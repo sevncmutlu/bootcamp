@@ -5,6 +5,10 @@
 
 > Her not: **Dün ne yapıldı? / Bugün ne yapılacak? / Engel var mı?**
 
+Toplantılar Scrum Master (Sevinç Mutlu) tarafından organize edildi. Aşağıda takımın toplantıya davet edildiği örnek bir görüşme yer almaktadır:
+
+![Daily Scrum toplantı daveti](../assets/sprint-1-daily-invite.png)
+
 ---
 
 ## 📅 Hafta 1
