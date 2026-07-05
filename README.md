@@ -132,6 +132,8 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
 
 - **Sprint Review:** Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu. Teknoloji yığını, geliştirmeye başlamak için yeterli detayda belirlendi. Gizlilik öncelikli mimari, projenin en kritik farklılaştırıcısı olarak onaylandı. Sprint hedeflerine %100 ulaşıldı, kapsam dışına çıkılmadı. Detay: [Sprint-1-Review.md](./Sprint-1/Sprint-1-Review.md)
 
+![Sprint 1 Review Toplantısı](./assets/sprint-1-review-meeting.png)
+
 - **Sprint Review Katılımcıları:** Emir Hüseyin İnci, Sevinç Mutlu
 
 - **Sprint Retrospective:**
