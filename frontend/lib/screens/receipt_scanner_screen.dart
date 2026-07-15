@@ -7,6 +7,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/config/api_config.dart';
+import 'dart:developer' as developer;
 
 class ReceiptScannerScreen extends StatefulWidget {
   const ReceiptScannerScreen({super.key});
@@ -61,9 +62,10 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
         });
       }
     } catch (e) {
+      developer.log('Error selecting image from picker', error: e, name: 'ReceiptScannerScreen');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedSelectImage(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.ocrError)),
         );
       }
     }
@@ -119,9 +121,10 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
         throw Exception('Server returned status: ${response.statusCode}');
       }
     } catch (e) {
+      developer.log('Error parsing receipt with backend OCR', error: e, name: 'ReceiptScannerScreen');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorParsingReceipt(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.ocrError)),
         );
       }
     } finally {

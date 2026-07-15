@@ -2,7 +2,10 @@ import os
 import httpx
 import xml.etree.ElementTree as ET
 import chromadb
+import logging
 from typing import List, Dict, Optional
+
+logger = logging.getLogger("maki_rag")
 
 class RagService:
     def __init__(self):
@@ -38,7 +41,7 @@ class RagService:
                             "source": "CBRT (TCMB) Live XML Feed"
                         })
         except Exception as e:
-            print(f"Error fetching live CBRT rates: {e}")
+            logger.error(f"Error fetching live CBRT rates: {e}")
             # Fallback static currency seed
             documents.append({
                 "id": "cbrt_usd_fallback",
@@ -100,7 +103,7 @@ class RagService:
                     self.initialized = True
                     return
             except Exception as e:
-                print(f"Failed to use Gemini Embeddings, falling back to default Chroma index: {e}")
+                logger.warning(f"Failed to use Gemini Embeddings, falling back to default Chroma index: {e}")
 
         # Fallback to standard Chroma indexing
         self.collection.add(
@@ -134,7 +137,7 @@ class RagService:
                         "sources": [m["source"] for m in results["metadatas"][0]] if results["metadatas"] else []
                     }
             except Exception as e:
-                print(f"Semantic query failed, falling back to simple keyword matching: {e}")
+                logger.warning(f"Semantic query failed, falling back to simple keyword matching: {e}")
 
         # Fallback to standard keyword queries
         results = self.collection.query(

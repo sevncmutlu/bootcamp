@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/config/api_config.dart';
+import 'package:maki_app/utils/pii_scrubber.dart';
+import 'dart:developer' as developer;
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -42,6 +44,8 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       final uri = Uri.parse('${ApiConfig.baseUrl}/api/chat');
 
+      final scrubbedText = PiiScrubber.scrub(text);
+
       // Map chat messages to history format expected by backend
       // Filter out initial welcome message and structure as [{'role': 'user'|'model', 'text': '...'}]
       final history = _messages
@@ -49,7 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
           .take(_messages.length - 2) // skip the message we just added
           .map((m) => {
                 'role': m.isUser ? 'user' : 'model',
-                'text': m.text,
+                'text': PiiScrubber.scrub(m.text),
               })
           .toList();
 
@@ -57,7 +61,7 @@ class _ChatScreenState extends State<ChatScreen> {
         uri,
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          'message': text,
+          'message': scrubbedText,
           'history': history,
         }),
       );
@@ -72,6 +76,7 @@ class _ChatScreenState extends State<ChatScreen> {
         throw Exception('Status code: ${response.statusCode}');
       }
     } catch (e) {
+      developer.log('Error in Maki AI Coach conversation', error: e, name: 'ChatScreen');
       setState(() {
         _messages.add(ChatMessage(
           text: AppLocalizations.of(context)!.chatError,
@@ -121,6 +126,57 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
+          // Privacy Info Card
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 12.0),
+            child: Card(
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                  color: theme.colorScheme.outline.withValues(alpha: 0.1),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.shield_outlined,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.privacyTitle,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.privacyMessage,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              height: 1.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
           // Chat message list
           Expanded(
             child: ListView.builder(

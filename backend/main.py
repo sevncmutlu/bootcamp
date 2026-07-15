@@ -1,15 +1,27 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
 import uvicorn
+import os
+import json
+import logging
+from contextlib import asynccontextmanager
+
+from google import genai
+from google.genai import types
 from mocks import DEMO_CHAT_REPLY_TR, DEMO_CHAT_REPLY_EN, DEMO_RECEIPT_DATA
 from rag_service import rag_service
+import pandas as pd
+from prophet import Prophet
 
-from contextlib import asynccontextmanager
+# Configure structured application logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("maki_main")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Load and index live economic data on app startup
+    logger.info("Initializing RAG vector store on startup...")
     await rag_service.initialize()
     yield
 
@@ -109,12 +121,8 @@ async def chat_with_coach(payload: ChatMessage):
         }
         
     except Exception as e:
-        print(f"Error in Maki AI Coach: {e}")
+        logger.error(f"Error in Maki AI Coach: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to communicate with AI Coach: {str(e)}")
-
-from google import genai
-from google.genai import types
-import os
 
 # Load API Key from environment
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -175,12 +183,11 @@ async def parse_receipt(file: UploadFile = File(...)):
             return response.parsed
             
         # Fallback raw parsing if parsed isn't populated
-        import json
         data = json.loads(response.text)
         return ReceiptResponse(**data)
         
     except Exception as e:
-        print(f"Error parsing receipt with Gemini: {e}")
+        logger.error(f"Error parsing receipt with Gemini: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to parse receipt: {str(e)}")
 
 
@@ -198,9 +205,6 @@ async def forecast_spending(payload: ForecastRequest):
         return ForecastResponse(forecast=[])
 
     try:
-        import pandas as pd
-        from prophet import Prophet
-        
         # 1. Load transactions into Pandas
         data = [{"ds": tx.date, "y": tx.amount} for tx in payload.transactions]
         df = pd.DataFrame(data)
@@ -227,7 +231,6 @@ async def forecast_spending(payload: ForecastRequest):
             return ForecastResponse(forecast=forecast_list)
 
         # 2. Fit the Prophet model (silencing logs for cleaner console output)
-        import logging
         logging.getLogger('prophet').setLevel(logging.ERROR)
         
         m = Prophet(yearly_seasonality=False, weekly_seasonality=True, daily_seasonality=False)
@@ -251,10 +254,9 @@ async def forecast_spending(payload: ForecastRequest):
         return ForecastResponse(forecast=forecast_list)
 
     except Exception as e:
-        print(f"Prophet fitting failed, falling back to moving average: {e}")
+        logger.warning(f"Prophet fitting failed, falling back to moving average: {e}")
         try:
             # Safe linear/average fallback on exception
-            import pandas as pd
             df = pd.DataFrame([{"ds": tx.date, "y": tx.amount} for tx in payload.transactions])
             avg_daily = df['y'].mean() if not df.empty else 0.0
             forecast_list = []
@@ -361,10 +363,8 @@ async def simulate_debt_payoff(payload: DebtSimulationRequest):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Error in debt simulation: {e}")
+        logger.error(f"Error in debt simulation: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to simulate debt payoff: {str(e)}")
-
-from typing import Dict
 
 class InflationCategoryBreakdown(BaseModel):
     category: str

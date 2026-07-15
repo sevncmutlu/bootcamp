@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/config/api_config.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'dart:developer' as developer;
 
 class InflationScreen extends StatefulWidget {
   const InflationScreen({super.key});
@@ -64,9 +65,10 @@ class _InflationScreenState extends State<InflationScreen> {
         throw Exception('Status code: ${response.statusCode}');
       }
     } catch (e) {
+      developer.log('Error calculating personal inflation comparison', error: e, name: 'InflationScreen');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.chatError)),
+          SnackBar(content: Text(AppLocalizations.of(context)!.inflationError)),
         );
       }
     } finally {

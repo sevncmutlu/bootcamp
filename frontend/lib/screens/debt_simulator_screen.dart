@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/config/api_config.dart';
+import 'package:maki_app/utils/pii_scrubber.dart';
+import 'dart:developer' as developer;
 
 class DebtSimulatorScreen extends StatefulWidget {
   const DebtSimulatorScreen({super.key});
@@ -137,7 +139,12 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
       final uri = Uri.parse('${ApiConfig.baseUrl}/api/debt-simulator');
 
       final payload = {
-        'debts': _debts.map((d) => d.toJson()).toList(),
+        'debts': _debts.map((d) => {
+          'name': PiiScrubber.scrub(d.name),
+          'balance': d.balance,
+          'interest_rate': d.interestRate,
+          'min_payment': d.minPayment,
+        }).toList(),
         'monthly_budget': budget,
         'strategy': _selectedStrategy,
       };
@@ -163,9 +170,10 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
         throw Exception(errMsg);
       }
     } catch (e) {
+      developer.log('Error simulating debt payoff strategies', error: e, name: 'DebtSimulatorScreen');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.simulatorError)),
         );
       }
     } finally {

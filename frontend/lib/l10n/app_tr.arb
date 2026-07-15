@@ -82,5 +82,11 @@
   "personalWeight": "Sizin Ağırlığınız",
   "officialWeight": "Resmi Ağırlık",
   "categoryInflation": "Yıllık Enflasyon",
-  "categoryLabel": "Kategori"
+  "categoryLabel": "Kategori",
+  "forecastError": "Harcama tahmini hesaplanamadı. Lütfen daha sonra tekrar deneyin.",
+  "inflationError": "Kişisel enflasyon hesaplanamadı. Lütfen daha sonra tekrar deneyin.",
+  "simulatorError": "Borç kapatma simülasyonu başarısız oldu. Lütfen bilgilerinizi kontrol edin.",
+  "ocrError": "Fiş görseli taranamadı. Lütfen daha sonra tekrar deneyin.",
+  "privacyTitle": "Gizlilik Öncelikli Yapay Zekâ Koçu",
+  "privacyMessage": "Maki tüm işlem kayıtlarınızı cihazınızda saklar. Sohbet mesajlarındaki telefon, kart numaraları veya IBAN bilgileri sunucuya gönderilmeden önce temizlenir."
 }

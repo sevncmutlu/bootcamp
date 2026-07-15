@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/config/api_config.dart';
+import 'dart:developer' as developer;
 
 class ForecastScreen extends StatefulWidget {
   const ForecastScreen({super.key});
@@ -71,9 +72,10 @@ class _ForecastScreenState extends State<ForecastScreen> {
         throw Exception('Status code: ${response.statusCode}');
       }
     } catch (e) {
+      developer.log('Error calculating expense forecast', error: e, name: 'ForecastScreen');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorParsingReceipt(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.forecastError)),
         );
       }
     } finally {

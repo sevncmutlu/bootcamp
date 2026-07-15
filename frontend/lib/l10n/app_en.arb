@@ -82,5 +82,11 @@
   "personalWeight": "Your Weight",
   "officialWeight": "Official Weight",
   "categoryInflation": "Annual Inflation",
-  "categoryLabel": "Category"
+  "categoryLabel": "Category",
+  "forecastError": "Failed to calculate spending forecast. Please try again later.",
+  "inflationError": "Failed to calculate personal inflation. Please try again later.",
+  "simulatorError": "Failed to simulate debt payoff. Please check your inputs.",
+  "ocrError": "Failed to scan receipt image. Please try again later.",
+  "privacyTitle": "Privacy-First AI Coach",
+  "privacyMessage": "Maki secures all transaction records on your device. Chat messages are scrubbed of any phone numbers, card numbers, or IBANs before processing."
 }
