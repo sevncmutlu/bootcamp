@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/config/api_config.dart';
 
 class DebtSimulatorScreen extends StatefulWidget {
   const DebtSimulatorScreen({super.key});
@@ -134,8 +134,7 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
     });
 
     try {
-      final apiHost = Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://localhost:8000';
-      final uri = Uri.parse('$apiHost/api/debt-simulator');
+      final uri = Uri.parse('${ApiConfig.baseUrl}/api/debt-simulator');
 
       final payload = {
         'debts': _debts.map((d) => d.toJson()).toList(),

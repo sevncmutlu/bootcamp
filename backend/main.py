@@ -2,11 +2,22 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 import uvicorn
+from mocks import DEMO_CHAT_REPLY_TR, DEMO_CHAT_REPLY_EN, DEMO_RECEIPT_DATA
+from rag_service import rag_service
+
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Load and index live economic data on app startup
+    await rag_service.initialize()
+    yield
 
 app = FastAPI(
     title="Maki Finance Coach API",
     description="Backend API for receipt parsing, AI coaching, forecasting, and debt simulation.",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Request/Response Models
@@ -45,19 +56,14 @@ async def chat_with_coach(payload: ChatMessage):
     # Graceful mock fallback if API key is not configured locally
     if not GEMINI_API_KEY:
         is_turkish = any(word in payload.message.lower() for word in ["merhaba", "selam", "nasıl", "para", "borç", "bütçe", "harcama"])
-        if is_turkish:
-            reply = (
-                "Merhaba! Ben bütçe koçunuz Maki. API anahtarınız henüz ayarlanmadığı için "
-                "şu an demo modundayım. Ama bütçe yapmanıza ve borçlarınızı kapatmanıza her zaman yardımcı olabilirim!"
-            )
-        else:
-            reply = (
-                "Hello! I am Maki, your budget coach. Since the Gemini API key is not configured yet, "
-                "I am running in demo mode. But I am always here to help you build budget sheets and manage expenses!"
-            )
+        reply = DEMO_CHAT_REPLY_TR if is_turkish else DEMO_CHAT_REPLY_EN
         return {"reply": reply, "sources": []}
 
     try:
+        # 1. Retrieve dynamic economic context from local RAG store
+        rag_result = await rag_service.query_context(payload.message)
+        rag_context = "\n".join(rag_result["documents"]) if rag_result["documents"] else ""
+
         # Initialize GenAI client
         client = genai.Client(api_key=GEMINI_API_KEY)
         
@@ -79,6 +85,11 @@ async def chat_with_coach(payload: ChatMessage):
             "If the user asks questions in Turkish, reply in Turkish. If they ask in English, reply in English. "
             "Keep your answers concise, practical, and action-oriented. Try to format numbers nicely."
         )
+
+        if rag_context:
+            system_instruction += (
+                f"\n\nGround your advice using the following official macroeconomic facts if relevant to the query:\n{rag_context}"
+            )
         
         # Create chat session with system instruction and history
         chat = client.chats.create(
@@ -94,7 +105,7 @@ async def chat_with_coach(payload: ChatMessage):
         
         return {
             "reply": response.text,
-            "sources": []
+            "sources": rag_result["sources"]
         }
         
     except Exception as e:
@@ -130,16 +141,7 @@ async def parse_receipt(file: UploadFile = File(...)):
     
     # Graceful fallback if API key is not configured locally
     if not GEMINI_API_KEY:
-        return ReceiptResponse(
-            store_name="Demo Market Inc. (No API Key)",
-            date="2026-07-15",
-            items=[
-                ReceiptItem(name="Default Grocery Item", price=120.0, quantity=1),
-                ReceiptItem(name="Bilingual Book", price=80.0, quantity=1)
-            ],
-            total=200.0,
-            category="Market"
-        )
+        return ReceiptResponse(**DEMO_RECEIPT_DATA)
     
     try:
         # Initialize Google GenAI client

@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/config/api_config.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -40,8 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
 
     try {
-      final apiHost = Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://localhost:8000';
-      final uri = Uri.parse('$apiHost/api/chat');
+      final uri = Uri.parse('${ApiConfig.baseUrl}/api/chat');
 
       // Map chat messages to history format expected by backend
       // Filter out initial welcome message and structure as [{'role': 'user'|'model', 'text': '...'}]

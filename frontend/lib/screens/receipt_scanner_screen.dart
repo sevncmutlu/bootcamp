@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:drift/drift.dart' as drift;
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/config/api_config.dart';
 
 class ReceiptScannerScreen extends StatefulWidget {
   const ReceiptScannerScreen({super.key});
@@ -78,8 +79,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
     try {
       // Resolve local host depending on simulator platform
       // Android emulator points to 10.0.2.2, iOS / Desktop points to localhost
-      final apiHost = Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://localhost:8000';
-      final uri = Uri.parse('$apiHost/api/ocr');
+      final uri = Uri.parse('${ApiConfig.baseUrl}/api/ocr');
       
       final request = http.MultipartRequest('POST', uri);
       request.files.add(

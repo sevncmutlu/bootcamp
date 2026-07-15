@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/config/api_config.dart';
 
 class ForecastScreen extends StatefulWidget {
   const ForecastScreen({super.key});
@@ -50,8 +50,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
         };
       }).toList();
 
-      final apiHost = Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://localhost:8000';
-      final uri = Uri.parse('$apiHost/api/forecast');
+      final uri = Uri.parse('${ApiConfig.baseUrl}/api/forecast');
 
       final response = await http.post(
         uri,
