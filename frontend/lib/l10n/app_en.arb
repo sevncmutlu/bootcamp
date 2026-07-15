@@ -5,5 +5,12 @@
   "chatPlaceholder": "Type a message...",
   "manualExpense": "Add Expense Manually",
   "scanReceipt": "Scan Receipt",
-  "totalExpense": "Total Expenses"
+  "totalExpense": "Total Expenses",
+  "onboardingTitle": "Welcome to Maki",
+  "onboardingSubtitle": "Let's personalize your coaching experience. What is your primary goal?",
+  "goalTrack": "Track daily spending",
+  "goalSave": "Save for a major goal",
+  "goalDebt": "Pay down existing debt",
+  "goalInvest": "Learn to invest",
+  "continueButton": "Continue"
 }

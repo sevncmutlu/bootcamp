@@ -49,8 +49,61 @@ class Incomes extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
+  /// Thread-safe singleton instance
+  static final AppDatabase instance = AppDatabase();
+
   @override
   int get schemaVersion => 1;
+
+  // ===========================================================================
+  // Expense Management Queries
+  // ===========================================================================
+
+  Stream<List<Expense>> watchAllExpenses() {
+    return (select(expenses)..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)])).watch();
+  }
+
+  Future<List<Expense>> getAllExpenses() {
+    return (select(expenses)..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)])).get();
+  }
+
+  Future<int> insertExpense(ExpensesCompanion companion) {
+    return into(expenses).insert(companion);
+  }
+
+  Future<bool> updateExpense(Expense entity) {
+    return update(expenses).replace(entity);
+  }
+
+  Future<int> deleteExpense(int id) {
+    return (delete(expenses)..where((t) => t.id.equals(id))).go();
+  }
+
+  // ===========================================================================
+  // Category Management & Seeding
+  // ===========================================================================
+
+  Future<List<Category>> getAllCategories() {
+    return select(categories).get();
+  }
+
+  Future<void> seedDefaultCategories() async {
+    final existing = await select(categories).get();
+    if (existing.isEmpty) {
+      final defaults = [
+        CategoriesCompanion.insert(name: 'Market', colorHex: '#FFFF9F00', iconName: 'shopping_cart'),
+        CategoriesCompanion.insert(name: 'Restaurant', colorHex: '#FFFF453A', iconName: 'restaurant'),
+        CategoriesCompanion.insert(name: 'Rent', colorHex: '#FF30D158', iconName: 'home'),
+        CategoriesCompanion.insert(name: 'Bills', colorHex: '#FF5E5CE6', iconName: 'receipt'),
+        CategoriesCompanion.insert(name: 'Transport', colorHex: '#FF64D2FF', iconName: 'directions_bus'),
+        CategoriesCompanion.insert(name: 'Fun', colorHex: '#FFBF5AF2', iconName: 'sports_esports'),
+      ];
+      
+      for (final companion in defaults) {
+        await into(categories).insert(companion);
+      }
+    }
+  }
 }
 
 // =============================================================================

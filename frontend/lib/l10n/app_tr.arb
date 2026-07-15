@@ -5,5 +5,12 @@
   "chatPlaceholder": "Bir mesaj yazın...",
   "manualExpense": "Manuel Harcama Ekle",
   "scanReceipt": "Fiş Tara",
-  "totalExpense": "Toplam Harcama"
+  "totalExpense": "Toplam Harcama",
+  "onboardingTitle": "Maki'ye Hoş Geldiniz",
+  "onboardingSubtitle": "Koçluk deneyiminizi kişiselleştirelim. Birincil finansal hedefiniz nedir?",
+  "goalTrack": "Günlük harcamalarımı takip etmek",
+  "goalSave": "Birikim yapmak (Hedef odaklı)",
+  "goalDebt": "Borçlarımı azaltmak/kapatmak",
+  "goalInvest": "Yatırım yapmayı öğrenmek",
+  "continueButton": "Devam Et"
 }
