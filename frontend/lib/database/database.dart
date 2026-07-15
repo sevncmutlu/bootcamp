@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:maki_app/database/secure_key_helper.dart';
 
 part 'database.g.dart';
 
@@ -118,13 +119,13 @@ LazyDatabase _openConnection() {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'maki_finance.db'));
 
+    // Retrieve the database encryption key asynchronously from secure hardware storage (Keychain/Keystore)
+    final encryptionKey = await SecureKeyHelper.getOrCreateEncryptionKey();
+
     return NativeDatabase.createInBackground(
       file,
       setup: (rawDb) {
-        // Define and execute PRAGMA key for transparent encryption.
-        // TODO: In production, retrieve the encryption key securely from 
-        // the device's secure hardware store (e.g. Keychain/Keystore).
-        const encryptionKey = 'maki_secure_encryption_key_120';
+        // Execute PRAGMA key for SQLite3MC transparent database encryption.
         rawDb.execute("PRAGMA key = '$encryptionKey';");
       },
     );
