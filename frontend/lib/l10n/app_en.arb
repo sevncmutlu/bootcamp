@@ -178,10 +178,30 @@
   "projectionVectorLabel": "Projection vector b",
   "rewardSuccess": "Trained! Selected period's reward updated.",
   "closeButton": "Close",
-  "xpClaimed": "🎉 +{xp} XP claimed!",
+  "xpClaimed": "+{xp} XP claimed!",
   "@xpClaimed": {
     "placeholders": {
       "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "paywallTitle": "Upgrade to Maki Pro",
+  "paywallSubtitle": "Unlock your AI-powered personal finance coach and take full control of your money.",
+  "paywallBenefit1": "Unlimited AI coaching conversations",
+  "paywallBenefit2": "RAG-powered macroeconomic insights",
+  "paywallBenefit3": "Smart budget advice tailored to you",
+  "paywallPriceLabel": "₺49.99 / month",
+  "paywallCtaButton": "Start Free Trial",
+  "paywallRestoreButton": "Restore Purchase",
+  "cameraButton": "Camera",
+  "galleryButton": "Gallery",
+  "interestRateAbbr": "Rate",
+  "categoryInflationLabel": "Inflation",
+  "payoffMonthLabel": "Month {month}",
+  "@payoffMonthLabel": {
+    "placeholders": {
+      "month": {
         "type": "int"
       }
     }

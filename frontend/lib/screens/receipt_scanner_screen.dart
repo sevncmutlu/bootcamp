@@ -229,13 +229,13 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                             ElevatedButton.icon(
                               onPressed: () => _pickImage(ImageSource.camera),
                               icon: const Icon(Icons.camera_alt_outlined),
-                              label: const Text('Camera'),
+                              label: Text(l10n.cameraButton),
                             ),
                             const SizedBox(width: 12),
                             ElevatedButton.icon(
                               onPressed: () => _pickImage(ImageSource.gallery),
                               icon: const Icon(Icons.photo_library_outlined),
-                              label: const Text('Gallery'),
+                              label: Text(l10n.galleryButton),
                             ),
                           ],
                         ),

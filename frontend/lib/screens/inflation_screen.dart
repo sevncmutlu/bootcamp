@@ -302,7 +302,7 @@ class _InflationScreenState extends State<InflationScreen> {
                                       ),
                                     ),
                                     Text(
-                                      l10n.categoryInflation.substring(7), // yields "Inflation" or "Enflasyon"
+                                      l10n.categoryInflationLabel,
                                       style: const TextStyle(fontSize: 11, color: Colors.grey),
                                     )
                                   ],

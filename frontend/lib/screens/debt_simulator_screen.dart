@@ -297,7 +297,7 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       subtitle: Text(
-                        '${l10n.minPayment}: \$${debt.minPayment.toStringAsFixed(0)} · ${l10n.interestRate.substring(0,4)}: ${debt.interestRate}%',
+                        '${l10n.minPayment}: \$${debt.minPayment.toStringAsFixed(0)} · ${l10n.interestRateAbbr}: ${debt.interestRate}%',
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -421,7 +421,7 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                         leading: CircleAvatar(
                           child: Text('${item.month}'),
                         ),
-                        title: Text('Month ${item.month}'),
+                        title: Text(l10n.payoffMonthLabel(item.month)),
                         trailing: Text(
                           '\$${item.remainingBalance.toStringAsFixed(2)}',
                           style: const TextStyle(fontWeight: FontWeight.bold),

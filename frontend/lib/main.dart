@@ -8,6 +8,8 @@ import 'package:maki_app/screens/forecast_screen.dart';
 import 'package:maki_app/screens/debt_simulator_screen.dart';
 import 'package:maki_app/screens/inflation_screen.dart';
 import 'package:maki_app/screens/forest_screen.dart';
+import 'package:maki_app/screens/paywall_screen.dart';
+import 'package:maki_app/services/premium_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -64,6 +66,29 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     ChatScreen(),
   ];
 
+  /// The tab index corresponding to the AI Coach feature.
+  static const int _coachTabIndex = 5;
+
+  /// Handles tab selection with a premium gate on the Coach tab.
+  Future<void> _onTabSelected(int index) async {
+    if (index == _coachTabIndex) {
+      final isPremium = await PremiumService.instance.isPremium();
+      if (!isPremium) {
+        if (mounted) {
+          await Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const PaywallScreen()),
+          );
+        }
+        return;
+      }
+    }
+    if (mounted) {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,11 +98,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onDestinationSelected: _onTabSelected,
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.account_balance_wallet_outlined),

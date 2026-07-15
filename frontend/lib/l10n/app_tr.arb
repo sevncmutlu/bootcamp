@@ -178,10 +178,30 @@
   "projectionVectorLabel": "Projeksiyon vektörü b",
   "rewardSuccess": "Model eğitildi! Seçilen periyodun ödül parametreleri güncellendi.",
   "closeButton": "Kapat",
-  "xpClaimed": "🎉 +{xp} XP kazanıldı!",
+  "xpClaimed": "+{xp} XP kazanıldı!",
   "@xpClaimed": {
     "placeholders": {
       "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "paywallTitle": "Maki Pro'ya Geç",
+  "paywallSubtitle": "Yapay zeka destekli kişisel finans koçunun kilidini aç ve paranın kontrolünü eline al.",
+  "paywallBenefit1": "Sınırsız yapay zeka koçluk konuşmaları",
+  "paywallBenefit2": "RAG destekli makroekonomik içgörüler",
+  "paywallBenefit3": "Sana özel akıllı bütçe tavsiyeleri",
+  "paywallPriceLabel": "₺49,99 / ay",
+  "paywallCtaButton": "Ücretsiz Denemeyi Başlat",
+  "paywallRestoreButton": "Satın Almayı Geri Yükle",
+  "cameraButton": "Kamera",
+  "galleryButton": "Galeri",
+  "interestRateAbbr": "Oran",
+  "categoryInflationLabel": "Enflasyon",
+  "payoffMonthLabel": "Ay {month}",
+  "@payoffMonthLabel": {
+    "placeholders": {
+      "month": {
         "type": "int"
       }
     }
