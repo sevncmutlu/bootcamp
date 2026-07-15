@@ -49,5 +49,11 @@
   
   "chatError": "Üzgünüm, şu anda bağlantı sorunu yaşıyorum. Lütfen tekrar deneyin.",
   "navExpenses": "Harcamalar",
-  "navCoach": "Maki Koçu"
+  "navCoach": "Maki Koçu",
+  "navForecast": "Tahminler",
+  "forecastTitle": "Harcama Tahmini",
+  "forecastSubtitle": "Maki'nin önümüzdeki 7 gün için yapay zeka tabanlı günlük harcama tahminleri.",
+  "forecastLoading": "Harcama tahminleri hesaplanıyor...",
+  "forecastEmpty": "Tahmin oluşturmak için yeterli işlem geçmişi yok. Maki'nin farklı günlerde yapılmış harcama verilerine ihtiyacı var.",
+  "projectedSpend": "Tahmini Harcama"
 }

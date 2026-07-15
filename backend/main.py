@@ -14,8 +14,12 @@ class ChatMessage(BaseModel):
     message: str
     history: Optional[List[dict]] = []
 
+class TransactionItem(BaseModel):
+    date: str # YYYY-MM-DD
+    amount: float
+
 class ForecastRequest(BaseModel):
-    transactions: List[dict] # Expected: [{"date": "YYYY-MM-DD", "amount": 12.34}]
+    transactions: List[TransactionItem]
 
 class DebtSimulationRequest(BaseModel):
     debts: List[dict] # Expected: [{"name": "Card A", "balance": 1000.0, "interest_rate": 18.5, "min_payment": 50.0}]
@@ -170,15 +174,90 @@ async def parse_receipt(file: UploadFile = File(...)):
         print(f"Error parsing receipt with Gemini: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to parse receipt: {str(e)}")
 
-@app.post("/api/forecast")
+
+class ForecastDay(BaseModel):
+    date: str
+    predicted_amount: float
+
+class ForecastResponse(BaseModel):
+    forecast: List[ForecastDay]
+
+@app.post("/api/forecast", response_model=ForecastResponse)
 async def forecast_spending(payload: ForecastRequest):
-    # Placeholder for Prophet Forecasting logic
-    return {
-        "forecast": [
-            {"date": "2026-08-01", "predicted_amount": 150.0},
-            {"date": "2026-08-02", "predicted_amount": 160.0}
-        ]
-    }
+    # Graceful exit if no transactions are provided
+    if not payload.transactions:
+        return ForecastResponse(forecast=[])
+
+    try:
+        import pandas as pd
+        from prophet import Prophet
+        
+        # 1. Load transactions into Pandas
+        data = [{"ds": tx.date, "y": tx.amount} for tx in payload.transactions]
+        df = pd.DataFrame(data)
+        
+        # Ensure correct formats
+        df['ds'] = pd.to_datetime(df['ds'])
+        df['y'] = df['y'].astype(float)
+        
+        # Group duplicates (e.g. multiple expenses on same day)
+        df = df.groupby('ds', as_index=False).sum()
+
+        # Fallback: Prophet requires a minimum sample size to predict trends.
+        # If less than 3 unique transaction days exist, we use a daily average.
+        if len(df) < 3:
+            avg_daily = df['y'].mean() if not df.empty else 0.0
+            last_date = df['ds'].max() if not df.empty else pd.Timestamp.now()
+            forecast_list = []
+            for i in range(1, 8):
+                future_day = last_date + pd.Timedelta(days=i)
+                forecast_list.append(ForecastDay(
+                    date=future_day.strftime('%Y-%m-%d'),
+                    predicted_amount=max(0.0, float(avg_daily))
+                ))
+            return ForecastResponse(forecast=forecast_list)
+
+        # 2. Fit the Prophet model (silencing logs for cleaner console output)
+        import logging
+        logging.getLogger('prophet').setLevel(logging.ERROR)
+        
+        m = Prophet(yearly_seasonality=False, weekly_seasonality=True, daily_seasonality=False)
+        m.fit(df)
+
+        # 3. Predict next 7 days
+        future = m.make_future_dataframe(periods=7, include_history=False)
+        forecast = m.predict(future)
+        
+        # 4. Map outputs
+        forecast_list = []
+        for _, row in forecast.iterrows():
+            date_str = row['ds'].strftime('%Y-%m-%d')
+            # Clamp predictions to >= 0.0
+            predicted_val = max(0.0, float(row['yhat']))
+            forecast_list.append(ForecastDay(
+                date=date_str,
+                predicted_amount=predicted_val
+            ))
+            
+        return ForecastResponse(forecast=forecast_list)
+
+    except Exception as e:
+        print(f"Prophet fitting failed, falling back to moving average: {e}")
+        try:
+            # Safe linear/average fallback on exception
+            import pandas as pd
+            df = pd.DataFrame([{"ds": tx.date, "y": tx.amount} for tx in payload.transactions])
+            avg_daily = df['y'].mean() if not df.empty else 0.0
+            forecast_list = []
+            for i in range(1, 8):
+                future_day = pd.Timestamp.now() + pd.Timedelta(days=i)
+                forecast_list.append(ForecastDay(
+                    date=future_day.strftime('%Y-%m-%d'),
+                    predicted_amount=max(0.0, float(avg_daily))
+                ))
+            return ForecastResponse(forecast=forecast_list)
+        except Exception as inner_e:
+            raise HTTPException(status_code=500, detail=f"Failed to generate forecast: {str(inner_e)}")
 
 @app.post("/api/debt-simulator")
 async def simulate_debt_payoff(payload: DebtSimulationRequest):

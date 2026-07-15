@@ -49,5 +49,11 @@
   
   "chatError": "Sorry, I am having trouble connecting right now. Please try again.",
   "navExpenses": "Expenses",
-  "navCoach": "Maki Coach"
+  "navCoach": "Maki Coach",
+  "navForecast": "Forecast",
+  "forecastTitle": "Expense Forecast",
+  "forecastSubtitle": "Maki's AI prediction for your daily expenses over the next 7 days.",
+  "forecastLoading": "Calculating spending forecast...",
+  "forecastEmpty": "Not enough transaction history to build predictions. Maki needs transactions across multiple days.",
+  "projectedSpend": "Projected Spending"
 }
