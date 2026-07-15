@@ -49,6 +49,9 @@ class Incomes extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
+  /// Testing constructor to run in-memory executions
+  AppDatabase.forTesting(QueryExecutor executor) : super(executor);
+
   /// Thread-safe singleton instance
   static final AppDatabase instance = AppDatabase();
 
