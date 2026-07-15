@@ -88,5 +88,69 @@
   "simulatorError": "Failed to simulate debt payoff. Please check your inputs.",
   "ocrError": "Failed to scan receipt image. Please try again later.",
   "privacyTitle": "Privacy-First AI Coach",
-  "privacyMessage": "Maki secures all transaction records on your device. Chat messages are scrubbed of any phone numbers, card numbers, or IBANs before processing."
+  "privacyMessage": "Maki secures all transaction records on your device. Chat messages are scrubbed of any phone numbers, card numbers, or IBANs before processing.",
+  "navForest": "Forest",
+  "forestTitle": "Maki Forest",
+  "forestSubtitle": "Grow your tree by completing daily challenges.",
+  "currentLevel": "Level {level}",
+  "@currentLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "levelTitleSeed": "Savings Seed",
+  "levelTitleSprout": "Active Sprout",
+  "levelTitleSapling": "Growing Sapling",
+  "levelTitleTree": "Mature Oak",
+  "levelTitleForest": "Oak Guardian",
+  "challengesHeader": "Daily Savings Challenges",
+  "xpNeeded": "{xp} / {maxXp} XP to Level {nextLevel}",
+  "@xpNeeded": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      },
+      "maxXp": {
+        "type": "int"
+      },
+      "nextLevel": {
+        "type": "int"
+      }
+    }
+  },
+  "claimXp": "Claim {xp} XP",
+  "@claimXp": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "claimedStatus": "Claimed",
+  "completedStatus": "Completed",
+  "pendingStatus": "Pending",
+  "leaderboardHeader": "Weekly Saver Standing",
+  "leaderboardSubtitle": "Compare your weekly savings with anonymous savers.",
+  "leaderboardRankText": "You saved more than {percent}% of users this week!",
+  "@leaderboardRankText": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeCookHome": "Cook at Home",
+  "challengeCookHomeDesc": "Keep restaurant expenses to 0 TL today.",
+  "challengeLogThree": "Log 3 Transactions",
+  "challengeLogThreeDesc": "Record 3 or more expenses or incomes today.",
+  "challengeNoShopping": "No Impulse Shopping",
+  "challengeNoShoppingDesc": "Avoid shopping or market category expenses today.",
+  "challengeSaveTen": "Budget Master",
+  "challengeSaveTenDesc": "Save at least 10% of your total budget today.",
+  "badgesUnlocked": "Unlocked Badges",
+  "badgeSavingsSeed": "Savings Seed",
+  "badgeBudgetMaster": "Budget Master",
+  "badgeOakGuardian": "Oak Guardian"
 }

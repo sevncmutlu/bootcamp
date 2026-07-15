@@ -7,6 +7,7 @@ import 'package:maki_app/screens/chat_screen.dart';
 import 'package:maki_app/screens/forecast_screen.dart';
 import 'package:maki_app/screens/debt_simulator_screen.dart';
 import 'package:maki_app/screens/inflation_screen.dart';
+import 'package:maki_app/screens/forest_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,6 +60,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     ForecastScreen(),
     InflationScreen(),
     DebtSimulatorScreen(),
+    ForestScreen(),
     ChatScreen(),
   ];
 
@@ -96,6 +98,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             icon: const Icon(Icons.calculate_outlined),
             selectedIcon: const Icon(Icons.calculate),
             label: AppLocalizations.of(context)!.navSimulator,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.forest_outlined),
+            selectedIcon: const Icon(Icons.forest),
+            label: AppLocalizations.of(context)!.navForest,
           ),
           NavigationDestination(
             icon: const Icon(Icons.spa_outlined),

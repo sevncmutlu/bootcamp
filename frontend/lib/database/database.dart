@@ -42,11 +42,34 @@ class Incomes extends Table {
   TextColumn get notes => text().nullable()();
 }
 
+/// Table representing user's level, XP, and badges.
+@DataClassName('UserGamificationState')
+class UserGamificationStates extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get level => integer().withDefault(const Constant(1))();
+  IntColumn get xp => integer().withDefault(const Constant(0))();
+  TextColumn get badges => text().withDefault(const Constant(''))();
+}
+
+/// Table representing active and completed challenges.
+@DataClassName('DailyChallenge')
+class DailyChallenges extends Table {
+  TextColumn get id => text().withLength(min: 1, max: 100)();
+  TextColumn get titleKey => text().withLength(min: 1, max: 100)();
+  TextColumn get descKey => text().withLength(min: 1, max: 200)();
+  IntColumn get xpReward => integer().withDefault(const Constant(10))();
+  BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get date => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 // =============================================================================
 // Drift Database Orchestration
 // =============================================================================
 
-@DriftDatabase(tables: [Expenses, Categories, Incomes])
+@DriftDatabase(tables: [Expenses, Categories, Incomes, UserGamificationStates, DailyChallenges])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -57,7 +80,20 @@ class AppDatabase extends _$AppDatabase {
   static final AppDatabase instance = AppDatabase();
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await m.createAll();
+    },
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.createTable(userGamificationStates);
+        await m.createTable(dailyChallenges);
+      }
+    },
+  );
 
   // ===========================================================================
   // Expense Management Queries
@@ -81,6 +117,58 @@ class AppDatabase extends _$AppDatabase {
 
   Future<int> deleteExpense(int id) {
     return (delete(expenses)..where((t) => t.id.equals(id))).go();
+  }
+
+  // ===========================================================================
+  // Income Management Queries
+  // ===========================================================================
+
+  Future<List<Income>> getAllIncomes() {
+    return select(incomes).get();
+  }
+
+  Future<int> insertIncome(IncomesCompanion companion) {
+    return into(incomes).insert(companion);
+  }
+
+  // ===========================================================================
+  // Gamification & Challenges Queries
+  // ===========================================================================
+
+  Future<UserGamificationState?> getGamificationState() async {
+    final list = await select(userGamificationStates).get();
+    if (list.isEmpty) {
+      // Auto-insert default state
+      final id = await into(userGamificationStates).insert(
+        UserGamificationStatesCompanion.insert(
+          level: const Value(1),
+          xp: const Value(0),
+          badges: const Value(''),
+        ),
+      );
+      return UserGamificationState(id: id, level: 1, xp: 0, badges: '');
+    }
+    return list.first;
+  }
+
+  Future<void> updateGamificationState(UserGamificationState state) {
+    return update(userGamificationStates).replace(state);
+  }
+
+  Future<List<DailyChallenge>> getChallengesForDate(DateTime date) {
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+    return (select(dailyChallenges)
+          ..where((t) => t.date.isBetweenValues(startOfDay, endOfDay)))
+        .get();
+  }
+
+  Future<void> insertChallenge(DailyChallenge challenge) {
+    return into(dailyChallenges).insert(challenge, mode: InsertMode.insertOrReplace);
+  }
+
+  Future<void> updateChallenge(DailyChallenge challenge) {
+    return update(dailyChallenges).replace(challenge);
   }
 
   // ===========================================================================

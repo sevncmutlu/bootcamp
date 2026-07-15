@@ -88,5 +88,69 @@
   "simulatorError": "Borç kapatma simülasyonu başarısız oldu. Lütfen bilgilerinizi kontrol edin.",
   "ocrError": "Fiş görseli taranamadı. Lütfen daha sonra tekrar deneyin.",
   "privacyTitle": "Gizlilik Öncelikli Yapay Zekâ Koçu",
-  "privacyMessage": "Maki tüm işlem kayıtlarınızı cihazınızda saklar. Sohbet mesajlarındaki telefon, kart numaraları veya IBAN bilgileri sunucuya gönderilmeden önce temizlenir."
+  "privacyMessage": "Maki tüm işlem kayıtlarınızı cihazınızda saklar. Sohbet mesajlarındaki telefon, kart numaraları veya IBAN bilgileri sunucuya gönderilmeden önce temizlenir.",
+  "navForest": "Orman",
+  "forestTitle": "Maki Ormanı",
+  "forestSubtitle": "Günlük görevleri tamamlayarak ağacınızı büyütün.",
+  "currentLevel": "Seviye {level}",
+  "@currentLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "levelTitleSeed": "Tasarruf Tohumu",
+  "levelTitleSprout": "Aktif Filiz",
+  "levelTitleSapling": "Büyüyen Fidan",
+  "levelTitleTree": "Olgun Meşe",
+  "levelTitleForest": "Meşe Muhafızı",
+  "challengesHeader": "Günlük Tasarruf Görevleri",
+  "xpNeeded": "{xp} / {maxXp} XP - Seviye {nextLevel} için",
+  "@xpNeeded": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      },
+      "maxXp": {
+        "type": "int"
+      },
+      "nextLevel": {
+        "type": "int"
+      }
+    }
+  },
+  "claimXp": "{xp} XP Kazan",
+  "@claimXp": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "claimedStatus": "Kazanıldı",
+  "completedStatus": "Tamamlandı",
+  "pendingStatus": "Bekliyor",
+  "leaderboardHeader": "Haftalık Tasarruf Sıralaması",
+  "leaderboardSubtitle": "Haftalık tasarruflarınızı anonim tasarruf sahipleriyle karşılaştırın.",
+  "leaderboardRankText": "Bu hafta kullanıcıların %{percent} kadarından daha fazla tasarruf ettiniz!",
+  "@leaderboardRankText": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeCookHome": "Evde Yemek Yap",
+  "challengeCookHomeDesc": "Bugün restoran harcamalarını 0 TL tutun.",
+  "challengeLogThree": "3 İşlem Kaydet",
+  "challengeLogThreeDesc": "Bugün 3 veya daha fazla gelir veya gider kaydedin.",
+  "challengeNoShopping": "Gereksiz Alışveriş Yapma",
+  "challengeNoShoppingDesc": "Bugün alışveriş veya market kategorisinde harcama yapmayın.",
+  "challengeSaveTen": "Bütçe Ustası",
+  "challengeSaveTenDesc": "Bugün toplam bütçenizin en az %10'unu tasarruf edin.",
+  "badgesUnlocked": "Kazanılan Rozetler",
+  "badgeSavingsSeed": "Tasarruf Tohumu",
+  "badgeBudgetMaster": "Bütçe Ustası",
+  "badgeOakGuardian": "Meşe Muhafızı"
 }

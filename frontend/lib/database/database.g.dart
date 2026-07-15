@@ -1110,12 +1110,731 @@ class IncomesCompanion extends UpdateCompanion<Income> {
   }
 }
 
+class $UserGamificationStatesTable extends UserGamificationStates
+    with TableInfo<$UserGamificationStatesTable, UserGamificationState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserGamificationStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _levelMeta = const VerificationMeta('level');
+  @override
+  late final GeneratedColumn<int> level = GeneratedColumn<int>(
+    'level',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _xpMeta = const VerificationMeta('xp');
+  @override
+  late final GeneratedColumn<int> xp = GeneratedColumn<int>(
+    'xp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _badgesMeta = const VerificationMeta('badges');
+  @override
+  late final GeneratedColumn<String> badges = GeneratedColumn<String>(
+    'badges',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, level, xp, badges];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_gamification_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserGamificationState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('level')) {
+      context.handle(
+        _levelMeta,
+        level.isAcceptableOrUnknown(data['level']!, _levelMeta),
+      );
+    }
+    if (data.containsKey('xp')) {
+      context.handle(_xpMeta, xp.isAcceptableOrUnknown(data['xp']!, _xpMeta));
+    }
+    if (data.containsKey('badges')) {
+      context.handle(
+        _badgesMeta,
+        badges.isAcceptableOrUnknown(data['badges']!, _badgesMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserGamificationState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserGamificationState(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      level: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}level'],
+      )!,
+      xp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}xp'],
+      )!,
+      badges: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}badges'],
+      )!,
+    );
+  }
+
+  @override
+  $UserGamificationStatesTable createAlias(String alias) {
+    return $UserGamificationStatesTable(attachedDatabase, alias);
+  }
+}
+
+class UserGamificationState extends DataClass
+    implements Insertable<UserGamificationState> {
+  final int id;
+  final int level;
+  final int xp;
+  final String badges;
+  const UserGamificationState({
+    required this.id,
+    required this.level,
+    required this.xp,
+    required this.badges,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['level'] = Variable<int>(level);
+    map['xp'] = Variable<int>(xp);
+    map['badges'] = Variable<String>(badges);
+    return map;
+  }
+
+  UserGamificationStatesCompanion toCompanion(bool nullToAbsent) {
+    return UserGamificationStatesCompanion(
+      id: Value(id),
+      level: Value(level),
+      xp: Value(xp),
+      badges: Value(badges),
+    );
+  }
+
+  factory UserGamificationState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserGamificationState(
+      id: serializer.fromJson<int>(json['id']),
+      level: serializer.fromJson<int>(json['level']),
+      xp: serializer.fromJson<int>(json['xp']),
+      badges: serializer.fromJson<String>(json['badges']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'level': serializer.toJson<int>(level),
+      'xp': serializer.toJson<int>(xp),
+      'badges': serializer.toJson<String>(badges),
+    };
+  }
+
+  UserGamificationState copyWith({
+    int? id,
+    int? level,
+    int? xp,
+    String? badges,
+  }) => UserGamificationState(
+    id: id ?? this.id,
+    level: level ?? this.level,
+    xp: xp ?? this.xp,
+    badges: badges ?? this.badges,
+  );
+  UserGamificationState copyWithCompanion(
+    UserGamificationStatesCompanion data,
+  ) {
+    return UserGamificationState(
+      id: data.id.present ? data.id.value : this.id,
+      level: data.level.present ? data.level.value : this.level,
+      xp: data.xp.present ? data.xp.value : this.xp,
+      badges: data.badges.present ? data.badges.value : this.badges,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserGamificationState(')
+          ..write('id: $id, ')
+          ..write('level: $level, ')
+          ..write('xp: $xp, ')
+          ..write('badges: $badges')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, level, xp, badges);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserGamificationState &&
+          other.id == this.id &&
+          other.level == this.level &&
+          other.xp == this.xp &&
+          other.badges == this.badges);
+}
+
+class UserGamificationStatesCompanion
+    extends UpdateCompanion<UserGamificationState> {
+  final Value<int> id;
+  final Value<int> level;
+  final Value<int> xp;
+  final Value<String> badges;
+  const UserGamificationStatesCompanion({
+    this.id = const Value.absent(),
+    this.level = const Value.absent(),
+    this.xp = const Value.absent(),
+    this.badges = const Value.absent(),
+  });
+  UserGamificationStatesCompanion.insert({
+    this.id = const Value.absent(),
+    this.level = const Value.absent(),
+    this.xp = const Value.absent(),
+    this.badges = const Value.absent(),
+  });
+  static Insertable<UserGamificationState> custom({
+    Expression<int>? id,
+    Expression<int>? level,
+    Expression<int>? xp,
+    Expression<String>? badges,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (level != null) 'level': level,
+      if (xp != null) 'xp': xp,
+      if (badges != null) 'badges': badges,
+    });
+  }
+
+  UserGamificationStatesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? level,
+    Value<int>? xp,
+    Value<String>? badges,
+  }) {
+    return UserGamificationStatesCompanion(
+      id: id ?? this.id,
+      level: level ?? this.level,
+      xp: xp ?? this.xp,
+      badges: badges ?? this.badges,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (level.present) {
+      map['level'] = Variable<int>(level.value);
+    }
+    if (xp.present) {
+      map['xp'] = Variable<int>(xp.value);
+    }
+    if (badges.present) {
+      map['badges'] = Variable<String>(badges.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserGamificationStatesCompanion(')
+          ..write('id: $id, ')
+          ..write('level: $level, ')
+          ..write('xp: $xp, ')
+          ..write('badges: $badges')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DailyChallengesTable extends DailyChallenges
+    with TableInfo<$DailyChallengesTable, DailyChallenge> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DailyChallengesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 100,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleKeyMeta = const VerificationMeta(
+    'titleKey',
+  );
+  @override
+  late final GeneratedColumn<String> titleKey = GeneratedColumn<String>(
+    'title_key',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 100,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descKeyMeta = const VerificationMeta(
+    'descKey',
+  );
+  @override
+  late final GeneratedColumn<String> descKey = GeneratedColumn<String>(
+    'desc_key',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 200,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _xpRewardMeta = const VerificationMeta(
+    'xpReward',
+  );
+  @override
+  late final GeneratedColumn<int> xpReward = GeneratedColumn<int>(
+    'xp_reward',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(10),
+  );
+  static const VerificationMeta _isCompletedMeta = const VerificationMeta(
+    'isCompleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isCompleted = GeneratedColumn<bool>(
+    'is_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    titleKey,
+    descKey,
+    xpReward,
+    isCompleted,
+    date,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'daily_challenges';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DailyChallenge> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('title_key')) {
+      context.handle(
+        _titleKeyMeta,
+        titleKey.isAcceptableOrUnknown(data['title_key']!, _titleKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleKeyMeta);
+    }
+    if (data.containsKey('desc_key')) {
+      context.handle(
+        _descKeyMeta,
+        descKey.isAcceptableOrUnknown(data['desc_key']!, _descKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_descKeyMeta);
+    }
+    if (data.containsKey('xp_reward')) {
+      context.handle(
+        _xpRewardMeta,
+        xpReward.isAcceptableOrUnknown(data['xp_reward']!, _xpRewardMeta),
+      );
+    }
+    if (data.containsKey('is_completed')) {
+      context.handle(
+        _isCompletedMeta,
+        isCompleted.isAcceptableOrUnknown(
+          data['is_completed']!,
+          _isCompletedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DailyChallenge map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DailyChallenge(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      titleKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title_key'],
+      )!,
+      descKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}desc_key'],
+      )!,
+      xpReward: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}xp_reward'],
+      )!,
+      isCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_completed'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+    );
+  }
+
+  @override
+  $DailyChallengesTable createAlias(String alias) {
+    return $DailyChallengesTable(attachedDatabase, alias);
+  }
+}
+
+class DailyChallenge extends DataClass implements Insertable<DailyChallenge> {
+  final String id;
+  final String titleKey;
+  final String descKey;
+  final int xpReward;
+  final bool isCompleted;
+  final DateTime date;
+  const DailyChallenge({
+    required this.id,
+    required this.titleKey,
+    required this.descKey,
+    required this.xpReward,
+    required this.isCompleted,
+    required this.date,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['title_key'] = Variable<String>(titleKey);
+    map['desc_key'] = Variable<String>(descKey);
+    map['xp_reward'] = Variable<int>(xpReward);
+    map['is_completed'] = Variable<bool>(isCompleted);
+    map['date'] = Variable<DateTime>(date);
+    return map;
+  }
+
+  DailyChallengesCompanion toCompanion(bool nullToAbsent) {
+    return DailyChallengesCompanion(
+      id: Value(id),
+      titleKey: Value(titleKey),
+      descKey: Value(descKey),
+      xpReward: Value(xpReward),
+      isCompleted: Value(isCompleted),
+      date: Value(date),
+    );
+  }
+
+  factory DailyChallenge.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DailyChallenge(
+      id: serializer.fromJson<String>(json['id']),
+      titleKey: serializer.fromJson<String>(json['titleKey']),
+      descKey: serializer.fromJson<String>(json['descKey']),
+      xpReward: serializer.fromJson<int>(json['xpReward']),
+      isCompleted: serializer.fromJson<bool>(json['isCompleted']),
+      date: serializer.fromJson<DateTime>(json['date']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'titleKey': serializer.toJson<String>(titleKey),
+      'descKey': serializer.toJson<String>(descKey),
+      'xpReward': serializer.toJson<int>(xpReward),
+      'isCompleted': serializer.toJson<bool>(isCompleted),
+      'date': serializer.toJson<DateTime>(date),
+    };
+  }
+
+  DailyChallenge copyWith({
+    String? id,
+    String? titleKey,
+    String? descKey,
+    int? xpReward,
+    bool? isCompleted,
+    DateTime? date,
+  }) => DailyChallenge(
+    id: id ?? this.id,
+    titleKey: titleKey ?? this.titleKey,
+    descKey: descKey ?? this.descKey,
+    xpReward: xpReward ?? this.xpReward,
+    isCompleted: isCompleted ?? this.isCompleted,
+    date: date ?? this.date,
+  );
+  DailyChallenge copyWithCompanion(DailyChallengesCompanion data) {
+    return DailyChallenge(
+      id: data.id.present ? data.id.value : this.id,
+      titleKey: data.titleKey.present ? data.titleKey.value : this.titleKey,
+      descKey: data.descKey.present ? data.descKey.value : this.descKey,
+      xpReward: data.xpReward.present ? data.xpReward.value : this.xpReward,
+      isCompleted: data.isCompleted.present
+          ? data.isCompleted.value
+          : this.isCompleted,
+      date: data.date.present ? data.date.value : this.date,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyChallenge(')
+          ..write('id: $id, ')
+          ..write('titleKey: $titleKey, ')
+          ..write('descKey: $descKey, ')
+          ..write('xpReward: $xpReward, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('date: $date')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, titleKey, descKey, xpReward, isCompleted, date);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DailyChallenge &&
+          other.id == this.id &&
+          other.titleKey == this.titleKey &&
+          other.descKey == this.descKey &&
+          other.xpReward == this.xpReward &&
+          other.isCompleted == this.isCompleted &&
+          other.date == this.date);
+}
+
+class DailyChallengesCompanion extends UpdateCompanion<DailyChallenge> {
+  final Value<String> id;
+  final Value<String> titleKey;
+  final Value<String> descKey;
+  final Value<int> xpReward;
+  final Value<bool> isCompleted;
+  final Value<DateTime> date;
+  final Value<int> rowid;
+  const DailyChallengesCompanion({
+    this.id = const Value.absent(),
+    this.titleKey = const Value.absent(),
+    this.descKey = const Value.absent(),
+    this.xpReward = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    this.date = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DailyChallengesCompanion.insert({
+    required String id,
+    required String titleKey,
+    required String descKey,
+    this.xpReward = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    required DateTime date,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       titleKey = Value(titleKey),
+       descKey = Value(descKey),
+       date = Value(date);
+  static Insertable<DailyChallenge> custom({
+    Expression<String>? id,
+    Expression<String>? titleKey,
+    Expression<String>? descKey,
+    Expression<int>? xpReward,
+    Expression<bool>? isCompleted,
+    Expression<DateTime>? date,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (titleKey != null) 'title_key': titleKey,
+      if (descKey != null) 'desc_key': descKey,
+      if (xpReward != null) 'xp_reward': xpReward,
+      if (isCompleted != null) 'is_completed': isCompleted,
+      if (date != null) 'date': date,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DailyChallengesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? titleKey,
+    Value<String>? descKey,
+    Value<int>? xpReward,
+    Value<bool>? isCompleted,
+    Value<DateTime>? date,
+    Value<int>? rowid,
+  }) {
+    return DailyChallengesCompanion(
+      id: id ?? this.id,
+      titleKey: titleKey ?? this.titleKey,
+      descKey: descKey ?? this.descKey,
+      xpReward: xpReward ?? this.xpReward,
+      isCompleted: isCompleted ?? this.isCompleted,
+      date: date ?? this.date,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (titleKey.present) {
+      map['title_key'] = Variable<String>(titleKey.value);
+    }
+    if (descKey.present) {
+      map['desc_key'] = Variable<String>(descKey.value);
+    }
+    if (xpReward.present) {
+      map['xp_reward'] = Variable<int>(xpReward.value);
+    }
+    if (isCompleted.present) {
+      map['is_completed'] = Variable<bool>(isCompleted.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyChallengesCompanion(')
+          ..write('id: $id, ')
+          ..write('titleKey: $titleKey, ')
+          ..write('descKey: $descKey, ')
+          ..write('xpReward: $xpReward, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('date: $date, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $ExpensesTable expenses = $ExpensesTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $IncomesTable incomes = $IncomesTable(this);
+  late final $UserGamificationStatesTable userGamificationStates =
+      $UserGamificationStatesTable(this);
+  late final $DailyChallengesTable dailyChallenges = $DailyChallengesTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1124,6 +1843,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     expenses,
     categories,
     incomes,
+    userGamificationStates,
+    dailyChallenges,
   ];
 }
 
@@ -1710,6 +2431,427 @@ typedef $$IncomesTableProcessedTableManager =
       Income,
       PrefetchHooks Function()
     >;
+typedef $$UserGamificationStatesTableCreateCompanionBuilder =
+    UserGamificationStatesCompanion Function({
+      Value<int> id,
+      Value<int> level,
+      Value<int> xp,
+      Value<String> badges,
+    });
+typedef $$UserGamificationStatesTableUpdateCompanionBuilder =
+    UserGamificationStatesCompanion Function({
+      Value<int> id,
+      Value<int> level,
+      Value<int> xp,
+      Value<String> badges,
+    });
+
+class $$UserGamificationStatesTableFilterComposer
+    extends Composer<_$AppDatabase, $UserGamificationStatesTable> {
+  $$UserGamificationStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get level => $composableBuilder(
+    column: $table.level,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get xp => $composableBuilder(
+    column: $table.xp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get badges => $composableBuilder(
+    column: $table.badges,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserGamificationStatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserGamificationStatesTable> {
+  $$UserGamificationStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get level => $composableBuilder(
+    column: $table.level,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get xp => $composableBuilder(
+    column: $table.xp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get badges => $composableBuilder(
+    column: $table.badges,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserGamificationStatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserGamificationStatesTable> {
+  $$UserGamificationStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get level =>
+      $composableBuilder(column: $table.level, builder: (column) => column);
+
+  GeneratedColumn<int> get xp =>
+      $composableBuilder(column: $table.xp, builder: (column) => column);
+
+  GeneratedColumn<String> get badges =>
+      $composableBuilder(column: $table.badges, builder: (column) => column);
+}
+
+class $$UserGamificationStatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserGamificationStatesTable,
+          UserGamificationState,
+          $$UserGamificationStatesTableFilterComposer,
+          $$UserGamificationStatesTableOrderingComposer,
+          $$UserGamificationStatesTableAnnotationComposer,
+          $$UserGamificationStatesTableCreateCompanionBuilder,
+          $$UserGamificationStatesTableUpdateCompanionBuilder,
+          (
+            UserGamificationState,
+            BaseReferences<
+              _$AppDatabase,
+              $UserGamificationStatesTable,
+              UserGamificationState
+            >,
+          ),
+          UserGamificationState,
+          PrefetchHooks Function()
+        > {
+  $$UserGamificationStatesTableTableManager(
+    _$AppDatabase db,
+    $UserGamificationStatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserGamificationStatesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$UserGamificationStatesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$UserGamificationStatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> level = const Value.absent(),
+                Value<int> xp = const Value.absent(),
+                Value<String> badges = const Value.absent(),
+              }) => UserGamificationStatesCompanion(
+                id: id,
+                level: level,
+                xp: xp,
+                badges: badges,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> level = const Value.absent(),
+                Value<int> xp = const Value.absent(),
+                Value<String> badges = const Value.absent(),
+              }) => UserGamificationStatesCompanion.insert(
+                id: id,
+                level: level,
+                xp: xp,
+                badges: badges,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserGamificationStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserGamificationStatesTable,
+      UserGamificationState,
+      $$UserGamificationStatesTableFilterComposer,
+      $$UserGamificationStatesTableOrderingComposer,
+      $$UserGamificationStatesTableAnnotationComposer,
+      $$UserGamificationStatesTableCreateCompanionBuilder,
+      $$UserGamificationStatesTableUpdateCompanionBuilder,
+      (
+        UserGamificationState,
+        BaseReferences<
+          _$AppDatabase,
+          $UserGamificationStatesTable,
+          UserGamificationState
+        >,
+      ),
+      UserGamificationState,
+      PrefetchHooks Function()
+    >;
+typedef $$DailyChallengesTableCreateCompanionBuilder =
+    DailyChallengesCompanion Function({
+      required String id,
+      required String titleKey,
+      required String descKey,
+      Value<int> xpReward,
+      Value<bool> isCompleted,
+      required DateTime date,
+      Value<int> rowid,
+    });
+typedef $$DailyChallengesTableUpdateCompanionBuilder =
+    DailyChallengesCompanion Function({
+      Value<String> id,
+      Value<String> titleKey,
+      Value<String> descKey,
+      Value<int> xpReward,
+      Value<bool> isCompleted,
+      Value<DateTime> date,
+      Value<int> rowid,
+    });
+
+class $$DailyChallengesTableFilterComposer
+    extends Composer<_$AppDatabase, $DailyChallengesTable> {
+  $$DailyChallengesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get titleKey => $composableBuilder(
+    column: $table.titleKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get descKey => $composableBuilder(
+    column: $table.descKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get xpReward => $composableBuilder(
+    column: $table.xpReward,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DailyChallengesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DailyChallengesTable> {
+  $$DailyChallengesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get titleKey => $composableBuilder(
+    column: $table.titleKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get descKey => $composableBuilder(
+    column: $table.descKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get xpReward => $composableBuilder(
+    column: $table.xpReward,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DailyChallengesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DailyChallengesTable> {
+  $$DailyChallengesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get titleKey =>
+      $composableBuilder(column: $table.titleKey, builder: (column) => column);
+
+  GeneratedColumn<String> get descKey =>
+      $composableBuilder(column: $table.descKey, builder: (column) => column);
+
+  GeneratedColumn<int> get xpReward =>
+      $composableBuilder(column: $table.xpReward, builder: (column) => column);
+
+  GeneratedColumn<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+}
+
+class $$DailyChallengesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DailyChallengesTable,
+          DailyChallenge,
+          $$DailyChallengesTableFilterComposer,
+          $$DailyChallengesTableOrderingComposer,
+          $$DailyChallengesTableAnnotationComposer,
+          $$DailyChallengesTableCreateCompanionBuilder,
+          $$DailyChallengesTableUpdateCompanionBuilder,
+          (
+            DailyChallenge,
+            BaseReferences<
+              _$AppDatabase,
+              $DailyChallengesTable,
+              DailyChallenge
+            >,
+          ),
+          DailyChallenge,
+          PrefetchHooks Function()
+        > {
+  $$DailyChallengesTableTableManager(
+    _$AppDatabase db,
+    $DailyChallengesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DailyChallengesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DailyChallengesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DailyChallengesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> titleKey = const Value.absent(),
+                Value<String> descKey = const Value.absent(),
+                Value<int> xpReward = const Value.absent(),
+                Value<bool> isCompleted = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DailyChallengesCompanion(
+                id: id,
+                titleKey: titleKey,
+                descKey: descKey,
+                xpReward: xpReward,
+                isCompleted: isCompleted,
+                date: date,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String titleKey,
+                required String descKey,
+                Value<int> xpReward = const Value.absent(),
+                Value<bool> isCompleted = const Value.absent(),
+                required DateTime date,
+                Value<int> rowid = const Value.absent(),
+              }) => DailyChallengesCompanion.insert(
+                id: id,
+                titleKey: titleKey,
+                descKey: descKey,
+                xpReward: xpReward,
+                isCompleted: isCompleted,
+                date: date,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DailyChallengesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DailyChallengesTable,
+      DailyChallenge,
+      $$DailyChallengesTableFilterComposer,
+      $$DailyChallengesTableOrderingComposer,
+      $$DailyChallengesTableAnnotationComposer,
+      $$DailyChallengesTableCreateCompanionBuilder,
+      $$DailyChallengesTableUpdateCompanionBuilder,
+      (
+        DailyChallenge,
+        BaseReferences<_$AppDatabase, $DailyChallengesTable, DailyChallenge>,
+      ),
+      DailyChallenge,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1720,4 +2862,11 @@ class $AppDatabaseManager {
       $$CategoriesTableTableManager(_db, _db.categories);
   $$IncomesTableTableManager get incomes =>
       $$IncomesTableTableManager(_db, _db.incomes);
+  $$UserGamificationStatesTableTableManager get userGamificationStates =>
+      $$UserGamificationStatesTableTableManager(
+        _db,
+        _db.userGamificationStates,
+      );
+  $$DailyChallengesTableTableManager get dailyChallenges =>
+      $$DailyChallengesTableTableManager(_db, _db.dailyChallenges);
 }
