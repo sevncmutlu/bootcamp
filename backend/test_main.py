@@ -59,3 +59,27 @@ def test_debt_simulator():
     assert "months_to_debt_free" in data
     assert "total_interest_paid" in data
     assert len(data["payoff_schedule"]) > 0
+
+def test_inflation_comparison():
+    # Test with standard user spending
+    payload = {
+        "category_spending": {
+            "Market": 1000.0,
+            "Rent": 2000.0,
+            "Bills": 1000.0
+        }
+    }
+    response = client.post("/api/inflation-comparison", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "personal_inflation" in data
+    assert "official_inflation" in data
+    assert data["official_inflation"] == 32.11
+    assert len(data["breakdown"]) == 6
+    
+    # Test zero spending fallback
+    payload_empty = {"category_spending": {}}
+    response_empty = client.post("/api/inflation-comparison", json=payload_empty)
+    assert response_empty.status_code == 200
+    data_empty = response_empty.json()
+    assert data_empty["personal_inflation"] == 32.11

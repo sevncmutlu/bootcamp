@@ -71,5 +71,16 @@
   "debtBalance": "Kalan Borç Tutarı",
   "interestRate": "Yıllık Faiz Oranı (%)",
   "minPayment": "Minimum Ödeme Tutarı",
-  "simulateButton": "Ödemeyi Simüle Et"
+  "simulateButton": "Ödemeyi Simüle Et",
+  "navInflation": "Enflasyon",
+  "inflationTitle": "Kişisel Enflasyon Paneli",
+  "inflationSubtitle": "Harcama dağılımınıza dayalı kişisel enflasyonunuzu resmi TÜİK enflasyon verileriyle karşılaştırın.",
+  "personalInflation": "Kişisel Enflasyon",
+  "officialInflation": "Resmi Enflasyon (TÜİK)",
+  "loadingInflation": "Kişisel harcama enflasyonu analiz ediliyor...",
+  "weightComparison": "Ağırlık Karşılaştırması (Kişisel vs. TÜİK)",
+  "personalWeight": "Sizin Ağırlığınız",
+  "officialWeight": "Resmi Ağırlık",
+  "categoryInflation": "Yıllık Enflasyon",
+  "categoryLabel": "Kategori"
 }

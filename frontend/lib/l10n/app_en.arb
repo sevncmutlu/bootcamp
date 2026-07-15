@@ -71,5 +71,16 @@
   "debtBalance": "Outstanding Balance",
   "interestRate": "Annual Interest Rate (%)",
   "minPayment": "Minimum Payment",
-  "simulateButton": "Simulate Payoff"
+  "simulateButton": "Simulate Payoff",
+  "navInflation": "Inflation",
+  "inflationTitle": "Personal Inflation Dashboard",
+  "inflationSubtitle": "Compare your personal inflation based on your spending distribution vs. official TÜİK headline figures.",
+  "personalInflation": "Personal Inflation",
+  "officialInflation": "Official Inflation (TÜİK)",
+  "loadingInflation": "Analyzing personal spending inflation...",
+  "weightComparison": "Weight Comparison (Personal vs. TÜİK)",
+  "personalWeight": "Your Weight",
+  "officialWeight": "Official Weight",
+  "categoryInflation": "Annual Inflation",
+  "categoryLabel": "Category"
 }

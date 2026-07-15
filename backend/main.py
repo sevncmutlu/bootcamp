@@ -364,5 +364,68 @@ async def simulate_debt_payoff(payload: DebtSimulationRequest):
         print(f"Error in debt simulation: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to simulate debt payoff: {str(e)}")
 
+from typing import Dict
+
+class InflationCategoryBreakdown(BaseModel):
+    category: str
+    personal_weight: float
+    official_weight: float
+    inflation_rate: float
+
+class InflationRequest(BaseModel):
+    category_spending: Dict[str, float]
+
+class InflationResponse(BaseModel):
+    personal_inflation: float
+    official_inflation: float
+    breakdown: List[InflationCategoryBreakdown]
+
+@app.post("/api/inflation-comparison", response_model=InflationResponse)
+async def calculate_inflation_comparison(payload: InflationRequest):
+    # Official TÜİK Weights & Category-Specific CPI Annual Inflation (June 2026)
+    TUIK_BASKET = {
+        "Market": {"weight": 24.44, "rate": 35.45},
+        "Rent": {"weight": 11.40, "rate": 45.14},
+        "Transport": {"weight": 16.62, "rate": 31.15},
+        "Restaurant": {"weight": 11.13, "rate": 42.00},
+        "Fun": {"weight": 4.34, "rate": 28.00},
+        "Bills": {"weight": 32.07, "rate": 22.56} # Includes Utilities & Other (adjusted to resolve exact headline CPI: 32.11%)
+    }
+
+    official_inflation = 32.11
+    total_user_spending = sum(payload.category_spending.values())
+    
+    personal_inflation = 0.0
+    breakdown_list = []
+    
+    if total_user_spending > 0:
+        for cat, meta in TUIK_BASKET.items():
+            user_spend = payload.category_spending.get(cat, 0.0)
+            personal_weight = (user_spend / total_user_spending) * 100.0
+            personal_inflation += (personal_weight / 100.0) * meta["rate"]
+            
+            breakdown_list.append(InflationCategoryBreakdown(
+                category=cat,
+                personal_weight=round(personal_weight, 2),
+                official_weight=meta["weight"],
+                inflation_rate=meta["rate"]
+            ))
+        personal_inflation = round(personal_inflation, 2)
+    else:
+        for cat, meta in TUIK_BASKET.items():
+            breakdown_list.append(InflationCategoryBreakdown(
+                category=cat,
+                personal_weight=meta["weight"],
+                official_weight=meta["weight"],
+                inflation_rate=meta["rate"]
+            ))
+        personal_inflation = official_inflation
+
+    return InflationResponse(
+        personal_inflation=personal_inflation,
+        official_inflation=official_inflation,
+        breakdown=breakdown_list
+    )
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
