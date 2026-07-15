@@ -18,6 +18,10 @@ from prophet import Prophet
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("maki_main")
 
+# Application-level constants read from environment at startup
+GEMINI_API_KEY: str = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_MODEL: str = "gemini-2.0-flash"
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Load and index live economic data on app startup
@@ -105,7 +109,7 @@ async def chat_with_coach(payload: ChatMessage):
         
         # Create chat session with system instruction and history
         chat = client.chats.create(
-            model="gemini-2.0-flash",
+            model=GEMINI_MODEL,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction
             ),
@@ -124,8 +128,6 @@ async def chat_with_coach(payload: ChatMessage):
         logger.error(f"Error in Maki AI Coach: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to communicate with AI Coach: {str(e)}")
 
-# Load API Key from environment
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 class ReceiptItem(BaseModel):
     name: str
@@ -170,7 +172,7 @@ async def parse_receipt(file: UploadFile = File(...)):
         
         # Call Gemini multimodal model
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model=GEMINI_MODEL,
             contents=[prompt, image_part],
             config={
                 'response_mime_type': 'application/json',

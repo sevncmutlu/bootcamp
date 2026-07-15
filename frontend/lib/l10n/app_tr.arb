@@ -152,5 +152,38 @@
   "badgesUnlocked": "Kazanılan Rozetler",
   "badgeSavingsSeed": "Tasarruf Tohumu",
   "badgeBudgetMaster": "Bütçe Ustası",
-  "badgeOakGuardian": "Meşe Muhafızı"
+  "badgeOakGuardian": "Meşe Muhafızı",
+  "navNotifications": "Akıllı Bildirimler",
+  "notificationsTitle": "Akıllı Bildirim Merkezi",
+  "notificationsSubtitle": "Cihaz içi yapay zekâ zamanlama tahminlerini yapılandırın.",
+  "settingsTitle": "Bildirim Ayarları",
+  "smartOptimizationEnable": "Akıllı Yapay Zekâ Optimizasyonunu Etkinleştir",
+  "smartOptimizationDesc": "Bildirimleri en çok açma olasılığınız olan saatlerde (Sabah, Öğle veya Akşam) iletmek üzere cihaz içi Thompson Örneklemesi takviyeli öğrenme algoritması kullanır, pil tasarrufu sağlar ve bildirim yorgunluğunu önler.",
+  "preferredTriggerHour": "Öngörülen En Uygun Saat",
+  "preferredTriggerHourValue": "{hour}:00",
+  "@preferredTriggerHourValue": {
+    "placeholders": {
+      "hour": {
+        "type": "int"
+      }
+    }
+  },
+  "simulationSection": "Thompson Örneklemesi Simülatörü",
+  "simulationDesc": "Bandit modelini cihaz içinde eğitmek için yapay uygulama açma simülasyonu yapın.",
+  "simulateOpenButton": "Kullanıcı Tıklaması Simüle Et",
+  "morningArm": "Sabah (09:00)",
+  "afternoonArm": "Öğleden Sonra (14:00)",
+  "eveningArm": "Akşam (20:00)",
+  "precisionMatrixLabel": "Hassasiyet matrisi A",
+  "projectionVectorLabel": "Projeksiyon vektörü b",
+  "rewardSuccess": "Model eğitildi! Seçilen periyodun ödül parametreleri güncellendi.",
+  "closeButton": "Kapat",
+  "xpClaimed": "🎉 +{xp} XP kazanıldı!",
+  "@xpClaimed": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  }
 }

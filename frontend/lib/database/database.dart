@@ -65,11 +65,22 @@ class DailyChallenges extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Table representing LinTS multi-armed bandit state.
+@DataClassName('NotificationBanditState')
+class NotificationBanditStates extends Table {
+  TextColumn get arm => text().withLength(min: 1, max: 50)(); // 'morning', 'afternoon', 'evening'
+  TextColumn get precisionMatrixJson => text()(); // e.g. [[1.0, 0.0], [0.0, 1.0]]
+  TextColumn get projectionVectorJson => text()(); // e.g. [0.0, 0.0]
+
+  @override
+  Set<Column> get primaryKey => {arm};
+}
+
 // =============================================================================
 // Drift Database Orchestration
 // =============================================================================
 
-@DriftDatabase(tables: [Expenses, Categories, Incomes, UserGamificationStates, DailyChallenges])
+@DriftDatabase(tables: [Expenses, Categories, Incomes, UserGamificationStates, DailyChallenges, NotificationBanditStates])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -80,7 +91,7 @@ class AppDatabase extends _$AppDatabase {
   static final AppDatabase instance = AppDatabase();
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -91,6 +102,9 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) {
         await m.createTable(userGamificationStates);
         await m.createTable(dailyChallenges);
+      }
+      if (from < 3) {
+        await m.createTable(notificationBanditStates);
       }
     },
   );
@@ -169,6 +183,22 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> updateChallenge(DailyChallenge challenge) {
     return update(dailyChallenges).replace(challenge);
+  }
+
+  // ===========================================================================
+  // LinTS Bandit Queries
+  // ===========================================================================
+
+  Future<List<NotificationBanditState>> getBanditStates() {
+    return select(notificationBanditStates).get();
+  }
+
+  Future<void> updateBanditState(NotificationBanditState state) {
+    return update(notificationBanditStates).replace(state);
+  }
+
+  Future<void> insertBanditState(NotificationBanditState state) {
+    return into(notificationBanditStates).insert(state, mode: InsertMode.insertOrReplace);
   }
 
   // ===========================================================================

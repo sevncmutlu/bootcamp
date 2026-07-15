@@ -152,5 +152,38 @@
   "badgesUnlocked": "Unlocked Badges",
   "badgeSavingsSeed": "Savings Seed",
   "badgeBudgetMaster": "Budget Master",
-  "badgeOakGuardian": "Oak Guardian"
+  "badgeOakGuardian": "Oak Guardian",
+  "navNotifications": "Smart Notifications",
+  "notificationsTitle": "Smart Notifications Hub",
+  "notificationsSubtitle": "Configure on-device AI timing predictions.",
+  "settingsTitle": "Notification Settings",
+  "smartOptimizationEnable": "Enable Smart AI Optimization",
+  "smartOptimizationDesc": "Uses on-device Thompson Sampling reinforcement learning to deliver alerts at times you are most likely to open the app, preserving battery and preventing fatigue.",
+  "preferredTriggerHour": "Predicted Optimal Hour",
+  "preferredTriggerHourValue": "{hour}:00",
+  "@preferredTriggerHourValue": {
+    "placeholders": {
+      "hour": {
+        "type": "int"
+      }
+    }
+  },
+  "simulationSection": "Thompson Sampling Simulator",
+  "simulationDesc": "Simulate mock openings to train the bandit model on-device.",
+  "simulateOpenButton": "Simulate User Tap",
+  "morningArm": "Morning (09:00)",
+  "afternoonArm": "Afternoon (14:00)",
+  "eveningArm": "Evening (20:00)",
+  "precisionMatrixLabel": "Precision matrix A",
+  "projectionVectorLabel": "Projection vector b",
+  "rewardSuccess": "Trained! Selected period's reward updated.",
+  "closeButton": "Close",
+  "xpClaimed": "🎉 +{xp} XP claimed!",
+  "@xpClaimed": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  }
 }

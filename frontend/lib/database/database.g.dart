@@ -1824,6 +1824,309 @@ class DailyChallengesCompanion extends UpdateCompanion<DailyChallenge> {
   }
 }
 
+class $NotificationBanditStatesTable extends NotificationBanditStates
+    with TableInfo<$NotificationBanditStatesTable, NotificationBanditState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NotificationBanditStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _armMeta = const VerificationMeta('arm');
+  @override
+  late final GeneratedColumn<String> arm = GeneratedColumn<String>(
+    'arm',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 50,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _precisionMatrixJsonMeta =
+      const VerificationMeta('precisionMatrixJson');
+  @override
+  late final GeneratedColumn<String> precisionMatrixJson =
+      GeneratedColumn<String>(
+        'precision_matrix_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _projectionVectorJsonMeta =
+      const VerificationMeta('projectionVectorJson');
+  @override
+  late final GeneratedColumn<String> projectionVectorJson =
+      GeneratedColumn<String>(
+        'projection_vector_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    arm,
+    precisionMatrixJson,
+    projectionVectorJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notification_bandit_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NotificationBanditState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('arm')) {
+      context.handle(
+        _armMeta,
+        arm.isAcceptableOrUnknown(data['arm']!, _armMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_armMeta);
+    }
+    if (data.containsKey('precision_matrix_json')) {
+      context.handle(
+        _precisionMatrixJsonMeta,
+        precisionMatrixJson.isAcceptableOrUnknown(
+          data['precision_matrix_json']!,
+          _precisionMatrixJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_precisionMatrixJsonMeta);
+    }
+    if (data.containsKey('projection_vector_json')) {
+      context.handle(
+        _projectionVectorJsonMeta,
+        projectionVectorJson.isAcceptableOrUnknown(
+          data['projection_vector_json']!,
+          _projectionVectorJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_projectionVectorJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {arm};
+  @override
+  NotificationBanditState map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NotificationBanditState(
+      arm: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}arm'],
+      )!,
+      precisionMatrixJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}precision_matrix_json'],
+      )!,
+      projectionVectorJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}projection_vector_json'],
+      )!,
+    );
+  }
+
+  @override
+  $NotificationBanditStatesTable createAlias(String alias) {
+    return $NotificationBanditStatesTable(attachedDatabase, alias);
+  }
+}
+
+class NotificationBanditState extends DataClass
+    implements Insertable<NotificationBanditState> {
+  final String arm;
+  final String precisionMatrixJson;
+  final String projectionVectorJson;
+  const NotificationBanditState({
+    required this.arm,
+    required this.precisionMatrixJson,
+    required this.projectionVectorJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['arm'] = Variable<String>(arm);
+    map['precision_matrix_json'] = Variable<String>(precisionMatrixJson);
+    map['projection_vector_json'] = Variable<String>(projectionVectorJson);
+    return map;
+  }
+
+  NotificationBanditStatesCompanion toCompanion(bool nullToAbsent) {
+    return NotificationBanditStatesCompanion(
+      arm: Value(arm),
+      precisionMatrixJson: Value(precisionMatrixJson),
+      projectionVectorJson: Value(projectionVectorJson),
+    );
+  }
+
+  factory NotificationBanditState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NotificationBanditState(
+      arm: serializer.fromJson<String>(json['arm']),
+      precisionMatrixJson: serializer.fromJson<String>(
+        json['precisionMatrixJson'],
+      ),
+      projectionVectorJson: serializer.fromJson<String>(
+        json['projectionVectorJson'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'arm': serializer.toJson<String>(arm),
+      'precisionMatrixJson': serializer.toJson<String>(precisionMatrixJson),
+      'projectionVectorJson': serializer.toJson<String>(projectionVectorJson),
+    };
+  }
+
+  NotificationBanditState copyWith({
+    String? arm,
+    String? precisionMatrixJson,
+    String? projectionVectorJson,
+  }) => NotificationBanditState(
+    arm: arm ?? this.arm,
+    precisionMatrixJson: precisionMatrixJson ?? this.precisionMatrixJson,
+    projectionVectorJson: projectionVectorJson ?? this.projectionVectorJson,
+  );
+  NotificationBanditState copyWithCompanion(
+    NotificationBanditStatesCompanion data,
+  ) {
+    return NotificationBanditState(
+      arm: data.arm.present ? data.arm.value : this.arm,
+      precisionMatrixJson: data.precisionMatrixJson.present
+          ? data.precisionMatrixJson.value
+          : this.precisionMatrixJson,
+      projectionVectorJson: data.projectionVectorJson.present
+          ? data.projectionVectorJson.value
+          : this.projectionVectorJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationBanditState(')
+          ..write('arm: $arm, ')
+          ..write('precisionMatrixJson: $precisionMatrixJson, ')
+          ..write('projectionVectorJson: $projectionVectorJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(arm, precisionMatrixJson, projectionVectorJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NotificationBanditState &&
+          other.arm == this.arm &&
+          other.precisionMatrixJson == this.precisionMatrixJson &&
+          other.projectionVectorJson == this.projectionVectorJson);
+}
+
+class NotificationBanditStatesCompanion
+    extends UpdateCompanion<NotificationBanditState> {
+  final Value<String> arm;
+  final Value<String> precisionMatrixJson;
+  final Value<String> projectionVectorJson;
+  final Value<int> rowid;
+  const NotificationBanditStatesCompanion({
+    this.arm = const Value.absent(),
+    this.precisionMatrixJson = const Value.absent(),
+    this.projectionVectorJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NotificationBanditStatesCompanion.insert({
+    required String arm,
+    required String precisionMatrixJson,
+    required String projectionVectorJson,
+    this.rowid = const Value.absent(),
+  }) : arm = Value(arm),
+       precisionMatrixJson = Value(precisionMatrixJson),
+       projectionVectorJson = Value(projectionVectorJson);
+  static Insertable<NotificationBanditState> custom({
+    Expression<String>? arm,
+    Expression<String>? precisionMatrixJson,
+    Expression<String>? projectionVectorJson,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (arm != null) 'arm': arm,
+      if (precisionMatrixJson != null)
+        'precision_matrix_json': precisionMatrixJson,
+      if (projectionVectorJson != null)
+        'projection_vector_json': projectionVectorJson,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NotificationBanditStatesCompanion copyWith({
+    Value<String>? arm,
+    Value<String>? precisionMatrixJson,
+    Value<String>? projectionVectorJson,
+    Value<int>? rowid,
+  }) {
+    return NotificationBanditStatesCompanion(
+      arm: arm ?? this.arm,
+      precisionMatrixJson: precisionMatrixJson ?? this.precisionMatrixJson,
+      projectionVectorJson: projectionVectorJson ?? this.projectionVectorJson,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (arm.present) {
+      map['arm'] = Variable<String>(arm.value);
+    }
+    if (precisionMatrixJson.present) {
+      map['precision_matrix_json'] = Variable<String>(
+        precisionMatrixJson.value,
+      );
+    }
+    if (projectionVectorJson.present) {
+      map['projection_vector_json'] = Variable<String>(
+        projectionVectorJson.value,
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationBanditStatesCompanion(')
+          ..write('arm: $arm, ')
+          ..write('precisionMatrixJson: $precisionMatrixJson, ')
+          ..write('projectionVectorJson: $projectionVectorJson, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1835,6 +2138,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DailyChallengesTable dailyChallenges = $DailyChallengesTable(
     this,
   );
+  late final $NotificationBanditStatesTable notificationBanditStates =
+      $NotificationBanditStatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1845,6 +2150,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     incomes,
     userGamificationStates,
     dailyChallenges,
+    notificationBanditStates,
   ];
 }
 
@@ -2852,6 +3158,191 @@ typedef $$DailyChallengesTableProcessedTableManager =
       DailyChallenge,
       PrefetchHooks Function()
     >;
+typedef $$NotificationBanditStatesTableCreateCompanionBuilder =
+    NotificationBanditStatesCompanion Function({
+      required String arm,
+      required String precisionMatrixJson,
+      required String projectionVectorJson,
+      Value<int> rowid,
+    });
+typedef $$NotificationBanditStatesTableUpdateCompanionBuilder =
+    NotificationBanditStatesCompanion Function({
+      Value<String> arm,
+      Value<String> precisionMatrixJson,
+      Value<String> projectionVectorJson,
+      Value<int> rowid,
+    });
+
+class $$NotificationBanditStatesTableFilterComposer
+    extends Composer<_$AppDatabase, $NotificationBanditStatesTable> {
+  $$NotificationBanditStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get arm => $composableBuilder(
+    column: $table.arm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get precisionMatrixJson => $composableBuilder(
+    column: $table.precisionMatrixJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get projectionVectorJson => $composableBuilder(
+    column: $table.projectionVectorJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NotificationBanditStatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $NotificationBanditStatesTable> {
+  $$NotificationBanditStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get arm => $composableBuilder(
+    column: $table.arm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get precisionMatrixJson => $composableBuilder(
+    column: $table.precisionMatrixJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get projectionVectorJson => $composableBuilder(
+    column: $table.projectionVectorJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NotificationBanditStatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NotificationBanditStatesTable> {
+  $$NotificationBanditStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get arm =>
+      $composableBuilder(column: $table.arm, builder: (column) => column);
+
+  GeneratedColumn<String> get precisionMatrixJson => $composableBuilder(
+    column: $table.precisionMatrixJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get projectionVectorJson => $composableBuilder(
+    column: $table.projectionVectorJson,
+    builder: (column) => column,
+  );
+}
+
+class $$NotificationBanditStatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NotificationBanditStatesTable,
+          NotificationBanditState,
+          $$NotificationBanditStatesTableFilterComposer,
+          $$NotificationBanditStatesTableOrderingComposer,
+          $$NotificationBanditStatesTableAnnotationComposer,
+          $$NotificationBanditStatesTableCreateCompanionBuilder,
+          $$NotificationBanditStatesTableUpdateCompanionBuilder,
+          (
+            NotificationBanditState,
+            BaseReferences<
+              _$AppDatabase,
+              $NotificationBanditStatesTable,
+              NotificationBanditState
+            >,
+          ),
+          NotificationBanditState,
+          PrefetchHooks Function()
+        > {
+  $$NotificationBanditStatesTableTableManager(
+    _$AppDatabase db,
+    $NotificationBanditStatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NotificationBanditStatesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$NotificationBanditStatesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$NotificationBanditStatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> arm = const Value.absent(),
+                Value<String> precisionMatrixJson = const Value.absent(),
+                Value<String> projectionVectorJson = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationBanditStatesCompanion(
+                arm: arm,
+                precisionMatrixJson: precisionMatrixJson,
+                projectionVectorJson: projectionVectorJson,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String arm,
+                required String precisionMatrixJson,
+                required String projectionVectorJson,
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationBanditStatesCompanion.insert(
+                arm: arm,
+                precisionMatrixJson: precisionMatrixJson,
+                projectionVectorJson: projectionVectorJson,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NotificationBanditStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NotificationBanditStatesTable,
+      NotificationBanditState,
+      $$NotificationBanditStatesTableFilterComposer,
+      $$NotificationBanditStatesTableOrderingComposer,
+      $$NotificationBanditStatesTableAnnotationComposer,
+      $$NotificationBanditStatesTableCreateCompanionBuilder,
+      $$NotificationBanditStatesTableUpdateCompanionBuilder,
+      (
+        NotificationBanditState,
+        BaseReferences<
+          _$AppDatabase,
+          $NotificationBanditStatesTable,
+          NotificationBanditState
+        >,
+      ),
+      NotificationBanditState,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2869,4 +3360,9 @@ class $AppDatabaseManager {
       );
   $$DailyChallengesTableTableManager get dailyChallenges =>
       $$DailyChallengesTableTableManager(_db, _db.dailyChallenges);
+  $$NotificationBanditStatesTableTableManager get notificationBanditStates =>
+      $$NotificationBanditStatesTableTableManager(
+        _db,
+        _db.notificationBanditStates,
+      );
 }

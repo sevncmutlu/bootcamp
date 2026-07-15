@@ -5,6 +5,11 @@ import chromadb
 import logging
 from typing import List, Dict, Optional
 
+try:
+    from google import genai as _genai
+except ImportError:
+    _genai = None  # type: ignore
+
 logger = logging.getLogger("maki_rag")
 
 class RagService:
@@ -81,8 +86,9 @@ class RagService:
         # If Gemini API Key is available, use Gemini Embeddings for high accuracy
         if self.api_key:
             try:
-                from google import genai
-                client = genai.Client(api_key=self.api_key)
+                if _genai is None:
+                    raise ImportError("google-generativeai package not available")
+                client = _genai.Client(api_key=self.api_key)
                 
                 embeddings_list = []
                 for t in texts:
@@ -120,8 +126,9 @@ class RagService:
         # If Gemini API key is available, use semantic embedding query
         if self.api_key:
             try:
-                from google import genai
-                client = genai.Client(api_key=self.api_key)
+                if _genai is None:
+                    raise ImportError("google-generativeai package not available")
+                client = _genai.Client(api_key=self.api_key)
                 res = client.models.embed_content(
                     model="text-embedding-004",
                     contents=user_query

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/services/gamification_service.dart';
+import 'package:maki_app/screens/notification_settings_dialog.dart';
 
 class ForestScreen extends StatefulWidget {
   const ForestScreen({super.key});
@@ -90,7 +91,7 @@ class _ForestScreenState extends State<ForestScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("🎉 +${challenge.xpReward} XP claimed!"),
+          content: Text(AppLocalizations.of(context)!.xpClaimed(challenge.xpReward)),
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
@@ -170,9 +171,18 @@ class _ForestScreenState extends State<ForestScreen> {
         centerTitle: true,
         actions: [
           IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => const NotificationSettingsDialog(),
+              ).then((_) => _loadData());
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadData,
-          )
+          ),
         ],
       ),
       body: SingleChildScrollView(
