@@ -31,13 +31,13 @@ Maki Finans Koçu; kullanıcının kendi harcamalarını yönetmesini sağlayan,
 ### Ürün Özellikleri
 
 - **Veri egemenliği:** Tüm kişisel finans verisi cihazda kalır; sunucuya yalnızca anonim sinyaller gider.
-- **Fiş OCR:** Market fişini fotoğraflayarak otomatik harcama girişi (PaddleOCR, Türkçe fiş desteği).
+- **Fiş OCR:** Market fişini fotoğraflayarak otomatik harcama girişi (PaddleOCR + Claude API ile alan çıkarımı).
 - **Yapay zeka koçu (MakiKoç):** TR + EN çift dilli, şefkatli ve yargılamayan, kaynaklı (RAG) finans koçluğu.
 - **Kişisel enflasyon:** Kullanıcının kendi enflasyonunu hesaplayıp TÜİK rakamıyla karşılaştıran grafik.
 - **Harcama tahmini:** Prophet ile basit harcama öngörüsü.
 - **Masum gamification:** Günlük meydan okumalar, XP/seviye sistemi, rozetler, yüzde bazlı kimliksiz leaderboard.
 - **Hafif orman katmanı:** Motivasyon için görsel ilerleme (fidan/orman) — ikincil, destekleyici katman.
-- **Akıllı bildirimler:** LinTS ile kişiye özel (yalnızca anonim özelliklere dayalı) bildirim optimizasyonu.
+- **Akıllı bildirimler:** LinTS Simülasyonu ile kişiye özel (yalnızca anonim özelliklere dayalı) bildirim optimizasyonu.
 - **Borç simülatörü (Premium):** LightGBM tabanlı sanal borçtan çıkma planı.
 
 ### Hedef Kitle
@@ -50,35 +50,36 @@ Maki Finans Koçu; kullanıcının kendi harcamalarını yönetmesini sağlayan,
 
 ---
 
-## 🏗️ Mimari (Gizlilik Öncelikli)
+## Mimari (Gizlilik Öncelikli)
 
 > Temel ilke: **kişisel finans verisi cihazdan çıkmaz.** Sunucuya yalnızca kimliksiz/anonim sinyaller gider.
 
 ```mermaid
 flowchart TB
-    subgraph Cihaz["📱 Kullanıcının Cihazı (Flutter)"]
+    subgraph Cihaz["Kullanıcının Cihazı (Flutter)"]
         UI["Arayüz + MakiKoç Sohbeti"]
-        LDB[("🔒 Isar/Drift<br/>Şifreli Yerel DB<br/>harcama · kategori · gelir")]
+        LDB[("Drift + sqlite3mc<br/>Şifreli Yerel DB<br/>harcama · kategori · gelir")]
         OCRD["Fiş Fotoğrafı"]
         UI --> LDB
         OCRD --> UI
     end
 
-    subgraph Sunucu["☁️ Backend (Python + FastAPI)"]
+    subgraph Sunucu["Backend (Python + FastAPI)"]
         OCR["PaddleOCR<br/>Fiş → Metin"]
         RAG["RAG<br/>Chroma/FAISS"]
-        ML["Modeller<br/>Prophet · LightGBM · LinTS"]
-        LLM["🤖 Claude<br/>TR+EN Koç"]
+        ML["Modeller<br/>Prophet · LightGBM · LinTS Simülasyonu"]
+        LLM["Claude<br/>TR+EN Koç"]
     end
 
-    subgraph Kaynak["📚 Kaynak Veri"]
+    subgraph Kaynak["Kaynak Veri"]
         TUIK["TÜİK"]
         MB["Merkez Bankası"]
     end
 
     LDB -. "yalnızca ANONİM sinyal" .-> ML
     OCRD -- "fiş görüntüsü (geçici)" --> OCR
-    OCR -- "çıkarılan alanlar" --> UI
+    OCR -- "çıkarılan ham metin" --> LLM
+    LLM -- "ayrıştırılmış alanlar (JSON)" --> UI
     UI -- "soru (kişisel veri YOK)" --> LLM
     RAG --> LLM
     TUIK --> RAG
@@ -95,9 +96,9 @@ flowchart TB
 
 ---
 
-# 🚀 Sprint 1 — Planlama & Proje Belirleme
+# Sprint 1 — Planlama & Proje Belirleme
 
-**Tarih:** 19 Haziran – 5 Temmuz · **Durum:** ✅ Tamamlandı
+**Tarih:** 19 Haziran – 5 Temmuz · **Durum:** [Tamamlandı]
 
 - **Sprint Notları:** Bu sprint tamamen planlama ve proje belirlemeye ayrıldı; kod yazılmadı. Ürün vizyonu, hedef kitle, teknoloji yığını, ürün kimliği (MakiKoç) ve gizlilik mimarisi kararları verildi. Detaylı sprint dokümanları [Sprint-1 klasöründe](./Sprint-1) yer almaktadır.
 
@@ -146,9 +147,9 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
 
 ---
 
-# 🚧 Sprint 2 — Temel + Fiş OCR + AI Koçluk (Başlangıç)
+# Sprint 2 — Temel + Fiş OCR + AI Koçluk (Başlangıç)
 
-**Tarih:** 6 – 19 Temmuz · **Durum:** ⏳ Planlandı
+**Tarih:** 6 – 19 Temmuz · **Durum:** [Planlandı]
 
 - **Sprint Notları:** _(Sprint sonunda doldurulacak.)_
 - **Sprint içinde tamamlanması tahmin edilen puan:** 100 Puan
@@ -161,9 +162,9 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
 
 ---
 
-# 🏁 Sprint 3 — Enflasyon, Gamification, Bildirim & Premium İskelesi
+# Sprint 3 — Enflasyon, Gamification, Bildirim & Premium İskelesi
 
-**Tarih:** 20 Temmuz – 2 Ağustos · **Durum:** ⏳ Planlandı
+**Tarih:** 20 Temmuz – 2 Ağustos · **Durum:** [Planlandı]
 
 - **Sprint Notları:** _(Sprint sonunda doldurulacak.)_
 - **Sprint içinde tamamlanması tahmin edilen puan:** 100 Puan

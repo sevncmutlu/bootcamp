@@ -1,19 +1,19 @@
-# 🏃 Sprint 1 — Planlama & Proje Belirleme
+# Sprint 1 — Planlama & Proje Belirleme
 
 **Proje:** Maki Finans Koçu · **Takım:** Takım 120
-**Tarih:** 19 Haziran – 5 Temmuz · **Durum:** ✅ Tamamlandı
+**Tarih:** 19 Haziran – 5 Temmuz · **Durum:** [Tamamlandı]
 
 > **Sprint Teması:** Projeyi netleştirmek, teknoloji ve kimlik kararlarını vermek, geliştirmeye hazır bir plan ve mimari çıkarmak. *(Bu sprintte kod yazılmadı — tamamen planlama sprinti.)*
 
 ---
 
-## 🎯 Sprint Hedefi
+## Sprint Hedefi
 
-Ürün fikrini, hedef kitleyi ve değer önermesini netleştirmek; teknoloji yığınını ve ürün kimliğini (MakiKoç karakteri + gizlilik mimarisi) belirlemek; 3 sprintlik yol haritasını ve riskleri tanımlayarak ekibi geliştirmeye hazır hâle getirmek.
+Ürün fikrini, hedef kitleyi ve değer önermesini netleştirmek; teknoloji yığını ve ürün kimliğini (MakiKoç karakteri + gizlilik mimarisi) belirlemek; 3 sprintlik yol haritasını ve riskleri tanımlayarak ekibi geliştirmeye hazır hâle getirmek.
 
 ---
 
-## 🧮 Sprint İçinde Tamamlanması Beklenen Puan (Sprint Kapasitesi)
+## Sprint İçinde Tamamlanması Beklenen Puan (Sprint Kapasitesi)
 
 - **Toplam proje puanı:** 300 puan (3 sprint)
 - **Sprint 1 hedef puanı:** ~100 puan
@@ -22,7 +22,7 @@
 
 ---
 
-## 📊 Backlog Dağıtma Mantığı (Puan Mantığı)
+## Backlog Dağıtma Mantığı (Puan Mantığı)
 
 - Proje 3 sprinte bölünmüş; her sprint yaklaşık eşit puan (~100) taşıyacak şekilde dengelenmiştir.
 - Sprint 1 **planlama ve karar** işlerini içerir; çıktısı kod değil, **geliştirmeye hazır plan + mimari + kararlar** olduğu için "her sprintte somut ilerleme" ilkesine uygun şekilde puanlanmıştır.
@@ -31,35 +31,35 @@
 
 ---
 
-## 📋 Sprint 1 Backlog (Yapılacaklar)
+## Sprint 1 Backlog (Yapılacaklar)
 
 | # | Görev | Durum |
 |---|-------|-------|
-| 1 | Problem, hedef kitle ve değer önermesinin netleştirilmesi | ✅ |
-| 2 | Kimlik & metafor kararı (MakiKoç karakteri + hafif orman katmanı) | ✅ |
-| 3 | Teknoloji yığını seçimi (Flutter, Isar/Drift, FastAPI, PaddleOCR, Prophet, RAG, LLM) | ✅ |
-| 4 | Gizlilik mimarisi kararı (neyin cihazda kaldığı, neyin anonim gittiği) | ✅ |
-| 5 | Kategori taksonomisi taslağı | ✅ |
-| 6 | 3 sprint takvimi + kapsam belirleme | ✅ |
-| 7 | Risklerin belirlenmesi | ✅ |
+| 1 | Problem, hedef kitle ve değer önermesinin netleştirilmesi | [Tamamlandı] |
+| 2 | Kimlik & metafor kararı (MakiKoç karakteri + hafif orman katmanı) | [Tamamlandı] |
+| 3 | Teknoloji yığını seçimi (Flutter, Drift + sqlite3mc, FastAPI, PaddleOCR + Claude, Prophet, RAG, LLM) | [Tamamlandı] |
+| 4 | Gizlilik mimarisi kararı (neyin cihazda kaldığı, neyin anonim gittiği) | [Tamamlandı] |
+| 5 | Kategori taksonomisi taslağı | [Tamamlandı] |
+| 6 | 3 sprint takvimi + kapsam belirleme | [Tamamlandı] |
+| 7 | Risklerin belirlenmesi | [Tamamlandı] |
 
 ---
 
-## 🗓️ Daily Scrum Notları
+## Daily Scrum Notları
 
 > Takım küçük olduğu için Daily Scrum'lar kısa senkron görüşmeler + yazışma üzerinden yürütülmüştür.
 
 - **Backlog Dağıtma:** Proje 3 sprinte bölündü, temalar ve puanlar belirlendi.
 - **Kimlik & Metafor:** MakiKoç karakteri ana kimlik olarak seçildi; orman metaforu ikincil/destekleyici katman olarak konumlandırıldı.
 - **Gizlilik Kararı:** Tüm kişisel verinin cihazda kalması, sunucuya yalnızca anonim sinyal gitmesi kararlaştırıldı.
-- **Teknoloji Kararı:** Flutter + Isar/Drift + FastAPI + PaddleOCR + Prophet + RAG + Claude yığını netleştirildi.
+- **Teknoloji Kararı:** Flutter + Drift (sqlite3mc) + FastAPI + PaddleOCR (Claude API parser) + Prophet + RAG + Claude yığını netleştirildi.
 - **Risk Değerlendirmesi:** Zaman kısıtı, gizlilik ispatı ve Türkçe OCR doğruluğu ana riskler olarak not edildi.
 
 > _Daily Scrum ekran görüntüleri / toplantı notları buraya eklenecektir._
 
 ---
 
-## 🗂️ Sprint Board Updates
+## Sprint Board Updates
 
 - **To Do → In Progress → Done** akışı kuruldu.
 - Sprint 1 sonunda tüm planlama kalemleri **Done** sütununa taşındı.
@@ -69,20 +69,20 @@
 
 ---
 
-## 📦 Ürün Durumu
+## Ürün Durumu
 
 Sprint 1 planlama sprinti olduğu için henüz çalışan bir uygulama ekranı yoktur. Sprint çıktısı:
 
-- ✅ Netleştirilmiş ürün vizyonu ve değer önermesi
-- ✅ Teknoloji yığını ve mimari kararları
-- ✅ Ürün kimliği (MakiKoç) ve gizlilik mimarisi kararı
-- ✅ 3 sprintlik yol haritası ve risk listesi
+- [Tamamlandı] Netleştirilmiş ürün vizyonu ve değer önermesi
+- [Tamamlandı] Teknoloji yığını ve mimari kararları
+- [Tamamlandı] Ürün kimliği (MakiKoç) ve gizlilik mimarisi kararı
+- [Tamamlandı] 3 sprintlik yol haritası ve risk listesi
 
 > _Ürün konsept görselleri / mimari şeması buraya eklenecektir._
 
 ---
 
-## 🔍 Sprint Review
+## Sprint Review
 
 - Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu.
 - Teknoloji yığını ve mimari, geliştirmeye başlamak için yeterli detayda belirlendi.
@@ -93,29 +93,29 @@ Sprint 1 planlama sprinti olduğu için henüz çalışan bir uygulama ekranı y
 
 ---
 
-## 🔄 Sprint Retrospective
+## Sprint Retrospective
 
-**👍 İyi Gidenler**
+**İyi Gidenler**
 - Kapsam erken netleşti; teknoloji ve kimlik kararları hızlı alındı.
 - Gizlilik mimarisi baştan tasarlandığı için sonraki sprintlerde sürprizi azaltacak.
 
-**🔧 Geliştirilebilecekler**
+**Geliştirilebilecekler**
 - Türkçe fiş OCR doğruluğu bir an önce (Sprint 2 başında) test edilmeli.
 - Modeller için "önce basit çalışan sürüm, sonra iyileştir" yaklaşımı disiplinli uygulanmalı.
 
-**🎯 Aksiyonlar (Sprint 2 için)**
-- PaddleOCR Türkçe fiş doğruluğunu Sprint 2 başında pilot testle doğrula.
-- Flutter iskeleti + cihaz DB şemasını sprint başında kur ki geliştirmeye erken başlanabilsin.
+**Aksiyonlar (Sprint 2 için)**
+- PaddleOCR + Claude API entegrasyonu ile Türkçe fiş doğruluğunu Sprint 2 başında pilot testle doğrula.
+- Flutter iskeleti + Drift şifreli cihaz DB şemasını sprint başında kur ki geliştirmeye erken başlanabilsin.
 
 ---
 
-## ✅ Sprint 1 Definition of Done (DoD)
+## Sprint 1 Definition of Done (DoD)
 
-Uygulamanın ne olduğu, hangi teknolojiyle ve hangi sırayla yapılacağı yazılı; kimlik ve gizlilik kararları verilmiş; ekip geliştirmeye başlamaya hazır. **→ Karşılandı ✅**
+Uygulamanın ne olduğu, hangi teknolojiyle ve hangi sırayla yapılacağı yazılı; kimlik ve gizlilik kararları verilmiş; ekip geliştirmeye başlamaya hazır. **→ Karşılandı**
 
 ---
 
-## ➡️ Sonraki Sprint
+## Sonraki Sprint
 
 **Sprint 2 (6 – 19 Temmuz):** Temel & Altyapı + Fiş OCR + AI Koçluk başlangıcı.
 Hedef: Çalışan iskelet, cihazda güvenli veri, fiş ile otomatik giriş ve ilk kaynaklı koçluk.

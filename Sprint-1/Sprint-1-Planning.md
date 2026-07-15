@@ -1,17 +1,17 @@
-# 🗓️ Sprint 1 — Sprint Planning
+# Sprint 1 — Sprint Planning
 
 **Proje:** Maki Finans Koçu · **Takım:** Takım 120
-**Sprint Süresi:** 19 Haziran – 5 Temmuz (2 hafta) · **Durum:** ✅ Tamamlandı
+**Sprint Süresi:** 19run Haziran – 5 Temmuz (2 hafta) · **Durum:** [Tamamlandı]
 
 ---
 
-## 🎯 Sprint Hedefi (Sprint Goal)
+## Sprint Hedefi (Sprint Goal)
 
 > Projeyi netleştirmek; teknoloji, ürün kimliği ve gizlilik mimarisi kararlarını vermek; 3 sprintlik yol haritasını ve riskleri tanımlayarak ekibi geliştirmeye hazır hâle getirmek. *(Bu sprint tamamen planlamadır — kod yazılmaz.)*
 
 ---
 
-## 👥 Katılımcılar
+## Katılımcılar
 
 | Rol | Kişi |
 |-----|------|
@@ -21,7 +21,7 @@
 
 ---
 
-## 📊 Kapasite & Taahhüt
+## Kapasite & Taahhüt
 
 - **Sprint kapasitesi (hedef):** ~100 SP
 - **Taahhüt edilen story point:** 60 SP (US-01 → US-07)
@@ -31,7 +31,7 @@
 
 ---
 
-## 📥 Sprinte Alınan Backlog Kalemleri
+## Sprinte Alınan Backlog Kalemleri
 
 | ID | User Story | SP |
 |----|-----------|----|
@@ -46,7 +46,7 @@
 
 ---
 
-## ✅ Sprint 1 Definition of Done (DoD)
+## Sprint 1 Definition of Done (DoD)
 
 Bir kalem "Done" sayılır eğer:
 - Karar yazılı olarak dokümante edildiyse,

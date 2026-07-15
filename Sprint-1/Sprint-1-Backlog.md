@@ -1,10 +1,10 @@
-# 📋 Sprint 1 — Sprint Backlog & Board
+# Sprint 1 — Sprint Backlog & Board
 
-**Proje:** Maki Finans Koçu · **Takım:** Takım 120 · **Durum:** ✅ Tamamlandı
+**Proje:** Maki Finans Koçu · **Takım:** Takım 120 · **Durum:** [Tamamlandı]
 
 ---
 
-## 🧮 Sprint İçinde Tamamlanması Beklenen Puan
+## Sprint İçinde Tamamlanması Beklenen Puan
 
 - **Sprint kapasitesi:** ~100 SP
 - **Taahhüt:** 60 SP
@@ -12,7 +12,7 @@
 
 ---
 
-## 📊 Backlog Dağıtma Mantığı
+## Backlog Dağıtma Mantığı
 
 - Proje 3 sprinte bölündü; her sprint ~100 SP taşıyacak şekilde dengelendi.
 - Sprint 1 **planlama & karar** işlerini içerir; çıktısı kod değil, geliştirmeye hazır plan + mimari + kararlardır.
@@ -21,7 +21,7 @@
 
 ---
 
-## 🗂️ Sprint Board
+## Sprint Board
 
 | To Do | In Progress | Done |
 |-------|-------------|------|
@@ -31,23 +31,23 @@
 
 ---
 
-## ✔️ Görev Detayı & Durum
+## Görev Detayı & Durum
 
 | ID | Görev | SP | Durum |
 |----|-------|----|-------|
-| US-01 | Problem, hedef kitle ve değer önermesinin netleştirilmesi | 8 | ✅ Done |
-| US-02 | Kimlik & metafor kararı (MakiKoç + hafif orman katmanı) | 8 | ✅ Done |
-| US-03 | Teknoloji yığını seçimi (Flutter, Isar/Drift, FastAPI, PaddleOCR, Prophet, RAG, LLM) | 13 | ✅ Done |
-| US-04 | Gizlilik mimarisi kararı (cihazda veri / anonim sinyal) | 13 | ✅ Done |
-| US-05 | Kategori taksonomisi taslağı | 5 | ✅ Done |
-| US-06 | 3 sprint takvimi + kapsam belirleme | 8 | ✅ Done |
-| US-07 | Risklerin belirlenmesi | 5 | ✅ Done |
+| US-01 | Problem, hedef kitle ve değer önermesinin netleştirilmesi | 8 | Done |
+| US-02 | Kimlik & metafor kararı (MakiKoç + hafif orman katmanı) | 8 | Done |
+| US-03 | Teknoloji yığını seçimi (Flutter, Drift + sqlite3mc, FastAPI, PaddleOCR + Claude, Prophet, RAG, LLM) | 13 | Done |
+| US-04 | Gizlilik mimarisi kararı (cihazda veri / anonim sinyal) | 13 | Done |
+| US-05 | Kategori taksonomisi taslağı | 5 | Done |
+| US-06 | 3 sprint takvimi + kapsam belirleme | 8 | Done |
+| US-07 | Risklerin belirlenmesi | 5 | Done |
 
 **Toplam:** 60 / 60 SP tamamlandı.
 
 ---
 
-## 📉 Sprint Burndown (Özet)
+## Sprint Burndown (Özet)
 
 | Gün Aralığı | Kalan SP |
 |-------------|----------|
