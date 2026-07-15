@@ -1,0 +1,9 @@
+{
+  "@@locale": "en",
+  "appTitle": "Maki Finance Coach",
+  "welcomeMessage": "Hello! How can I help you with your money today?",
+  "chatPlaceholder": "Type a message...",
+  "manualExpense": "Add Expense Manually",
+  "scanReceipt": "Scan Receipt",
+  "totalExpense": "Total Expenses"
+}

@@ -3,10 +3,6 @@
 venv/
 env/
 ENV/
-bin/
-include/
-lib/
-share/
 pyvenv.cfg
 
 # Python Cache and Compilations

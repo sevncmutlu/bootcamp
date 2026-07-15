@@ -1,0 +1,9 @@
+{
+  "@@locale": "tr",
+  "appTitle": "Maki Finans Koçu",
+  "welcomeMessage": "Merhaba! Bugün paranızı yönetmenize nasıl yardımcı olabilirim?",
+  "chatPlaceholder": "Bir mesaj yazın...",
+  "manualExpense": "Manuel Harcama Ekle",
+  "scanReceipt": "Fiş Tara",
+  "totalExpense": "Toplam Harcama"
+}
