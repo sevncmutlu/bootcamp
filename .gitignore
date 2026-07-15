@@ -1,0 +1,51 @@
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+bin/
+include/
+lib/
+share/
+pyvenv.cfg
+
+# Python Cache and Compilations
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDEs and Editors
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Database and Generated Files
+*.db
+*.sqlite
+*.sqlite3
+*.log
+local_data/
+
+# Environment Variables & Keys (Secrets)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials.json
+google_client_secret.json
+
+# Local Dev Artifacts
+build/
+frontend/build/
+frontend/.dart_tool/
+frontend/lib/l10n/app_localizations*.dart
