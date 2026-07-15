@@ -3,6 +3,8 @@ import 'package:drift/drift.dart' as drift;
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 
+import 'package:maki_app/screens/receipt_scanner_screen.dart';
+
 class ExpenseEntryScreen extends StatefulWidget {
   const ExpenseEntryScreen({super.key});
 
@@ -244,6 +246,19 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner_outlined),
+            tooltip: l10n.scanReceipt,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ReceiptScannerScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: StreamBuilder<List<Expense>>(
         stream: _database.watchAllExpenses(),

@@ -37,22 +37,85 @@ async def chat_with_coach(payload: ChatMessage):
         "sources": []
     }
 
-@app.post("/api/ocr")
+from google import genai
+from google.genai import types
+import os
+
+# Load API Key from environment
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
+class ReceiptItem(BaseModel):
+    name: str
+    price: float
+    quantity: int
+
+class ReceiptResponse(BaseModel):
+    store_name: str
+    date: str # YYYY-MM-DD
+    items: List[ReceiptItem]
+    total: float
+    category: str
+
+@app.post("/api/ocr", response_model=ReceiptResponse)
 async def parse_receipt(file: UploadFile = File(...)):
-    # Placeholder for Gemini Multimodal Receipt Vision API
+    # Validate file type
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Uploaded file must be an image.")
     
-    return {
-        "store_name": "Sample Store Ltd.",
-        "date": "2026-07-15",
-        "items": [
-            {"name": "Sample Item 1", "price": 100.0, "quantity": 1},
-            {"name": "Sample Item 2", "price": 50.0, "quantity": 2}
-        ],
-        "total": 200.0,
-        "category": "Market"
-    }
+    contents = await file.read()
+    
+    # Graceful fallback if API key is not configured locally
+    if not GEMINI_API_KEY:
+        return ReceiptResponse(
+            store_name="Demo Market Inc. (No API Key)",
+            date="2026-07-15",
+            items=[
+                ReceiptItem(name="Default Grocery Item", price=120.0, quantity=1),
+                ReceiptItem(name="Bilingual Book", price=80.0, quantity=1)
+            ],
+            total=200.0,
+            category="Market"
+        )
+    
+    try:
+        # Initialize Google GenAI client
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        
+        # Prepare multimodal payload
+        image_part = types.Part.from_bytes(
+            data=contents,
+            mime_type=file.content_type
+        )
+        
+        prompt = (
+            "Analyze this receipt image. Extract the store name, date of purchase "
+            "(in YYYY-MM-DD format), list of individual items with price and quantity, "
+            "the total sum paid, and classify the category of the purchase into one of the "
+            "following categories: Market, Restaurant, Rent, Bills, Transport, Fun."
+        )
+        
+        # Call Gemini multimodal model
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=[prompt, image_part],
+            config={
+                'response_mime_type': 'application/json',
+                'response_schema': ReceiptResponse,
+            }
+        )
+        
+        # Return parsed JSON directly
+        if response.parsed:
+            return response.parsed
+            
+        # Fallback raw parsing if parsed isn't populated
+        import json
+        data = json.loads(response.text)
+        return ReceiptResponse(**data)
+        
+    except Exception as e:
+        print(f"Error parsing receipt with Gemini: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to parse receipt: {str(e)}")
 
 @app.post("/api/forecast")
 async def forecast_spending(payload: ForecastRequest):
