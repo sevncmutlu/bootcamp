@@ -100,9 +100,9 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                   // Title Field
                   TextField(
                     controller: titleController,
-                    decoration: const InputDecoration(
-                      labelText: 'Title',
-                      prefixIcon: Icon(Icons.title),
+                    decoration: InputDecoration(
+                      labelText: l10n.labelTitle,
+                      prefixIcon: const Icon(Icons.title),
                     ),
                     textCapitalization: TextCapitalization.sentences,
                   ),
@@ -111,18 +111,18 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                   TextField(
                     controller: amountController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Amount',
-                      prefixIcon: Icon(Icons.attach_money),
+                    decoration: InputDecoration(
+                      labelText: l10n.labelAmount,
+                      prefixIcon: const Icon(Icons.attach_money),
                     ),
                   ),
                   const SizedBox(height: 16),
                   // Category Dropdown
                   DropdownButtonFormField<Category>(
                     initialValue: selectedCategory,
-                    decoration: const InputDecoration(
-                      labelText: 'Category',
-                      prefixIcon: Icon(Icons.category_outlined),
+                    decoration: InputDecoration(
+                      labelText: l10n.labelCategory,
+                      prefixIcon: const Icon(Icons.category_outlined),
                     ),
                     items: _categories.map((cat) {
                       return DropdownMenuItem<Category>(
@@ -217,9 +217,9 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Save Expense',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.saveExpense,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -305,10 +305,10 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
               // List view
               Expanded(
                 child: list.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
-                          'No expenses tracked yet.',
-                          style: TextStyle(color: Colors.grey),
+                          l10n.noExpenses,
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       )
                     : ListView.builder(

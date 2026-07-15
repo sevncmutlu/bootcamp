@@ -31,11 +31,64 @@ def health_check():
 
 @app.post("/api/chat")
 async def chat_with_coach(payload: ChatMessage):
-    # Placeholder for Gemini Coach RAG conversational logic
-    return {
-        "reply": f"Maki here! I received your message: '{payload.message}'. Setup the Gemini API key to start real conversations.",
-        "sources": []
-    }
+    # Graceful mock fallback if API key is not configured locally
+    if not GEMINI_API_KEY:
+        is_turkish = any(word in payload.message.lower() for word in ["merhaba", "selam", "nasıl", "para", "borç", "bütçe", "harcama"])
+        if is_turkish:
+            reply = (
+                "Merhaba! Ben bütçe koçunuz Maki. API anahtarınız henüz ayarlanmadığı için "
+                "şu an demo modundayım. Ama bütçe yapmanıza ve borçlarınızı kapatmanıza her zaman yardımcı olabilirim!"
+            )
+        else:
+            reply = (
+                "Hello! I am Maki, your budget coach. Since the Gemini API key is not configured yet, "
+                "I am running in demo mode. But I am always here to help you build budget sheets and manage expenses!"
+            )
+        return {"reply": reply, "sources": []}
+
+    try:
+        # Initialize GenAI client
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        
+        # Map conversation history
+        contents = []
+        for h in payload.history:
+            role = h.get("role")
+            text = h.get("text")
+            if role and text:
+                contents.append(types.Content(
+                    role="user" if role == "user" else "model",
+                    parts=[types.Part.from_text(text=text)]
+                ))
+        
+        system_instruction = (
+            "You are Maki, a highly supportive, bilingual (English and Turkish) personal finance coach. "
+            "Your goal is to help users build healthy money habits, track daily expenses, reduce debt, "
+            "and make smart saving choices. Be warm, empathetic, and encouraging. Never be judgmental. "
+            "If the user asks questions in Turkish, reply in Turkish. If they ask in English, reply in English. "
+            "Keep your answers concise, practical, and action-oriented. Try to format numbers nicely."
+        )
+        
+        # Create chat session with system instruction and history
+        chat = client.chats.create(
+            model="gemini-2.0-flash",
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction
+            ),
+            history=contents
+        )
+        
+        # Send user message
+        response = chat.send_message(payload.message)
+        
+        return {
+            "reply": response.text,
+            "sources": []
+        }
+        
+    except Exception as e:
+        print(f"Error in Maki AI Coach: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to communicate with AI Coach: {str(e)}")
 
 from google import genai
 from google.genai import types

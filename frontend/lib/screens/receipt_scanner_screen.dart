@@ -62,7 +62,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to select image: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedSelectImage(e.toString()))),
         );
       }
     }
@@ -121,7 +121,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error parsing receipt: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorParsingReceipt(e.toString()))),
         );
       }
     } finally {
@@ -248,7 +248,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => setState(() => _selectedImage = null),
-                      child: const Text('Clear'),
+                      child: Text(l10n.clearButton),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -260,7 +260,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                         foregroundColor: theme.colorScheme.onPrimary,
                         elevation: 0,
                       ),
-                      child: const Text('Parse Receipt'),
+                      child: Text(l10n.parseReceipt),
                     ),
                   ),
                 ],
@@ -274,7 +274,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                   const CircularProgressIndicator(),
                   const SizedBox(height: 16),
                   Text(
-                    'Maki is parsing your receipt...',
+                    l10n.parsingStatus,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,
@@ -287,7 +287,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
             if (_hasResult) ...[
               const Divider(height: 40),
               Text(
-                'Review & Confirm Info',
+                l10n.reviewTitle,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -295,26 +295,26 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
               const SizedBox(height: 20),
               TextField(
                 controller: _storeController,
-                decoration: const InputDecoration(
-                  labelText: 'Store Name',
-                  prefixIcon: Icon(Icons.storefront_outlined),
+                decoration: InputDecoration(
+                  labelText: l10n.labelStoreName,
+                  prefixIcon: const Icon(Icons.storefront_outlined),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Total Amount',
-                  prefixIcon: Icon(Icons.attach_money_outlined),
+                decoration: InputDecoration(
+                  labelText: l10n.labelTotalAmount,
+                  prefixIcon: const Icon(Icons.attach_money_outlined),
                 ),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategory,
-                decoration: const InputDecoration(
-                  labelText: 'Category',
-                  prefixIcon: Icon(Icons.category_outlined),
+                decoration: InputDecoration(
+                  labelText: l10n.labelCategory,
+                  prefixIcon: const Icon(Icons.category_outlined),
                 ),
                 items: _categories.map((cat) {
                   return DropdownMenuItem<String>(
@@ -389,9 +389,9 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Add to Expenses',
-                  style: TextStyle(
+                child: Text(
+                  l10n.addToExpenses,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),

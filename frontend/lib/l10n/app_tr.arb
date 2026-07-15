@@ -12,5 +12,42 @@
   "goalSave": "Birikim yapmak (Hedef odaklı)",
   "goalDebt": "Borçlarımı azaltmak/kapatmak",
   "goalInvest": "Yatırım yapmayı öğrenmek",
-  "continueButton": "Devam Et"
+  "continueButton": "Devam Et",
+  
+  "noExpenses": "Henüz harcama kaydedilmedi.",
+  "labelTitle": "Başlık",
+  "labelAmount": "Miktar",
+  "labelCategory": "Kategori",
+  "labelDate": "Tarih",
+  "saveExpense": "Harcamayı Kaydet",
+  
+  "failedSelectImage": "Resim seçilemedi: {error}",
+  "@failedSelectImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorParsingReceipt": "Fiş çözümlenirken hata oluştu: {error}",
+  "@errorParsingReceipt": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "clearButton": "Temizle",
+  "parseReceipt": "Fişi Çözümle",
+  "parsingStatus": "Maki fişinizi çözümlüyor...",
+  "reviewTitle": "Bilgileri İnceleyin ve Onaylayın",
+  "labelStoreName": "Mağaza Adı",
+  "labelTotalAmount": "Toplam Tutar",
+  "addToExpenses": "Harcamalara Ekle",
+  
+  "chatError": "Üzgünüm, şu anda bağlantı sorunu yaşıyorum. Lütfen tekrar deneyin.",
+  "navExpenses": "Harcamalar",
+  "navCoach": "Maki Koçu"
 }

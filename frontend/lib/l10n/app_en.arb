@@ -12,5 +12,42 @@
   "goalSave": "Save for a major goal",
   "goalDebt": "Pay down existing debt",
   "goalInvest": "Learn to invest",
-  "continueButton": "Continue"
+  "continueButton": "Continue",
+  
+  "noExpenses": "No expenses tracked yet.",
+  "labelTitle": "Title",
+  "labelAmount": "Amount",
+  "labelCategory": "Category",
+  "labelDate": "Date",
+  "saveExpense": "Save Expense",
+  
+  "failedSelectImage": "Failed to select image: {error}",
+  "@failedSelectImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorParsingReceipt": "Error parsing receipt: {error}",
+  "@errorParsingReceipt": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "clearButton": "Clear",
+  "parseReceipt": "Parse Receipt",
+  "parsingStatus": "Maki is parsing your receipt...",
+  "reviewTitle": "Review & Confirm Info",
+  "labelStoreName": "Store Name",
+  "labelTotalAmount": "Total Amount",
+  "addToExpenses": "Add to Expenses",
+  
+  "chatError": "Sorry, I am having trouble connecting right now. Please try again.",
+  "navExpenses": "Expenses",
+  "navCoach": "Maki Coach"
 }
