@@ -31,7 +31,7 @@ Maki Finans Koçu; kullanıcının kendi harcamalarını yönetmesini sağlayan,
 ### Ürün Özellikleri
 
 - **Veri egemenliği:** Tüm kişisel finans verisi cihazda kalır; sunucuya yalnızca anonim sinyaller gider.
-- **Fiş OCR:** Market fişini fotoğraflayarak otomatik harcama girişi (PaddleOCR + Claude API ile alan çıkarımı).
+- **Fiş OCR:** Market fişini fotoğraflayarak otomatik harcama girişi (Gemini Multimodal ile doğrudan alan çıkarımı).
 - **Yapay zeka koçu (MakiKoç):** TR + EN çift dilli, şefkatli ve yargılamayan, kaynaklı (RAG) finans koçluğu.
 - **Kişisel enflasyon:** Kullanıcının kendi enflasyonunu hesaplayıp TÜİK rakamıyla karşılaştıran grafik.
 - **Harcama tahmini:** Prophet ile basit harcama öngörüsü.
@@ -65,10 +65,9 @@ flowchart TB
     end
 
     subgraph Sunucu["Backend (Python + FastAPI)"]
-        OCR["PaddleOCR<br/>Fiş → Metin"]
         RAG["RAG<br/>Chroma/FAISS"]
         ML["Modeller<br/>Prophet · LightGBM · LinTS Simülasyonu"]
-        LLM["Claude<br/>TR+EN Koç"]
+        LLM["Gemini<br/>TR+EN Koç & OCR"]
     end
 
     subgraph Kaynak["Kaynak Veri"]
@@ -77,8 +76,7 @@ flowchart TB
     end
 
     LDB -. "yalnızca ANONİM sinyal" .-> ML
-    OCRD -- "fiş görüntüsü (geçici)" --> OCR
-    OCR -- "çıkarılan ham metin" --> LLM
+    OCRD -- "fiş görüntüsü" --> LLM
     LLM -- "ayrıştırılmış alanlar (JSON)" --> UI
     UI -- "soru (kişisel veri YOK)" --> LLM
     RAG --> LLM
@@ -90,7 +88,7 @@ flowchart TB
     classDef server fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
     classDef src fill:#fff3e0,stroke:#ef6c00,color:#e65100;
     class UI,LDB,OCRD device;
-    class OCR,RAG,ML,LLM server;
+    class RAG,ML,LLM server;
     class TUIK,MB src;
 ```
 

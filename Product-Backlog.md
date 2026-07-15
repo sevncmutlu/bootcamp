@@ -31,7 +31,7 @@
 | **E0 — Planlama & Mimari** | Vizyon, teknoloji, kimlik ve gizlilik kararları |
 | **E1 — Temel & Altyapı** | Flutter iskeleti, tema, cihaz DB, onboarding |
 | **E2 — Harcama Yönetimi** | Manuel giriş, listeleme, kategori taksonomisi |
-| **E3 — Fiş OCR** | Kamera/galeri, PaddleOCR, alan çıkarımı |
+| **E3 — Fiş OCR** | Kamera/galeri, Gemini Multimodal, alan çıkarımı |
 | **E4 — AI Koçluk (MakiKoç) & RAG** | LLM koç, çift dilli prompt, kaynaklı tavsiye |
 | **E5 — Kişisel Enflasyon & Tahmin** | Kişisel enflasyon, TÜİK karşılaştırma, Prophet |
 | **E6 — Gamification & Orman** | Meydan okuma, XP/seviye, rozet, leaderboard, orman |
@@ -75,7 +75,7 @@
 
 | ID | User Story | Öncelik | SP | Sprint |
 |----|-----------|---------|----|--------|
-| US-14 | Kullanıcı olarak fişi fotoğraflayıp otomatik harcama oluşturmak istiyorum (PaddleOCR + Claude API ile alan çıkarımı) ki elle girmekle uğraşmayayım. | Yüksek | 13 | S2 |
+| US-14 | Kullanıcı olarak fişi fotoğraflayıp otomatik harcama oluşturmak istiyorum (Gemini Multimodal ile doğrudan alan çıkarımı) ki elle girmekle uğraşmayayım. | Yüksek | 13 | S2 |
 | US-15 | Kullanıcı olarak OCR sonrası çıkan bilgiyi düzenleyip onaylamak istiyorum ki hatalar düzeltilebilsin. | Orta | 5 | S2 |
 
 ### E4 — AI Koçluk (MakiKoç) & RAG  · _Sprint 2–3_

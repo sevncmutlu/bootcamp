@@ -58,7 +58,7 @@ To clarify the product idea, target audience, and value proposition; determine t
 |----|------|----|--------|
 | US-01 | Clarification of problem, target audience, and value proposition | 8 | Done |
 | US-02 | Identity & metaphor decision (MakiCoach + light forest layer) | 8 | Done |
-| US-03 | Technology stack selection (Flutter, Drift + sqlite3mc, FastAPI, PaddleOCR + Claude, Prophet, RAG, LLM) | 13 | Done |
+| US-03 | Technology stack selection (Flutter, Drift + sqlite3mc, FastAPI, Gemini Multimodal, Prophet, RAG) | 13 | Done |
 | US-04 | Privacy architecture decision (data on-device / anonymous signal) | 13 | Done |
 | US-05 | Category taxonomy draft | 5 | Done |
 | US-06 | 3-sprint schedule + scope definition | 8 | Done |
@@ -102,7 +102,7 @@ To clarify the product idea, target audience, and value proposition; determine t
 ### Week 2
 
 **Days 6–7 — Technology Decision (Completed)**
-*   **Done:** The technology stack was carefully designed. Each layer was selected with justification: Turkish receipt support and Claude integration for OCR, Prophet for forecasting, FAISS/Chroma for RAG, and Claude for bilingual coaching. The stack was finalized -> Flutter + Drift (sqlite3mc) + FastAPI + PaddleOCR (Claude API parser) + Prophet + RAG + Claude (US-03) [Completed].
+*   **Done:** The technology stack was carefully designed. Each layer was selected with justification: Gemini for OCR and bilingual coaching, Prophet for forecasting, and FAISS/Chroma for RAG. The stack was finalized -> Flutter + Drift (sqlite3mc) + FastAPI + Gemini Multimodal + Prophet + RAG (US-03) [Completed].
 *   **To-Do:** Privacy architecture decision.
 *   **Blockers:** None — the intensity of the research ensured the decision was based on solid ground.
 
@@ -161,7 +161,7 @@ Since Sprint 1 is a planning sprint, there are no working application screens ye
 
 | # | Action | Owner |
 |---|--------|-------|
-| 1 | Validate Turkish receipt accuracy at the beginning of Sprint 2 with a pilot test of the PaddleOCR + Claude API integration | Sevinç Mutlu |
+| 1 | Validate Turkish receipt accuracy at the beginning of Sprint 2 with a pilot test of the Gemini Multimodal API integration | Sevinç Mutlu |
 | 2 | Set up the Flutter skeleton + Drift encrypted device DB schema at the start of the sprint | Emir Hüseyin İnci |
 | 3 | Set a fixed time for Daily Scrums | Sevinç Mutlu (Scrum Master) |
 | 4 | Define a "simple version" DoD for each model | Emir Hüseyin İnci (PO) |

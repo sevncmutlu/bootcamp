@@ -31,7 +31,7 @@ Maki Finance Coach is a privacy-first personal finance application with built-in
 ### Product Features
 
 - **Data Sovereignty:** All personal financial data remains on the device; only anonymized signals are sent to the server.
-- **Receipt OCR:** Automated expense entry by photographing receipts (PaddleOCR + Claude API for field extraction).
+- **Receipt OCR:** Automated expense entry by photographing receipts (Gemini Multimodal for direct field extraction).
 - **AI Coach (MakiCoach):** TR + EN bilingual, empathetic and non-judgmental, source-backed (RAG) financial coaching.
 - **Personal Inflation:** A graph that calculates the user's own inflation and compares it with official TÜİK figures.
 - **Expense Forecasting:** Simple spending predictions using Prophet.
@@ -65,10 +65,9 @@ flowchart TB
     end
 
     subgraph Sunucu["Backend (Python + FastAPI)"]
-        OCR["PaddleOCR<br/>Receipt → Text"]
         RAG["RAG<br/>Chroma/FAISS"]
         ML["Models<br/>Prophet · LightGBM · LinTS Simulation"]
-        LLM["Claude<br/>TR+EN Coach"]
+        LLM["Gemini<br/>TR+EN Coach & OCR"]
     end
 
     subgraph Kaynak["Source Data"]
@@ -77,8 +76,7 @@ flowchart TB
     end
 
     LDB -. "only ANONYMOUS signal" .-> ML
-    OCRD -- "receipt image (temporary)" --> OCR
-    OCR -- "extracted raw text" --> LLM
+    OCRD -- "receipt image" --> LLM
     LLM -- "parsed fields (JSON)" --> UI
     UI -- "question (NO personal data)" --> LLM
     RAG --> LLM
@@ -90,7 +88,7 @@ flowchart TB
     classDef server fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
     classDef src fill:#fff3e0,stroke:#ef6c00,color:#e65100;
     class UI,LDB,OCRD device;
-    class OCR,RAG,ML,LLM server;
+    class RAG,ML,LLM server;
     class TUIK,MB src;
 ```
 

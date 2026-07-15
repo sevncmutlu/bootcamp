@@ -58,7 +58,7 @@
 |----|-------|----|-------|
 | US-01 | Problem, hedef kitle ve değer önermesinin netleştirilmesi | 8 | Done |
 | US-02 | Kimlik & metafor kararı (MakiKoç + hafif orman katmanı) | 8 | Done |
-| US-03 | Teknoloji yığını seçimi (Flutter, Drift + sqlite3mc, FastAPI, PaddleOCR + Claude, Prophet, RAG, LLM) | 13 | Done |
+| US-03 | Teknoloji yığını seçimi (Flutter, Drift + sqlite3mc, FastAPI, Gemini Multimodal, Prophet, RAG) | 13 | Done |
 | US-04 | Gizlilik mimarisi kararı (cihazda veri / anonim sinyal) | 13 | Done |
 | US-05 | Kategori taksonomisi taslağı | 5 | Done |
 | US-06 | 3 sprint takvimi + kapsam belirleme | 8 | Done |
@@ -102,7 +102,7 @@
 ### Hafta 2
 
 **Gün 6–7 — Teknoloji Kararı (tamam)**
-*   **Yapıldı:** Teknoloji yığını özenle tasarlandı. Her katman gerekçesiyle birlikte seçildi: OCR için Türkçe fiş desteği ve Claude entegrasyonu, tahmin için Prophet, RAG için FAISS/Chroma ve çift dilli koçluk için Claude. Yığın netleşti → Flutter + Drift (sqlite3mc) + FastAPI + PaddleOCR (Claude API parser) + Prophet + RAG + Claude (US-03) [Tamamlandı].
+*   **Yapıldı:** Teknoloji yığını özenle tasarlandı. Her katman gerekçesiyle birlikte seçildi: OCR ve çift dilli koçluk için Gemini, tahmin için Prophet, RAG için FAISS/Chroma. Yığın netleşti → Flutter + Drift (sqlite3mc) + FastAPI + Gemini Multimodal + Prophet + RAG (US-03) [Tamamlandı].
 *   **Yapılacak:** Gizlilik mimarisi kararı.
 *   **Engel:** Yok — araştırmanın yoğunluğu sayesinde karar sağlam zemine oturdu.
 
@@ -161,7 +161,7 @@ Sprint 1 planlama sprinti olduğu için henüz çalışan bir uygulama ekranı y
 
 | # | Aksiyon | Sorumlu |
 |---|---------|---------|
-| 1 | PaddleOCR + Claude API entegrasyonunu birkaç örnek Türkçe fişle Sprint 2 başında hızlıca test edip doğruluğu erken gör | Sevinç Mutlu |
+| 1 | Gemini Multimodal API entegrasyonu ile Türkçe fiş doğruluğunu Sprint 2 başında hızlıca test edip doğruluğu erken gör | Sevinç Mutlu |
 | 2 | Flutter iskeleti + Drift şifreli cihaz DB şemasını sprint başında kur | Emir Hüseyin İnci |
 | 3 | Daily Scrum için sabit saat belirle | Sevinç Mutlu (Scrum Master) |
 | 4 | Her model için "basit sürüm" DoD'si tanımla | Emir Hüseyin İnci (PO) |

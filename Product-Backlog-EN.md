@@ -31,7 +31,7 @@
 | **E0 — Planning & Architecture** | Vision, technology, identity, and privacy decisions |
 | **E1 — Infrastructure & Core** | Flutter skeleton, theme, on-device DB, onboarding |
 | **E2 — Expense Management** | Manual entry, listing, category taxonomy |
-| **E3 — Receipt OCR** | Camera/gallery, PaddleOCR, field extraction |
+| **E3 — Receipt OCR** | Camera/gallery, Gemini Multimodal, field extraction |
 | **E4 — AI Coaching (MakiCoach) & RAG** | LLM coach, bilingual prompt, source-backed advice |
 | **E5 — Personal Inflation & Forecasting** | Personal inflation, TÜİK comparison, Prophet |
 | **E6 — Gamification & Forest** | Challenges, XP/level, badges, leaderboard, forest |
@@ -75,7 +75,7 @@
 
 | ID | User Story | Priority | SP | Sprint |
 |----|-----------|---------|----|--------|
-| US-14 | As a user, I want to photograph receipts to automatically create expenses (PaddleOCR + Claude API field extraction) so that I do not have to enter them manually. | High | 13 | S2 |
+| US-14 | As a user, I want to photograph receipts to automatically create expenses (Gemini Multimodal for direct field extraction) so that I do not have to enter them manually. | High | 13 | S2 |
 | US-15 | As a user, I want to edit and approve the information extracted from OCR so that any errors can be corrected. | Medium | 5 | S2 |
 
 ### E4 — AI Coaching (MakiCoach) & RAG · _Sprint 2–3_
