@@ -100,7 +100,7 @@ flowchart TB
 
 **Date:** June 19 – July 5 · **Status:** [Completed]
 
-- **Sprint Notes:** This sprint was fully dedicated to planning and project definition; no code was written. Decisions on product vision, target audience, technology stack, product identity (MakiCoach), and privacy architecture were made. Detailed sprint documentation can be found in the [Sprint-1 folder](./Sprint-1).
+- **Sprint Notes:** This sprint was fully dedicated to planning and project definition; no code was written. Decisions on product vision, target audience, technology stack, product identity (MakiCoach), and privacy architecture were made. Detailed sprint documentation can be found in the [Sprint-1-EN.md](./Sprint-1-EN.md) master file.
 
 - **Estimated points completed in sprint:** 100 Points
 
@@ -123,7 +123,7 @@ Detailed product backlog: [Product-Backlog-EN.md](./Product-Backlog-EN.md)
 
 </details>
 
-- **Daily Scrum:** Since the team is small, Daily Scrums were conducted via short sync meetings + Slack. Meeting notes: [Daily-Scrum-Notes.md](./Sprint-1/Daily-Scrum-Notes.md)
+- **Daily Scrum:** Since the team is small, Daily Scrums were conducted via short sync meetings + Slack. Meeting notes: [Sprint-1-EN.md#daily-scrum-notes](./Sprint-1-EN.md#daily-scrum-notes)
 
 - **Sprint Board Update:** The sprint board was completed with all planning items moved to the Done column. Remaining items carried over to Sprint 2 are in the Backlog, and rejected decisions are in the Rejected column.
 
@@ -131,7 +131,7 @@ Detailed product backlog: [Product-Backlog-EN.md](./Product-Backlog-EN.md)
 
 - **Product Status:** As Sprint 1 is a planning sprint, there are no working screens yet. Outputs: clarified product vision, technology & architecture decisions, product identity (MakiCoach), privacy architecture, a 3-sprint roadmap, and a risk list. _(Architecture diagram is shown above.)_
 
-- **Sprint Review:** Product idea, target audience, and value proposition were clearly established. The technology stack was defined in sufficient detail to start development. The privacy-first architecture was approved as the key differentiator of the project. Sprint goals were 100% met without any scope creep. Details: [Sprint-1-Review.md](./Sprint-1/Sprint-1-Review.md)
+- **Sprint Review:** Product idea, target audience, and value proposition were clearly established. The technology stack was defined in sufficient detail to start development. The privacy-first architecture was approved as the key differentiator of the project. Sprint goals were 100% met without any scope creep. Details: [Sprint-1-EN.md#sprint-review](./Sprint-1-EN.md#sprint-review)
 
 ![Sprint 1 Review Meeting](./assets/sprint-1-review-meeting.png)
 
@@ -143,7 +143,7 @@ Detailed product backlog: [Product-Backlog-EN.md](./Product-Backlog-EN.md)
   - Turkish receipt OCR accuracy should be tested early in Sprint 2 with sample receipts.
   - The "first simple working version, then improve" approach for models should be applied disciplinedly.
   - Daily Scrums should be made more structured (fixed time).
-  - Details: [Sprint-1-Retrospective.md](./Sprint-1/Sprint-1-Retrospective.md)
+  - Details: [Sprint-1-EN.md#sprint-retrospective](./Sprint-1-EN.md#sprint-retrospective)
 
 ---
 

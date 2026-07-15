@@ -100,7 +100,7 @@ flowchart TB
 
 **Tarih:** 19 Haziran – 5 Temmuz · **Durum:** [Tamamlandı]
 
-- **Sprint Notları:** Bu sprint tamamen planlama ve proje belirlemeye ayrıldı; kod yazılmadı. Ürün vizyonu, hedef kitle, teknoloji yığını, ürün kimliği (MakiKoç) ve gizlilik mimarisi kararları verildi. Detaylı sprint dokümanları [Sprint-1 klasöründe](./Sprint-1) yer almaktadır.
+- **Sprint Notları:** Bu sprint tamamen planlama ve proje belirlemeye ayrıldı; kod yazılmadı. Ürün vizyonu, hedef kitle, teknoloji yığını, ürün kimliği (MakiKoç) ve gizlilik mimarisi kararları verildi. Detaylı sprint dokümanları [Sprint-1.md](./Sprint-1.md) master dosyasında yer almaktadır.
 
 - **Sprint içinde tamamlanması tahmin edilen puan:** 100 Puan
 
@@ -123,7 +123,7 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
 
 </details>
 
-- **Daily Scrum:** Daily Scrum toplantıları takım küçük olduğu için kısa senkron görüşme + **Slack** üzerinden yürütülmüştür. Toplantı notları: [Daily-Scrum-Notes.md](./Sprint-1/Daily-Scrum-Notes.md)
+- **Daily Scrum:** Daily Scrum toplantıları takım küçük olduğu için kısa senkron görüşme + **Slack** üzerinden yürütülmüştür. Toplantı notları: [Sprint-1.md#daily-scrum-notları](./Sprint-1.md#daily-scrum-notları)
 
 - **Sprint Board Update:** Sprint board, tüm planlama kalemleri **Tamamlandı** sütununa taşınarak tamamlanmıştır. Sprint 2'ye devreden işler Backlog'da, kapsam dışı bırakılan kararlar Reddedildi sütununda yer almaktadır.
 
@@ -131,7 +131,7 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
 
 - **Ürün Durumu:** Sprint 1 planlama sprinti olduğu için henüz çalışan ekran yoktur. Çıktılar: netleşmiş ürün vizyonu, teknoloji & mimari kararları, ürün kimliği (MakiKoç) ve gizlilik mimarisi, 3 sprintlik yol haritası ve risk listesi. _(Mimari şeması yukarıda yer almaktadır.)_
 
-- **Sprint Review:** Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu. Teknoloji yığını, geliştirmeye başlamak için yeterli detayda belirlendi. Gizlilik öncelikli mimari, projenin en kritik farklılaştırıcısı olarak onaylandı. Sprint hedeflerine %100 ulaşıldı, kapsam dışına çıkılmadı. Detay: [Sprint-1-Review.md](./Sprint-1/Sprint-1-Review.md)
+- **Sprint Review:** Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu. Teknoloji yığını, geliştirmeye başlamak için yeterli detayda belirlendi. Gizlilik öncelikli mimari, projenin en kritik farklılaştırıcısı olarak onaylandı. Sprint hedeflerine %100 ulaşıldı, kapsam dışına çıkılmadı. Detay: [Sprint-1.md#sprint-review](./Sprint-1.md#sprint-review)
 
 ![Sprint 1 Review Toplantısı](./assets/sprint-1-review-meeting.png)
 
@@ -143,7 +143,7 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
   - Türkçe fiş OCR doğruluğu Sprint 2 başında birkaç örnek fişle erken test edilmeli.
   - Modeller için "önce basit çalışan sürüm, sonra iyileştir" yaklaşımı disiplinli uygulanmalı.
   - Daily Scrum'lar daha yapılandırılmış (sabit saat) hâle getirilmeli.
-  - Detay: [Sprint-1-Retrospective.md](./Sprint-1/Sprint-1-Retrospective.md)
+  - Detay: [Sprint-1.md#sprint-retrospective](./Sprint-1.md#sprint-retrospective)
 
 ---
 
