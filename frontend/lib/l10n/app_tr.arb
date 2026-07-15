@@ -55,5 +55,21 @@
   "forecastSubtitle": "Maki'nin önümüzdeki 7 gün için yapay zeka tabanlı günlük harcama tahminleri.",
   "forecastLoading": "Harcama tahminleri hesaplanıyor...",
   "forecastEmpty": "Tahmin oluşturmak için yeterli işlem geçmişi yok. Maki'nin farklı günlerde yapılmış harcama verilerine ihtiyacı var.",
-  "projectedSpend": "Tahmini Harcama"
+  "projectedSpend": "Tahmini Harcama",
+  "navSimulator": "Borç Simülatörü",
+  "simulatorTitle": "Borç Ödeme Simülatörü",
+  "simulatorSubtitle": "Borçlarınızdan ne kadar sürede kurtulabileceğinizi görmek için ödeme stratejilerini simüle edin.",
+  "strategyAvalanche": "Çığ (En Yüksek Faiz)",
+  "strategySnowball": "Kar Topu (En Düşük Bakiye)",
+  "extraBudget": "Ek Aylık Bütçe",
+  "monthsToFree": "Borçsuz Kalma Süresi",
+  "totalInterest": "Ödenen Toplam Faiz",
+  "debtListTitle": "Borçlarım",
+  "noDebts": "Henüz borç eklenmedi. Simüle etmek için kredi kartı veya kredi ekleyin.",
+  "addDebt": "Borç Ekle",
+  "debtName": "Borç Adı",
+  "debtBalance": "Kalan Borç Tutarı",
+  "interestRate": "Yıllık Faiz Oranı (%)",
+  "minPayment": "Minimum Ödeme Tutarı",
+  "simulateButton": "Ödemeyi Simüle Et"
 }

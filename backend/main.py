@@ -21,9 +21,16 @@ class TransactionItem(BaseModel):
 class ForecastRequest(BaseModel):
     transactions: List[TransactionItem]
 
+class DebtItem(BaseModel):
+    name: str
+    balance: float
+    interest_rate: float
+    min_payment: float
+
 class DebtSimulationRequest(BaseModel):
-    debts: List[dict] # Expected: [{"name": "Card A", "balance": 1000.0, "interest_rate": 18.5, "min_payment": 50.0}]
+    debts: List[DebtItem]
     monthly_budget: float
+    strategy: str # 'avalanche' or 'snowball'
 
 @app.get("/")
 def read_root():
@@ -259,17 +266,101 @@ async def forecast_spending(payload: ForecastRequest):
         except Exception as inner_e:
             raise HTTPException(status_code=500, detail=f"Failed to generate forecast: {str(inner_e)}")
 
-@app.post("/api/debt-simulator")
+class DebtMonthSchedule(BaseModel):
+    month: int
+    remaining_balance: float
+
+class DebtSimulationResponse(BaseModel):
+    months_to_debt_free: int
+    total_interest_paid: float
+    payoff_schedule: List[DebtMonthSchedule]
+
+@app.post("/api/debt-simulator", response_model=DebtSimulationResponse)
 async def simulate_debt_payoff(payload: DebtSimulationRequest):
-    # Placeholder for LightGBM/Rule-based Debt Payoff planning
-    return {
-        "months_to_debt_free": 12,
-        "total_interest_paid": 450.0,
-        "payoff_schedule": [
-            {"month": 1, "remaining_balance": 950.0},
-            {"month": 2, "remaining_balance": 900.0}
+    # Graceful exit if no debts are submitted
+    if not payload.debts:
+        return DebtSimulationResponse(months_to_debt_free=0, total_interest_paid=0.0, payoff_schedule=[])
+
+    try:
+        # Clone input models to dictionaries to iterate calculations
+        debts = [
+            {
+                "name": d.name,
+                "balance": d.balance,
+                "interest_rate": d.interest_rate,
+                "min_payment": d.min_payment
+            } for d in payload.debts
         ]
-    }
+
+        # Prioritize according to Avalanche or Snowball strategy
+        if payload.strategy.lower() == 'avalanche':
+            # Highest interest rate first
+            debts.sort(key=lambda x: x['interest_rate'], reverse=True)
+        else:
+            # Lowest balance first (Snowball)
+            debts.sort(key=lambda x: x['balance'])
+
+        total_interest_paid = 0.0
+        months = 0
+        schedule = []
+        max_months = 360 # 30 years ceiling to prevent infinite runs
+
+        while any(d['balance'] > 0 for d in debts) and months < max_months:
+            months += 1
+            month_interest = 0.0
+
+            # 1. Apply monthly compound interest
+            for d in debts:
+                if d['balance'] > 0:
+                    interest = d['balance'] * ((d['interest_rate'] / 100) / 12)
+                    d['balance'] += interest
+                    month_interest += interest
+            
+            total_interest_paid += month_interest
+
+            # 2. Check if total minimum payments exceed budget
+            active_debts = [d for d in debts if d['balance'] > 0]
+            total_mins = sum(min(d['balance'], d['min_payment']) for d in active_debts)
+
+            if total_mins > payload.monthly_budget:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Monthly budget of ${payload.monthly_budget:.2f} is insufficient to cover minimum payments of ${total_mins:.2f}."
+                )
+
+            # 3. Pay minimum payments
+            available_pool = payload.monthly_budget
+            for d in debts:
+                if d['balance'] > 0:
+                    payment = min(d['balance'], d['min_payment'])
+                    d['balance'] -= payment
+                    available_pool -= payment
+
+            # 4. Allocate leftover budget to first prioritized active debt
+            for d in debts:
+                if d['balance'] > 0 and available_pool > 0:
+                    extra_payment = min(d['balance'], available_pool)
+                    d['balance'] -= extra_payment
+                    available_pool -= extra_payment
+
+            # 5. Record month-end total balance
+            current_total_balance = sum(d['balance'] for d in debts)
+            schedule.append(DebtMonthSchedule(
+                month=months,
+                remaining_balance=round(current_total_balance, 2)
+            ))
+
+        return DebtSimulationResponse(
+            months_to_debt_free=months,
+            total_interest_paid=round(total_interest_paid, 2),
+            payoff_schedule=schedule
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in debt simulation: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to simulate debt payoff: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

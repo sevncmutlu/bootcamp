@@ -5,6 +5,7 @@ import 'package:maki_app/screens/onboarding_screen.dart';
 import 'package:maki_app/screens/expense_entry_screen.dart';
 import 'package:maki_app/screens/chat_screen.dart';
 import 'package:maki_app/screens/forecast_screen.dart';
+import 'package:maki_app/screens/debt_simulator_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,6 +56,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final _screens = const [
     ExpenseEntryScreen(),
     ForecastScreen(),
+    DebtSimulatorScreen(),
     ChatScreen(),
   ];
 
@@ -82,6 +84,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             icon: const Icon(Icons.analytics_outlined),
             selectedIcon: const Icon(Icons.analytics),
             label: AppLocalizations.of(context)!.navForecast,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.calculate_outlined),
+            selectedIcon: const Icon(Icons.calculate),
+            label: AppLocalizations.of(context)!.navSimulator,
           ),
           NavigationDestination(
             icon: const Icon(Icons.spa_outlined),
