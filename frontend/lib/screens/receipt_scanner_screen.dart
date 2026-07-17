@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +21,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
   final _database = AppDatabase.instance;
   final _picker = ImagePicker();
   
-  File? _selectedImage;
+  XFile? _selectedImage;
   bool _isUploading = false;
   
   // Scanned results fields
@@ -57,7 +58,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
       );
       if (pickedFile != null) {
         setState(() {
-          _selectedImage = File(pickedFile.path);
+          _selectedImage = pickedFile;
           _hasResult = false; // Reset previous result if any
         });
       }
@@ -84,10 +85,12 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
       final uri = Uri.parse('${ApiConfig.baseUrl}/api/ocr');
       
       final request = http.MultipartRequest('POST', uri);
+      final byteData = await _selectedImage!.readAsBytes();
       request.files.add(
-        await http.MultipartFile.fromPath(
+        http.MultipartFile.fromBytes(
           'file',
-          _selectedImage!.path,
+          byteData,
+          filename: _selectedImage!.name,
         ),
       );
 
@@ -209,10 +212,15 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
               child: _selectedImage != null
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      child: Image.file(
-                        _selectedImage!,
-                        fit: BoxFit.cover,
-                      ),
+                      child: kIsWeb
+                          ? Image.network(
+                              _selectedImage!.path,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.file(
+                              File(_selectedImage!.path),
+                              fit: BoxFit.cover,
+                            ),
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,

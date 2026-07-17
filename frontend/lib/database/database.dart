@@ -1,9 +1,5 @@
-import 'dart:io';
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
-import 'package:maki_app/database/secure_key_helper.dart';
+import 'package:maki_app/database/connection/connection.dart' as conn;
 
 part 'database.g.dart';
 
@@ -82,7 +78,7 @@ class NotificationBanditStates extends Table {
 
 @DriftDatabase(tables: [Expenses, Categories, Incomes, UserGamificationStates, DailyChallenges, NotificationBanditStates])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase() : super(conn.connect());
 
   /// Testing constructor to run in-memory executions
   AppDatabase.forTesting(super.executor);
@@ -228,24 +224,4 @@ class AppDatabase extends _$AppDatabase {
   }
 }
 
-// =============================================================================
-// Encrypted SQLite connection via SQLite3MC (SQLite3 Multiple Ciphers)
-// =============================================================================
 
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'maki_finance.db'));
-
-    // Retrieve the database encryption key asynchronously from secure hardware storage (Keychain/Keystore)
-    final encryptionKey = await SecureKeyHelper.getOrCreateEncryptionKey();
-
-    return NativeDatabase.createInBackground(
-      file,
-      setup: (rawDb) {
-        // Execute PRAGMA key for SQLite3MC transparent database encryption.
-        rawDb.execute("PRAGMA key = '$encryptionKey';");
-      },
-    );
-  });
-}

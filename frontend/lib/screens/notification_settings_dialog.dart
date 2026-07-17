@@ -249,6 +249,7 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
                 children: [
                   Expanded(
                     child: DropdownButton<String>(
+                      isExpanded: true,
                       value: _selectedSimArm,
                       items: LintsBanditService.arms.map((arm) {
                         return DropdownMenuItem<String>(

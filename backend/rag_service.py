@@ -93,7 +93,7 @@ class RagService:
                 embeddings_list = []
                 for t in texts:
                     res = client.models.embed_content(
-                        model="text-embedding-004",
+                        model="gemini-embedding-2",
                         contents=t
                     )
                     if res.embeddings:
@@ -130,7 +130,7 @@ class RagService:
                     raise ImportError("google-generativeai package not available")
                 client = _genai.Client(api_key=self.api_key)
                 res = client.models.embed_content(
-                    model="text-embedding-004",
+                    model="gemini-embedding-2",
                     contents=user_query
                 )
                 if res.embeddings:
