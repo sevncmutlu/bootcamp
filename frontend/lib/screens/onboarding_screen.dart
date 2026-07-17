@@ -3,7 +3,7 @@ import 'package:maki_app/l10n/app_localizations.dart';
 
 /// Screen representing the user's initial onboarding questionnaire.
 class OnboardingScreen extends StatefulWidget {
-  final VoidCallback onCompleted;
+  final Function(String) onCompleted;
 
   const OnboardingScreen({super.key, required this.onCompleted});
 
@@ -135,7 +135,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const Spacer(),
               // Continue button
               ElevatedButton(
-                onPressed: _selectedGoalIndex != null ? widget.onCompleted : null,
+                onPressed: _selectedGoalIndex != null
+                    ? () {
+                        final goalsMapping = [
+                          'track_spending',
+                          'save_goal',
+                          'pay_debt',
+                          'learn_invest'
+                        ];
+                        widget.onCompleted(goalsMapping[_selectedGoalIndex!]);
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: theme.colorScheme.onPrimary,

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
@@ -86,11 +87,24 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
       
       final request = http.MultipartRequest('POST', uri);
       final byteData = await _selectedImage!.readAsBytes();
+      
+      String mimeType = 'image/jpeg';
+      final fileNameLower = _selectedImage!.name.toLowerCase();
+      if (fileNameLower.endsWith('.png')) {
+        mimeType = 'image/png';
+      } else if (fileNameLower.endsWith('.webp')) {
+        mimeType = 'image/webp';
+      } else if (fileNameLower.endsWith('.gif')) {
+        mimeType = 'image/gif';
+      }
+      final parts = mimeType.split('/');
+
       request.files.add(
         http.MultipartFile.fromBytes(
           'file',
           byteData,
           filename: _selectedImage!.name,
+          contentType: MediaType(parts[0], parts[1]),
         ),
       );
 

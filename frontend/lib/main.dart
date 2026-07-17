@@ -4,12 +4,11 @@ import 'package:maki_app/theme/app_theme.dart';
 import 'package:maki_app/screens/onboarding_screen.dart';
 import 'package:maki_app/screens/expense_entry_screen.dart';
 import 'package:maki_app/screens/chat_screen.dart';
-import 'package:maki_app/screens/forecast_screen.dart';
 import 'package:maki_app/screens/debt_simulator_screen.dart';
-import 'package:maki_app/screens/inflation_screen.dart';
 import 'package:maki_app/screens/forest_screen.dart';
 import 'package:maki_app/screens/paywall_screen.dart';
 import 'package:maki_app/services/premium_service.dart';
+import 'package:maki_app/screens/insights_screen.dart';
 import 'package:maki_app/services/onboarding_service.dart';
 
 void main() {
@@ -20,12 +19,17 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<MyApp> createState() => MyAppState();
+
+  static MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<MyAppState>();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   bool _hasCompletedOnboarding = false;
   bool _isLoading = true;
+  ThemeMode _themeMode = ThemeMode.system;
+  Locale? _locale;
 
   @override
   void initState() {
@@ -35,12 +39,46 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _checkOnboardingStatus() async {
     final completed = await OnboardingService.instance.hasCompletedOnboarding();
+    final themeStr = await OnboardingService.instance.getThemeMode();
+    final localeStr = await OnboardingService.instance.getAppLocale();
+
+    ThemeMode mode;
+    switch (themeStr) {
+      case 'light':
+        mode = ThemeMode.light;
+        break;
+      case 'dark':
+        mode = ThemeMode.dark;
+        break;
+      default:
+        mode = ThemeMode.system;
+    }
+
+    Locale? loc;
+    if (localeStr != null && localeStr.isNotEmpty) {
+      loc = Locale(localeStr);
+    }
+
     if (mounted) {
       setState(() {
         _hasCompletedOnboarding = completed;
+        _themeMode = mode;
+        _locale = loc;
         _isLoading = false;
       });
     }
+  }
+
+  void setThemeMode(ThemeMode mode) {
+    setState(() {
+      _themeMode = mode;
+    });
+  }
+
+  void setLocale(Locale? locale) {
+    setState(() {
+      _locale = locale;
+    });
   }
 
   @override
@@ -49,9 +87,10 @@ class _MyAppState extends State<MyApp> {
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: _locale,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: _themeMode,
       home: _isLoading
           ? const Scaffold(
               body: Center(
@@ -61,7 +100,8 @@ class _MyAppState extends State<MyApp> {
           : _hasCompletedOnboarding
               ? const MainNavigationScreen()
               : OnboardingScreen(
-                  onCompleted: () async {
+                  onCompleted: (selectedGoal) async {
+                    await OnboardingService.instance.setPrimaryGoal(selectedGoal);
                     await OnboardingService.instance.setCompletedOnboarding(true);
                     if (mounted) {
                       setState(() {
@@ -84,17 +124,25 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  final _screens = const [
-    ExpenseEntryScreen(),
-    ForecastScreen(),
-    InflationScreen(),
-    DebtSimulatorScreen(),
-    ForestScreen(),
-    ChatScreen(),
-  ];
+  final _insightsKey = GlobalKey<InsightsScreenState>();
+  final _forestKey = GlobalKey<ForestScreenState>();
+
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      const ExpenseEntryScreen(),
+      InsightsScreen(key: _insightsKey),
+      const DebtSimulatorScreen(),
+      ForestScreen(key: _forestKey),
+      const ChatScreen(),
+    ];
+  }
 
   /// The tab index corresponding to the AI Coach feature.
-  static const int _coachTabIndex = 5;
+  static const int _coachTabIndex = 4;
 
   /// Handles tab selection with a premium gate on the Coach tab.
   Future<void> _onTabSelected(int index) async {
@@ -113,6 +161,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       setState(() {
         _currentIndex = index;
       });
+      
+      // Auto-refresh tabs when selected to keep state in sync
+      if (index == 1) {
+        _insightsKey.currentState?.refresh();
+      } else if (index == 3) {
+        _forestKey.currentState?.refresh();
+      }
     }
   }
 
@@ -135,12 +190,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           NavigationDestination(
             icon: const Icon(Icons.analytics_outlined),
             selectedIcon: const Icon(Icons.analytics),
-            label: AppLocalizations.of(context)!.navForecast,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.trending_up_outlined),
-            selectedIcon: const Icon(Icons.trending_up),
-            label: AppLocalizations.of(context)!.navInflation,
+            label: AppLocalizations.of(context)!.navInsights,
           ),
           NavigationDestination(
             icon: const Icon(Icons.calculate_outlined),

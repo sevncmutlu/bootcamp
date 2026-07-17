@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 import uvicorn
@@ -41,10 +42,20 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Request/Response Models
 class ChatMessage(BaseModel):
     message: str
     history: Optional[List[dict]] = []
+    primary_goal: Optional[str] = None
+    locale: Optional[str] = None
 
 class TransactionItem(BaseModel):
     date: str # YYYY-MM-DD
@@ -74,9 +85,11 @@ def health_check():
 
 @app.post("/api/chat")
 async def chat_with_coach(payload: ChatMessage):
+    # Determine user language
+    is_turkish = (payload.locale == "tr") if payload.locale else any(word in payload.message.lower() for word in ["merhaba", "selam", "nasıl", "para", "borç", "bütçe", "harcama", "haftalık", "yönetimi", "rehberi", "sırları"])
+
     # Graceful mock fallback if API key is not configured locally
     if not GEMINI_API_KEY:
-        is_turkish = any(word in payload.message.lower() for word in ["merhaba", "selam", "nasıl", "para", "borç", "bütçe", "harcama", "haftalık", "yönetimi", "rehberi", "sırları"])
         if "weekly budget check-in" in payload.message.lower() or "haftalık analiz" in payload.message.lower():
             reply = "Welcome to your Weekly Budget Check-in! Let's start with Step 1: How did you feel about your spending this week? Did you stick to your goals?" if not is_turkish else "Haftalık Bütçe Değerlendirmenize Hoş Geldiniz! 1. Adım ile başlayalım: Bu haftaki harcamalarınız hakkında ne hissediyorsunuz? Hedeflerinize sadık kalabildiniz mi?"
         elif "debt optimization" in payload.message.lower() or "borç yönetimi" in payload.message.lower():
@@ -87,6 +100,17 @@ async def chat_with_coach(payload: ChatMessage):
             reply = "Here are 3 quick savings hacks:\n1. Audit subscription trials.\n2. Prep meals at home.\n3. Wait 48 hours before impulse buys." if not is_turkish else "İşte 3 hızlı tasarruf ipucu:\n1. Aboneliklerinizi gözden geçirin.\n2. Evde yemek hazırlayın.\n3. Ani alışverişlerden önce 48 saat bekleyin."
         else:
             reply = DEMO_CHAT_REPLY_TR if is_turkish else DEMO_CHAT_REPLY_EN
+            
+        # Customize mock reply based on goal
+        if payload.primary_goal == "learn_invest":
+            reply += " (Focus Tip: Since you want to learn to invest, try reading about compound interest and diversification!)" if not is_turkish else " (Odak İpucu: Yatırım yapmayı öğrenmek istediğiniz için, bileşik faiz ve çeşitlendirme konularını okumayı deneyin!)"
+        elif payload.primary_goal == "pay_debt":
+            reply += " (Focus Tip: Since you want to pay down debt, remember to track highest interest rates first!)" if not is_turkish else " (Odak İpucu: Borçlarınızı ödemek istediğiniz için, öncelikle en yüksek faiz oranlarını takip etmeyi unutmayın!)"
+        elif payload.primary_goal == "save_goal":
+            reply += " (Focus Tip: Since you want to save for a major goal, check out our savings challenge modules!)" if not is_turkish else " (Odak İpucu: Büyük bir hedef için tasarruf etmek istediğiniz için, tasarruf meydan okuma modüllerimizi inceleyin!)"
+        elif payload.primary_goal == "track_spending":
+            reply += " (Focus Tip: Since you want to track daily spending, make sure to categorize your expenses regularly!)" if not is_turkish else " (Odak İpucu: Günlük harcamalarınızı takip etmek istediğiniz için, harcamalarınızı düzenli olarak kategorize etmeyi unutmayın!)"
+
         return {"reply": reply, "sources": []}
 
     try:
@@ -109,12 +133,26 @@ async def chat_with_coach(payload: ChatMessage):
                 ))
         
         system_instruction = (
-            "You are Maki, a highly supportive, bilingual (English and Turkish) personal finance coach. "
+            "You are Maki, a highly supportive personal finance coach. "
+            f"You MUST write all your messages in {'Turkish' if is_turkish else 'English'}. "
             "Your goal is to help users build healthy money habits, track daily expenses, reduce debt, "
             "and make smart saving choices. Be warm, empathetic, and encouraging. Never be judgmental. "
-            "If the user asks questions in Turkish, reply in Turkish. If they ask in English, reply in English. "
             "Keep your answers concise, practical, and action-oriented. Try to format numbers nicely."
         )
+
+        if payload.primary_goal:
+            goal_guidance = ""
+            if payload.primary_goal == "track_spending":
+                goal_guidance = "\n\nThe user's primary goal is tracking daily spending. Proactively focus your coaching on expense categorization, budget limits, and identifying wasteful habits."
+            elif payload.primary_goal == "save_goal":
+                goal_guidance = "\n\nThe user's primary goal is saving for a major goal. Proactively focus your coaching on savings challenges, compound interest benefits, and building an emergency fund."
+            elif payload.primary_goal == "pay_debt":
+                goal_guidance = "\n\nThe user's primary goal is paying down existing debt. Proactively focus your coaching on debt reduction strategies, reducing interest expenses, and maintaining a debt repayment plan."
+            elif payload.primary_goal == "learn_invest":
+                goal_guidance = "\n\nThe user's primary goal is learning how to invest. Proactively focus your coaching on investment basics, asset allocation, diversification, and long-term wealth building."
+            
+            if goal_guidance:
+                system_instruction += goal_guidance
 
         # Structured Session Prompts (US-18)
         session_prefix = ""
@@ -190,9 +228,17 @@ class ReceiptResponse(BaseModel):
 
 @app.post("/api/ocr", response_model=ReceiptResponse)
 async def parse_receipt(file: UploadFile = File(...)):
-    # Validate file type
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Uploaded file must be an image.")
+    # Validate file type (handle web octet-stream fallbacks by inspecting extension)
+    content_type = file.content_type or ""
+    filename = file.filename or ""
+    is_image_mime = content_type.startswith("image/")
+    is_image_ext = filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.heic'))
+    
+    if not is_image_mime and not is_image_ext:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Uploaded file must be an image. Got content_type: {content_type}, filename: {filename}"
+        )
     
     contents = await file.read()
     

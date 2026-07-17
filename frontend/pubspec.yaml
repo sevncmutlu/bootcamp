@@ -24,6 +24,8 @@ dependencies:
   http: ^1.2.2
   fl_chart: ^0.70.2
   flutter_secure_storage: ^9.2.2
+  http_parser: ^4.1.0
+  flutter_markdown_plus: ^1.0.12
 
 dev_dependencies:
   flutter_test:

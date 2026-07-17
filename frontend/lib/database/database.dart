@@ -222,6 +222,16 @@ class AppDatabase extends _$AppDatabase {
       }
     }
   }
+
+  Future<void> clearAllData() async {
+    await transaction(() async {
+      await delete(expenses).go();
+      await delete(incomes).go();
+      await delete(userGamificationStates).go();
+      await delete(dailyChallenges).go();
+      await delete(notificationBanditStates).go();
+    });
+  }
 }
 
 

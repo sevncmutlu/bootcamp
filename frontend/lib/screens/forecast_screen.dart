@@ -7,13 +7,17 @@ import 'package:maki_app/config/api_config.dart';
 import 'dart:developer' as developer;
 
 class ForecastScreen extends StatefulWidget {
-  const ForecastScreen({super.key});
+  final bool showAppBar;
+  const ForecastScreen({super.key, this.showAppBar = true});
 
   @override
-  State<ForecastScreen> createState() => _ForecastScreenState();
+  State<ForecastScreen> createState() => ForecastScreenState();
 }
 
-class _ForecastScreenState extends State<ForecastScreen> {
+class ForecastScreenState extends State<ForecastScreen> {
+  void refresh() {
+    _fetchAndCalculateForecast();
+  }
   final _database = AppDatabase.instance;
   List<ForecastDay> _forecast = [];
   bool _isLoading = false;
@@ -26,8 +30,12 @@ class _ForecastScreenState extends State<ForecastScreen> {
   }
 
   Future<void> _fetchAndCalculateForecast() async {
+    if (_forecast.isEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
     setState(() {
-      _isLoading = true;
       _hasInsufficientHistory = false;
     });
 
@@ -91,36 +99,32 @@ class _ForecastScreenState extends State<ForecastScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: widget.showAppBar ? AppBar(
         title: Text(
           l10n.forecastTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_outlined),
-            onPressed: _fetchAndCalculateForecast,
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.forecastLoading,
-                    style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+      ) : null,
+      body: RefreshIndicator(
+        onRefresh: _fetchAndCalculateForecast,
+        child: _isLoading
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.forecastLoading,
+                      style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              )
+            : SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -245,6 +249,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
                 ],
               ),
             ),
+      ),
     );
   }
 }

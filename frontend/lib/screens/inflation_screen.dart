@@ -8,16 +8,77 @@ import 'package:maki_app/l10n/app_localizations.dart';
 import 'dart:developer' as developer;
 
 class InflationScreen extends StatefulWidget {
-  const InflationScreen({super.key});
+  final bool showAppBar;
+  const InflationScreen({super.key, this.showAppBar = true});
 
   @override
-  State<InflationScreen> createState() => _InflationScreenState();
+  State<InflationScreen> createState() => InflationScreenState();
 }
 
-class _InflationScreenState extends State<InflationScreen> {
+class InflationScreenState extends State<InflationScreen> {
+  void refresh() {
+    _fetchAndCalculateInflation();
+  }
+
+  String _formatPercent(double value, {int decimal = 2}) {
+    if (!mounted) return value.toStringAsFixed(decimal);
+    final isTr = Localizations.localeOf(context).languageCode == 'tr';
+    final valStr = value.toStringAsFixed(decimal);
+    return isTr ? '%$valStr' : '$valStr%';
+  }
+
+  IconData _getCategoryIcon(String category) {
+    switch (category.toLowerCase()) {
+      case 'market':
+      case 'alışveriş':
+        return Icons.shopping_cart_outlined;
+      case 'restaurant':
+      case 'yemek':
+        return Icons.restaurant_outlined;
+      case 'rent':
+      case 'kira':
+        return Icons.home_outlined;
+      case 'transport':
+      case 'ulaşım':
+        return Icons.directions_bus_outlined;
+      case 'fun':
+      case 'eğlence':
+        return Icons.sports_esports_outlined;
+      case 'bills':
+      case 'faturalar':
+        return Icons.receipt_long_outlined;
+      default:
+        return Icons.category_outlined;
+    }
+  }
+
+  Color _getCategoryColor(String category, ThemeData theme) {
+    switch (category.toLowerCase()) {
+      case 'market':
+      case 'alışveriş':
+        return Colors.teal;
+      case 'restaurant':
+      case 'yemek':
+        return Colors.orange;
+      case 'rent':
+      case 'kira':
+        return Colors.green;
+      case 'transport':
+      case 'ulaşım':
+        return Colors.blue;
+      case 'fun':
+      case 'eğlence':
+        return Colors.purple;
+      case 'bills':
+      case 'faturalar':
+        return Colors.red;
+      default:
+        return theme.colorScheme.primary;
+    }
+  }
+
   final _database = AppDatabase.instance;
   bool _isLoading = false;
-  
   double? _personalInflation;
   double? _officialInflation;
   List<CategoryBreakdown> _breakdowns = [];
@@ -29,9 +90,11 @@ class _InflationScreenState extends State<InflationScreen> {
   }
 
   Future<void> _fetchAndCalculateInflation() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (_breakdowns.isEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     try {
       final expenses = await _database.getAllExpenses();
@@ -84,36 +147,32 @@ class _InflationScreenState extends State<InflationScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: widget.showAppBar ? AppBar(
         title: Text(
           l10n.inflationTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_outlined),
-            onPressed: _fetchAndCalculateInflation,
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.loadingInflation,
-                    style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+      ) : null,
+      body: RefreshIndicator(
+        onRefresh: _fetchAndCalculateInflation,
+        child: _isLoading
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.loadingInflation,
+                      style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              )
+            : SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -148,7 +207,7 @@ class _InflationScreenState extends State<InflationScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    '%${_personalInflation!.toStringAsFixed(2)}',
+                                    _formatPercent(_personalInflation!),
                                     style: theme.textTheme.headlineMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: theme.colorScheme.primary,
@@ -176,7 +235,7 @@ class _InflationScreenState extends State<InflationScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    '%${_officialInflation!.toStringAsFixed(2)}',
+                                    _formatPercent(_officialInflation!),
                                     style: theme.textTheme.headlineMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: theme.colorScheme.onSurface,
@@ -206,7 +265,21 @@ class _InflationScreenState extends State<InflationScreen> {
                           BarChartData(
                             alignment: BarChartAlignment.spaceAround,
                             maxY: 100,
-                            barTouchData: BarTouchData(enabled: true),
+                            barTouchData: BarTouchData(
+                              enabled: true,
+                              touchTooltipData: BarTouchTooltipData(
+                                getTooltipColor: (group) => theme.colorScheme.surfaceContainer,
+                                getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                  final cat = _breakdowns[groupIndex].category;
+                                  final type = rodIndex == 0 ? l10n.personalWeight : l10n.officialWeight;
+                                  final val = _formatPercent(rod.toY, decimal: 1);
+                                  return BarTooltipItem(
+                                    '$cat\n$type: $val',
+                                    TextStyle(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold),
+                                  );
+                                },
+                              ),
+                            ),
                             titlesData: FlTitlesData(
                               show: true,
                               bottomTitles: AxisTitles(
@@ -215,17 +288,21 @@ class _InflationScreenState extends State<InflationScreen> {
                                   getTitlesWidget: (value, meta) {
                                     final index = value.toInt();
                                     if (index >= 0 && index < _breakdowns.length) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(top: 8.0),
-                                        child: Text(
-                                          _breakdowns[index].category.substring(0, 3),
-                                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                      return SideTitleWidget(
+                                        meta: meta,
+                                        space: 8,
+                                        child: Transform.rotate(
+                                          angle: -0.3,
+                                          child: Text(
+                                            _breakdowns[index].category,
+                                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                                          ),
                                         ),
                                       );
                                     }
                                     return const Text('');
                                   },
-                                  reservedSize: 28,
+                                  reservedSize: 38,
                                 ),
                               ),
                               leftTitles: const AxisTitles(
@@ -248,16 +325,17 @@ class _InflationScreenState extends State<InflationScreen> {
                                   BarChartRodData(
                                     toY: item.personalWeight,
                                     color: theme.colorScheme.primary,
-                                    width: 12,
+                                    width: 10,
                                     borderRadius: BorderRadius.circular(4.0),
                                   ),
                                   BarChartRodData(
                                     toY: item.officialWeight,
                                     color: Colors.grey.shade400,
-                                    width: 12,
+                                    width: 10,
                                     borderRadius: BorderRadius.circular(4.0),
                                   ),
                                 ],
+                                barsSpace: 4,
                               );
                             }),
                           ),
@@ -267,47 +345,135 @@ class _InflationScreenState extends State<InflationScreen> {
 
                     // Table Breakdown List
                     ..._breakdowns.map((item) {
+                      final catColor = _getCategoryColor(item.category, theme);
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12.0),
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item.category,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${l10n.personalWeight}: %${item.personalWeight.toStringAsFixed(1)} · ${l10n.officialWeight}: %${item.officialWeight.toStringAsFixed(1)}',
-                                        style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-                                      ),
-                                    ],
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            borderRadius: BorderRadius.circular(16.0),
+                            border: Border.all(
+                              color: theme.colorScheme.outline.withValues(alpha: 0.1),
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16.0),
+                            child: IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Container(
+                                    width: 6,
+                                    color: catColor,
                                   ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      '%${item.inflationRate.toStringAsFixed(1)}',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.primary,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      _getCategoryIcon(item.category),
+                                                      color: catColor,
+                                                      size: 20,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      item.category,
+                                                      style: theme.textTheme.titleMedium?.copyWith(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 12),
+                                                Row(
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          l10n.personalWeight,
+                                                          style: theme.textTheme.bodySmall?.copyWith(
+                                                            color: theme.colorScheme.onSurfaceVariant,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(height: 2),
+                                                        Text(
+                                                          _formatPercent(item.personalWeight, decimal: 1),
+                                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                                            fontWeight: FontWeight.bold,
+                                                            color: theme.colorScheme.primary,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(width: 24),
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          l10n.officialWeight,
+                                                          style: theme.textTheme.bodySmall?.copyWith(
+                                                            color: theme.colorScheme.onSurfaceVariant,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(height: 2),
+                                                        Text(
+                                                          _formatPercent(item.officialWeight, decimal: 1),
+                                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                                            fontWeight: FontWeight.bold,
+                                                            color: theme.colorScheme.onSurfaceVariant,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Container(
+                                            width: 1,
+                                            color: theme.colorScheme.outline.withValues(alpha: 0.15),
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                _formatPercent(item.inflationRate, decimal: 1),
+                                                style: theme.textTheme.titleLarge?.copyWith(
+                                                  color: catColor,
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 22,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                l10n.categoryInflationLabel.toUpperCase(),
+                                                style: theme.textTheme.bodySmall?.copyWith(
+                                                  color: theme.colorScheme.onSurfaceVariant,
+                                                  fontSize: 9,
+                                                  letterSpacing: 0.5,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Text(
-                                      l10n.categoryInflationLabel,
-                                      style: const TextStyle(fontSize: 11, color: Colors.grey),
-                                    )
-                                  ],
-                                )
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -317,6 +483,7 @@ class _InflationScreenState extends State<InflationScreen> {
                 ],
               ),
             ),
+      ),
     );
   }
 }

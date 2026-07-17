@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/services/gamification_service.dart';
-import 'package:maki_app/screens/notification_settings_dialog.dart';
 import 'package:maki_app/screens/leaderboard_screen.dart';
+import 'package:maki_app/screens/settings_screen.dart';
 
 class ForestScreen extends StatefulWidget {
   const ForestScreen({super.key});
 
   @override
-  State<ForestScreen> createState() => _ForestScreenState();
+  State<ForestScreen> createState() => ForestScreenState();
 }
 
-class _ForestScreenState extends State<ForestScreen> {
+class ForestScreenState extends State<ForestScreen> {
+  void refresh() {
+    _loadData();
+  }
   final _db = AppDatabase.instance;
   late final GamificationService _gamificationService;
 
@@ -174,23 +177,21 @@ class _ForestScreenState extends State<ForestScreen> {
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const NotificationSettingsDialog(),
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
               ).then((_) => _loadData());
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadData,
-          ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: RefreshIndicator(
+        onRefresh: _loadData,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // 1. Tree Growth Visualizer Card
               Container(
@@ -458,6 +459,7 @@ class _ForestScreenState extends State<ForestScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

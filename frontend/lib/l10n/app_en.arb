@@ -13,14 +13,12 @@
   "goalDebt": "Pay down existing debt",
   "goalInvest": "Learn to invest",
   "continueButton": "Continue",
-  
   "noExpenses": "No expenses tracked yet.",
   "labelTitle": "Title",
   "labelAmount": "Amount",
   "labelCategory": "Category",
   "labelDate": "Date",
   "saveExpense": "Save Expense",
-  
   "failedSelectImage": "Failed to select image: {error}",
   "@failedSelectImage": {
     "placeholders": {
@@ -29,7 +27,6 @@
       }
     }
   },
-  
   "errorParsingReceipt": "Error parsing receipt: {error}",
   "@errorParsingReceipt": {
     "placeholders": {
@@ -38,7 +35,6 @@
       }
     }
   },
-  
   "clearButton": "Clear",
   "parseReceipt": "Parse Receipt",
   "parsingStatus": "Maki is parsing your receipt...",
@@ -46,7 +42,6 @@
   "labelStoreName": "Store Name",
   "labelTotalAmount": "Total Amount",
   "addToExpenses": "Add to Expenses",
-  
   "chatError": "Sorry, I am having trouble connecting right now. Please try again.",
   "navExpenses": "Expenses",
   "navCoach": "Maki Coach",
@@ -231,5 +226,32 @@
   "sessionSavingsHack": "Savings Hack",
   "sessionHeader": "Coaching Modules",
   "feasibilityLabel": "Plan Feasibility Index",
-  "predictedByLgbm": "Plan feasibility index (predicted by LightGBM)"
+  "predictedByLgbm": "Plan feasibility index (predicted by LightGBM)",
+  "labelStrategy": "Payoff Strategy",
+  "validationTitle": "Please enter a title",
+  "validationAmount": "Please enter a valid amount greater than 0",
+  "validationCategory": "Please select a category",
+  "validationDebtName": "Please enter a debt name",
+  "validationDebtBalance": "Please enter a valid balance greater than 0",
+  "validationDebtRate": "Please enter a valid interest rate greater than or equal to 0",
+  "validationDebtMinPayment": "Please enter a valid minimum payment greater than 0 and less than or equal to the balance",
+  "settingsTitle": "Settings",
+  "settingsGoalTitle": "Primary Goal",
+  "settingsNotificationsTitle": "Alert Delivery",
+  "settingsNotificationsSubtitle": "Smart reminder hour customization",
+  "settingsProActive": "Pro subscription active",
+  "settingsProInactive": "Activate free trial features",
+  "settingsResetTitle": "Reset Application Data",
+  "settingsResetSubtitle": "Delete all expenses and start fresh",
+  "resetDataTitle": "Confirm Reset",
+  "resetDataConfirmation": "Are you sure you want to delete all transaction records and reset your goal? This action is permanent.",
+  "resetButtonLabel": "Reset Everything",
+  "navInsights": "Insights",
+  "settingsThemeTitle": "App Theme",
+  "settingsThemeSystem": "System Default",
+  "settingsThemeLight": "Light Mode",
+  "settingsThemeDark": "Dark Mode",
+  "settingsLanguageTitle": "Language",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageTurkish": "Türkçe"
 }

@@ -13,14 +13,12 @@
   "goalDebt": "Borçlarımı azaltmak/kapatmak",
   "goalInvest": "Yatırım yapmayı öğrenmek",
   "continueButton": "Devam Et",
-  
   "noExpenses": "Henüz harcama kaydedilmedi.",
   "labelTitle": "Başlık",
   "labelAmount": "Miktar",
   "labelCategory": "Kategori",
   "labelDate": "Tarih",
   "saveExpense": "Harcamayı Kaydet",
-  
   "failedSelectImage": "Resim seçilemedi: {error}",
   "@failedSelectImage": {
     "placeholders": {
@@ -29,7 +27,6 @@
       }
     }
   },
-  
   "errorParsingReceipt": "Fiş çözümlenirken hata oluştu: {error}",
   "@errorParsingReceipt": {
     "placeholders": {
@@ -38,7 +35,6 @@
       }
     }
   },
-  
   "clearButton": "Temizle",
   "parseReceipt": "Fişi Çözümle",
   "parsingStatus": "Maki fişinizi çözümlüyor...",
@@ -46,7 +42,6 @@
   "labelStoreName": "Mağaza Adı",
   "labelTotalAmount": "Toplam Tutar",
   "addToExpenses": "Harcamalara Ekle",
-  
   "chatError": "Üzgünüm, şu anda bağlantı sorunu yaşıyorum. Lütfen tekrar deneyin.",
   "navExpenses": "Harcamalar",
   "navCoach": "Maki Koçu",
@@ -231,5 +226,32 @@
   "sessionSavingsHack": "Tasarruf Sırları",
   "sessionHeader": "Koçluk Modülleri",
   "feasibilityLabel": "Plan Gerçekleşme Endeksi",
-  "predictedByLgbm": "Plan gerçekleşme olasılığı (LightGBM ile tahmin edilen)"
+  "predictedByLgbm": "Plan gerçekleşme olasılığı (LightGBM ile tahmin edilen)",
+  "labelStrategy": "Ödeme Stratejisi",
+  "validationTitle": "Lütfen bir başlık girin",
+  "validationAmount": "Lütfen 0'dan büyük geçerli bir tutar girin",
+  "validationCategory": "Lütfen bir kategori seçin",
+  "validationDebtName": "Lütfen borç adını girin",
+  "validationDebtBalance": "Lütfen 0'dan büyük geçerli bir bakiye girin",
+  "validationDebtRate": "Lütfen 0 veya daha büyük geçerli bir faiz oranı girin",
+  "validationDebtMinPayment": "Lütfen bakiyeden küçük veya eşit ve 0'dan büyük geçerli bir asgari ödeme girin",
+  "settingsTitle": "Ayarlar",
+  "settingsGoalTitle": "Ana Hedef",
+  "settingsNotificationsTitle": "Bildirim Zamanlaması",
+  "settingsNotificationsSubtitle": "Akıllı hatırlatıcı saati yapılandırması",
+  "settingsProActive": "Pro abonelik aktif",
+  "settingsProInactive": "Ücretsiz deneme özelliklerini aç",
+  "settingsResetTitle": "Uygulama Verilerini Sıfırla",
+  "settingsResetSubtitle": "Tüm harcamaları sil ve baştan başla",
+  "resetDataTitle": "Sıfırlamayı Onayla",
+  "resetDataConfirmation": "Tüm işlem kayıtlarını silmek ve hedefinizi sıfırlamak istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+  "resetButtonLabel": "Her Şeyi Sıfırla",
+  "navInsights": "Analizler",
+  "settingsThemeTitle": "Uygulama Teması",
+  "settingsThemeSystem": "Sistem Varsayılanı",
+  "settingsThemeLight": "Açık Tema",
+  "settingsThemeDark": "Koyu Tema",
+  "settingsLanguageTitle": "Dil",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageTurkish": "Türkçe"
 }

@@ -4,7 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/config/api_config.dart';
 import 'package:maki_app/utils/pii_scrubber.dart';
+import 'package:maki_app/services/onboarding_service.dart';
 import 'dart:developer' as developer;
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -57,12 +59,16 @@ class _ChatScreenState extends State<ChatScreen> {
               })
           .toList();
 
+      final localeCode = Localizations.localeOf(context).languageCode;
+      final goal = await OnboardingService.instance.getPrimaryGoal();
       final response = await http.post(
         uri,
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'message': scrubbedText,
           'history': history,
+          'primary_goal': goal,
+          'locale': localeCode,
         }),
       );
 
@@ -349,6 +355,13 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final textStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: message.isUser
+          ? theme.colorScheme.onPrimary
+          : message.isError
+              ? theme.colorScheme.onErrorContainer
+              : theme.colorScheme.onSurface,
+    ) ?? const TextStyle();
     
     return Align(
       alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -386,14 +399,11 @@ class MessageBubble extends StatelessWidget {
                     bottomRight: Radius.circular(message.isUser ? 0.0 : 16.0),
                   ),
                 ),
-                child: Text(
-                  message.text,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: message.isUser
-                        ? theme.colorScheme.onPrimary
-                        : message.isError
-                            ? theme.colorScheme.onErrorContainer
-                            : theme.colorScheme.onSurface,
+                child: MarkdownBody(
+                  data: message.text,
+                  styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                    p: textStyle,
+                    strong: textStyle.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),

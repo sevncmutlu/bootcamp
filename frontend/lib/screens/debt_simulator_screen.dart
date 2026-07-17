@@ -31,6 +31,7 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
     final balanceController = TextEditingController();
     final rateController = TextEditingController();
     final minPayController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
 
     showModalBottomSheet(
       context: context,
@@ -50,73 +51,130 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
             top: 24.0,
             bottom: MediaQuery.of(context).viewInsets.bottom + 24.0,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                l10n.addDebt,
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(labelText: l10n.debtName),
-                textCapitalization: TextCapitalization.words,
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: balanceController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: l10n.debtBalance),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: rateController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: l10n.interestRate),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: minPayController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: l10n.minPayment),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  final name = nameController.text.trim();
-                  final balance = double.tryParse(balanceController.text.trim()) ?? 0.0;
-                  final rate = double.tryParse(rateController.text.trim()) ?? 0.0;
-                  final minPay = double.tryParse(minPayController.text.trim()) ?? 0.0;
-
-                  if (name.isNotEmpty && balance > 0 && rate >= 0 && minPay > 0) {
-                    setState(() {
-                      _debts.add(DebtModel(
-                        name: name,
-                        balance: balance,
-                        interestRate: rate,
-                        minPayment: minPay,
-                      ));
-                    });
-                    Navigator.pop(context);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
+          child: Form(
+            key: formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l10n.addDebt,
+                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  l10n.addDebt,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: l10n.debtName,
+                      errorMaxLines: 3,
+                    ),
+                    textCapitalization: TextCapitalization.words,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.validationDebtName;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: balanceController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      labelText: l10n.debtBalance,
+                      errorMaxLines: 3,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.validationDebtBalance;
+                      }
+                      final parsed = double.tryParse(value.trim());
+                      if (parsed == null || parsed <= 0) {
+                        return l10n.validationDebtBalance;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: rateController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      labelText: l10n.interestRate,
+                      errorMaxLines: 3,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.validationDebtRate;
+                      }
+                      final parsed = double.tryParse(value.trim());
+                      if (parsed == null || parsed < 0) {
+                        return l10n.validationDebtRate;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: minPayController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      labelText: l10n.minPayment,
+                      errorMaxLines: 3,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.validationDebtMinPayment;
+                      }
+                      final parsed = double.tryParse(value.trim());
+                      if (parsed == null || parsed <= 0) {
+                        return l10n.validationDebtMinPayment;
+                      }
+                      final balanceVal = double.tryParse(balanceController.text.trim()) ?? 0.0;
+                      if (parsed > balanceVal) {
+                        return l10n.validationDebtMinPayment;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        final name = nameController.text.trim();
+                        final balance = double.tryParse(balanceController.text.trim()) ?? 0.0;
+                        final rate = double.tryParse(rateController.text.trim()) ?? 0.0;
+                        final minPay = double.tryParse(minPayController.text.trim()) ?? 0.0;
+
+                        setState(() {
+                          _debts.add(DebtModel(
+                            name: name,
+                            balance: balance,
+                            interestRate: rate,
+                            minPayment: minPay,
+                          ));
+                        });
+                        Navigator.pop(context);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      l10n.addDebt,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },
@@ -232,7 +290,7 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                     DropdownButtonFormField<String>(
                       initialValue: _selectedStrategy,
                       decoration: InputDecoration(
-                        labelText: l10n.labelCategory, // maps category dropdown labels
+                        labelText: l10n.labelStrategy,
                         prefixIcon: const Icon(Icons.insights_outlined),
                       ),
                       items: [
