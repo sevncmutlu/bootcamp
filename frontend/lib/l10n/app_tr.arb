@@ -141,6 +141,25 @@
       }
     }
   },
+  "leaderboardTitle": "Tasarruf Liderlik Tablosu",
+  "leaderboardYou": "Siz (Anonim)",
+  "leaderboardAnonymous": "Anonim Tasarruf Sahibi",
+  "leaderboardPercentile": "En İyi %{percent}",
+  "@leaderboardPercentile": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "leaderboardTrees": "{count} ağaç",
+  "@leaderboardTrees": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "challengeCookHome": "Evde Yemek Yap",
   "challengeCookHomeDesc": "Bugün restoran harcamalarını 0 TL tutun.",
   "challengeLogThree": "3 İşlem Kaydet",
@@ -205,5 +224,12 @@
         "type": "int"
       }
     }
-  }
+  },
+  "sessionWeeklyCheckin": "Haftalık Analiz",
+  "sessionDebtStrategy": "Borç Yönetimi",
+  "sessionInflationGuide": "Enflasyon Rehberi",
+  "sessionSavingsHack": "Tasarruf Sırları",
+  "sessionHeader": "Koçluk Modülleri",
+  "feasibilityLabel": "Plan Gerçekleşme Endeksi",
+  "predictedByLgbm": "Plan gerçekleşme olasılığı (LightGBM ile tahmin edilen)"
 }

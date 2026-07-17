@@ -23,6 +23,7 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
   // Results fields
   int? _monthsToFree;
   double? _totalInterestPaid;
+  double? _successProbability;
   List<PayoffMonth> _schedule = [];
 
   void _addDebtDialog() {
@@ -132,6 +133,7 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
       _isLoading = true;
       _monthsToFree = null;
       _totalInterestPaid = null;
+      _successProbability = null;
       _schedule = [];
     });
 
@@ -162,6 +164,7 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
         setState(() {
           _monthsToFree = data['months_to_debt_free'] ?? 0;
           _totalInterestPaid = (data['total_interest_paid'] ?? 0.0).toDouble();
+          _successProbability = (data['repayment_success_probability'] ?? 0.0).toDouble();
           _schedule = scheduleRaw.map((item) => PayoffMonth.fromJson(item)).toList();
         });
       } else {
@@ -405,6 +408,65 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
+              if (_successProbability != null)
+                Card(
+                  color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.25),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.psychology_outlined,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.feasibilityLabel,
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${(_successProbability! * 100).toStringAsFixed(1)}%',
+                                style: theme.textTheme.headlineMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.predictedByLgbm,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               const SizedBox(height: 20),
 
               // Payoff monthly schedule timeline

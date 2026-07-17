@@ -3,6 +3,7 @@ import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/services/gamification_service.dart';
 import 'package:maki_app/screens/notification_settings_dialog.dart';
+import 'package:maki_app/screens/leaderboard_screen.dart';
 
 class ForestScreen extends StatefulWidget {
   const ForestScreen({super.key});
@@ -381,61 +382,74 @@ class _ForestScreenState extends State<ForestScreen> {
               const SizedBox(height: 16),
 
               // 3. Weekly Saver Leaderboard Card (US-24)
-              Card(
-                elevation: 0,
-                color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                  side: BorderSide(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LeaderboardScreen(
+                        userPercentile: _saverPercentile,
+                        userLevel: level,
+                      ),
+                    ),
+                  ).then((_) => _loadData());
+                },
+                child: Card(
+                  elevation: 0,
+                  color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    side: BorderSide(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.leaderboard_outlined,
+                            color: theme.colorScheme.primary,
+                            size: 28,
+                          ),
                         ),
-                        child: Icon(
-                          Icons.leaderboard_outlined,
-                          color: theme.colorScheme.primary,
-                          size: 28,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.leaderboardHeader,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                l10n.leaderboardRankText(_saverPercentile),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurface,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.leaderboardSubtitle,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.leaderboardHeader,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              l10n.leaderboardRankText(_saverPercentile),
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurface,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              l10n.leaderboardSubtitle,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

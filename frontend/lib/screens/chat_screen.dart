@@ -104,6 +104,37 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  Widget _buildSessionChip(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required String triggerMsg,
+  }) {
+    final theme = Theme.of(context);
+    return ActionChip(
+      onPressed: _isLoading
+          ? null
+          : () {
+              _messageController.text = triggerMsg;
+              _sendMessage();
+            },
+      avatar: Icon(icon, size: 16, color: theme.colorScheme.primary),
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: theme.colorScheme.primary,
+        ),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
+      backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.05),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -174,6 +205,59 @@ class _ChatScreenState extends State<ChatScreen> {
                   ],
                 ),
               ),
+            ),
+          ),
+
+          // Coaching Modules Header & Row (US-18)
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.sessionHeader,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 40,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      _buildSessionChip(
+                        context,
+                        label: l10n.sessionWeeklyCheckin,
+                        icon: Icons.calendar_today_outlined,
+                        triggerMsg: "[Session: Weekly Budget Check-in]",
+                      ),
+                      const SizedBox(width: 8),
+                      _buildSessionChip(
+                        context,
+                        label: l10n.sessionDebtStrategy,
+                        icon: Icons.calculate_outlined,
+                        triggerMsg: "[Session: Debt Optimization]",
+                      ),
+                      const SizedBox(width: 8),
+                      _buildSessionChip(
+                        context,
+                        label: l10n.sessionInflationGuide,
+                        icon: Icons.trending_up_outlined,
+                        triggerMsg: "[Session: Inflation Impact]",
+                      ),
+                      const SizedBox(width: 8),
+                      _buildSessionChip(
+                        context,
+                        label: l10n.sessionSavingsHack,
+                        icon: Icons.savings_outlined,
+                        triggerMsg: "[Session: Savings Hack]",
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
 

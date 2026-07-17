@@ -10,6 +10,7 @@ import 'package:maki_app/screens/inflation_screen.dart';
 import 'package:maki_app/screens/forest_screen.dart';
 import 'package:maki_app/screens/paywall_screen.dart';
 import 'package:maki_app/services/premium_service.dart';
+import 'package:maki_app/services/onboarding_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,6 +25,23 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _hasCompletedOnboarding = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+  }
+
+  Future<void> _checkOnboardingStatus() async {
+    final completed = await OnboardingService.instance.hasCompletedOnboarding();
+    if (mounted) {
+      setState(() {
+        _hasCompletedOnboarding = completed;
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +52,24 @@ class _MyAppState extends State<MyApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: _hasCompletedOnboarding
-          ? const MainNavigationScreen()
-          : OnboardingScreen(
-              onCompleted: () {
-                setState(() {
-                  _hasCompletedOnboarding = true;
-                });
-              },
-            ),
+      home: _isLoading
+          ? const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : _hasCompletedOnboarding
+              ? const MainNavigationScreen()
+              : OnboardingScreen(
+                  onCompleted: () async {
+                    await OnboardingService.instance.setCompletedOnboarding(true);
+                    if (mounted) {
+                      setState(() {
+                        _hasCompletedOnboarding = true;
+                      });
+                    }
+                  },
+                ),
     );
   }
 }

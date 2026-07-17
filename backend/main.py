@@ -13,6 +13,7 @@ from mocks import DEMO_CHAT_REPLY_TR, DEMO_CHAT_REPLY_EN, DEMO_RECEIPT_DATA
 from rag_service import rag_service
 import pandas as pd
 from prophet import Prophet
+from debt_model import debt_predictor
 
 # Configure structured application logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -27,6 +28,10 @@ async def lifespan(app: FastAPI):
     # Load and index live economic data on app startup
     logger.info("Initializing RAG vector store on startup...")
     await rag_service.initialize()
+    
+    # Train the LightGBM model for debt payoff prediction
+    logger.info("Initializing LightGBM debt model...")
+    debt_predictor.train_model()
     yield
 
 app = FastAPI(
@@ -71,8 +76,17 @@ def health_check():
 async def chat_with_coach(payload: ChatMessage):
     # Graceful mock fallback if API key is not configured locally
     if not GEMINI_API_KEY:
-        is_turkish = any(word in payload.message.lower() for word in ["merhaba", "selam", "nasıl", "para", "borç", "bütçe", "harcama"])
-        reply = DEMO_CHAT_REPLY_TR if is_turkish else DEMO_CHAT_REPLY_EN
+        is_turkish = any(word in payload.message.lower() for word in ["merhaba", "selam", "nasıl", "para", "borç", "bütçe", "harcama", "haftalık", "yönetimi", "rehberi", "sırları"])
+        if "weekly budget check-in" in payload.message.lower() or "haftalık analiz" in payload.message.lower():
+            reply = "Welcome to your Weekly Budget Check-in! Let's start with Step 1: How did you feel about your spending this week? Did you stick to your goals?" if not is_turkish else "Haftalık Bütçe Değerlendirmenize Hoş Geldiniz! 1. Adım ile başlayalım: Bu haftaki harcamalarınız hakkında ne hissediyorsunuz? Hedeflerinize sadık kalabildiniz mi?"
+        elif "debt optimization" in payload.message.lower() or "borç yönetimi" in payload.message.lower():
+            reply = "Let's optimize your debts! Would you prefer the Avalanche strategy (paying highest interest rate first to save money) or the Snowball strategy (paying smallest balances first for quick motivation)?" if not is_turkish else "Borçlarınızı optimize edelim! Çığ stratejisini mi (en yüksek faiz oranına sahip borcu önce ödemek) yoksa Kar Topu stratejisini mi (küçük bakiyeleri önce ödeyerek hızlı motivasyon kazanmak) tercih edersiniz?"
+        elif "inflation impact" in payload.message.lower() or "enflasyon rehberi" in payload.message.lower():
+            reply = "Turkey's current annual inflation rate is 38.21%. Which spending category (e.g. Market, Rent, Restaurants) do you feel is rising fastest in your personal budget?" if not is_turkish else "Türkiye'nin güncel yıllık enflasyon oranı %38.21'dir. Kişisel bütçenizde hangi harcama kategorisinin (örneğin Market, Kira, Restoran) en hızlı yükseldiğini hissediyorsunuz?"
+        elif "savings hack" in payload.message.lower() or "tasarruf sırları" in payload.message.lower():
+            reply = "Here are 3 quick savings hacks:\n1. Audit subscription trials.\n2. Prep meals at home.\n3. Wait 48 hours before impulse buys." if not is_turkish else "İşte 3 hızlı tasarruf ipucu:\n1. Aboneliklerinizi gözden geçirin.\n2. Evde yemek hazırlayın.\n3. Ani alışverişlerden önce 48 saat bekleyin."
+        else:
+            reply = DEMO_CHAT_REPLY_TR if is_turkish else DEMO_CHAT_REPLY_EN
         return {"reply": reply, "sources": []}
 
     try:
@@ -101,6 +115,39 @@ async def chat_with_coach(payload: ChatMessage):
             "If the user asks questions in Turkish, reply in Turkish. If they ask in English, reply in English. "
             "Keep your answers concise, practical, and action-oriented. Try to format numbers nicely."
         )
+
+        # Structured Session Prompts (US-18)
+        session_prefix = ""
+        user_message_lower = payload.message.lower()
+        if "weekly budget check-in" in user_message_lower or "haftalık analiz" in user_message_lower:
+            session_prefix = (
+                "\n\n[STRUCTURED SESSION: Weekly Budget Check-in]\n"
+                "Guide the user through a structured 3-step check-in:\n"
+                "1. Ask them how their spending felt this week (warmly).\n"
+                "2. Help them identify one unnecessary expense they can cut.\n"
+                "3. Challenge them to set a small savings goal for next week.\n"
+                "Respond by starting Step 1 in a friendly manner. Keep your response very brief."
+            )
+        elif "debt optimization" in user_message_lower or "borç yönetimi" in user_message_lower:
+            session_prefix = (
+                "\n\n[STRUCTURED SESSION: Debt Optimization]\n"
+                "Help the user understand debt payoff strategy. Explain Snowball and Avalanche options simply. "
+                "Ask them if they want to prioritize highest interest rates or smallest balances to get started. Keep it brief."
+            )
+        elif "inflation impact" in user_message_lower or "enflasyon rehberi" in user_message_lower:
+            session_prefix = (
+                "\n\n[STRUCTURED SESSION: Inflation Impact]\n"
+                "Discuss Turkey's current inflation environment (headline 38.21% in June 2026). "
+                "Ask the user which category (e.g. Market, Rent, Restaurants) they feel is rising fastest for them. Keep it brief."
+            )
+        elif "savings hack" in user_message_lower or "tasarruf sırları" in user_message_lower:
+            session_prefix = (
+                "\n\n[STRUCTURED SESSION: Savings Hack]\n"
+                "Provide the user with exactly three highly actionable savings hacks they can try today. Keep it short and bulleted."
+            )
+
+        if session_prefix:
+            system_instruction += session_prefix
 
         if rag_context:
             system_instruction += (
@@ -280,12 +327,13 @@ class DebtSimulationResponse(BaseModel):
     months_to_debt_free: int
     total_interest_paid: float
     payoff_schedule: List[DebtMonthSchedule]
+    repayment_success_probability: float
 
 @app.post("/api/debt-simulator", response_model=DebtSimulationResponse)
 async def simulate_debt_payoff(payload: DebtSimulationRequest):
     # Graceful exit if no debts are submitted
     if not payload.debts:
-        return DebtSimulationResponse(months_to_debt_free=0, total_interest_paid=0.0, payoff_schedule=[])
+        return DebtSimulationResponse(months_to_debt_free=0, total_interest_paid=0.0, payoff_schedule=[], repayment_success_probability=1.0)
 
     try:
         # Clone input models to dictionaries to iterate calculations
@@ -356,10 +404,27 @@ async def simulate_debt_payoff(payload: DebtSimulationRequest):
                 remaining_balance=round(current_total_balance, 2)
             ))
 
+        # Calculate LightGBM success probability
+        total_balance = sum(d.balance for d in payload.debts)
+        avg_interest_rate = (
+            sum(d.interest_rate * d.balance for d in payload.debts) / total_balance 
+            if total_balance > 0 else 0.0
+        )
+        total_min_payment = sum(d.min_payment for d in payload.debts)
+
+        repayment_success_probability = debt_predictor.predict_success_probability(
+            total_balance=total_balance,
+            avg_interest_rate=avg_interest_rate,
+            monthly_budget=payload.monthly_budget,
+            total_min_payment=total_min_payment,
+            strategy=payload.strategy
+        )
+
         return DebtSimulationResponse(
             months_to_debt_free=months,
             total_interest_paid=round(total_interest_paid, 2),
-            payoff_schedule=schedule
+            payoff_schedule=schedule,
+            repayment_success_probability=round(repayment_success_probability, 4)
         )
 
     except HTTPException:

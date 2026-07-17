@@ -141,6 +141,25 @@
       }
     }
   },
+  "leaderboardTitle": "Saver Leaderboard",
+  "leaderboardYou": "You (Anonymous)",
+  "leaderboardAnonymous": "Anonymous Saver",
+  "leaderboardPercentile": "Top {percent}%",
+  "@leaderboardPercentile": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "leaderboardTrees": "{count} trees",
+  "@leaderboardTrees": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "challengeCookHome": "Cook at Home",
   "challengeCookHomeDesc": "Keep restaurant expenses to 0 TL today.",
   "challengeLogThree": "Log 3 Transactions",
@@ -205,5 +224,12 @@
         "type": "int"
       }
     }
-  }
+  },
+  "sessionWeeklyCheckin": "Weekly Check-in",
+  "sessionDebtStrategy": "Debt Strategy",
+  "sessionInflationGuide": "Inflation Guide",
+  "sessionSavingsHack": "Savings Hack",
+  "sessionHeader": "Coaching Modules",
+  "feasibilityLabel": "Plan Feasibility Index",
+  "predictedByLgbm": "Plan feasibility index (predicted by LightGBM)"
 }

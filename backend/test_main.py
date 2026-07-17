@@ -58,6 +58,7 @@ def test_debt_simulator():
     data = response.json()
     assert "months_to_debt_free" in data
     assert "total_interest_paid" in data
+    assert "repayment_success_probability" in data
     assert len(data["payoff_schedule"]) > 0
 
 def test_inflation_comparison():
