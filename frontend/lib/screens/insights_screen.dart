@@ -10,7 +10,8 @@ class InsightsScreen extends StatefulWidget {
   State<InsightsScreen> createState() => InsightsScreenState();
 }
 
-class InsightsScreenState extends State<InsightsScreen> with SingleTickerProviderStateMixin {
+class InsightsScreenState extends State<InsightsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _forecastKey = GlobalKey<ForecastScreenState>();
   final _inflationKey = GlobalKey<InflationScreenState>();

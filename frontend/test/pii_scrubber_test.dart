@@ -2,29 +2,32 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:maki_app/utils/pii_scrubber.dart';
 
 void main() {
-  group('PiiScrubber Tests', () {
-    test('should scrub emails', () {
-      const input = 'My email is user@example.com, send updates there.';
+  group('Kişisel veri temizleme', () {
+    test('e-posta adreslerini temizler', () {
+      const input = 'E-postam user@example.com, güncellemeleri buraya gönder.';
       final output = PiiScrubber.scrub(input);
-      expect(output, equals('My email is [EMAIL], send updates there.'));
+      expect(output, equals('E-postam [EMAIL], güncellemeleri buraya gönder.'));
     });
 
-    test('should scrub Turkish IBANs', () {
-      const input = 'Please transfer money to TR56 0006 2000 0001 2098 7654 32';
+    test('Türk IBAN numaralarını temizler', () {
+      const input = 'TR56 0006 2000 0001 2098 7654 32 hesabına aktar.';
       final output = PiiScrubber.scrub(input);
-      expect(output, equals('Please transfer money to [IBAN]'));
+      expect(output, equals('[IBAN] hesabına aktar.'));
     });
 
-    test('should scrub credit card numbers', () {
-      const input = 'My card number is 4111 2222 3333 4444.';
+    test('kredi kartı numaralarını temizler', () {
+      const input = 'Kart numaram 4111 2222 3333 4444.';
       final output = PiiScrubber.scrub(input);
-      expect(output, equals('My card number is [CARD_NUMBER].'));
+      expect(output, equals('Kart numaram [CARD_NUMBER].'));
     });
 
-    test('should scrub Turkish phone numbers', () {
-      const input = 'Reach me at 0532 123 45 67 or +905321234567';
+    test('Türk telefon numaralarını temizler', () {
+      const input = '0532 123 45 67 veya +905321234567 numarasından ara.';
       final output = PiiScrubber.scrub(input);
-      expect(output, equals('Reach me at [PHONE_NUMBER] or [PHONE_NUMBER]'));
+      expect(
+        output,
+        equals('[PHONE_NUMBER] veya [PHONE_NUMBER] numarasından ara.'),
+      );
     });
   });
 }

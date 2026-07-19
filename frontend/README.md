@@ -1,16 +1,44 @@
-# maki_app
+# Maki mobil
 
-A new Flutter project.
+Maki'nin Flutter tabanlı Android ve iOS uygulamasıdır. Web hedefi Sprint 2'de
+kaldırılmıştır.
 
-## Getting Started
+## Ürün ilkeleri
 
-This project is a starting point for a Flutter application.
+- Kullanıcı metinleri, doğrulamalar ve hata mesajları Türkçedir.
+- Finans verileri varsayılan olarak cihazda kalır.
+- Para hesapları finans çekirdeğindeki deterministik modellerle yapılır.
+- Release yapısı HTTPS ve dışarıdan sağlanan backend adresi gerektirir.
+- Ekranlar küçük cihaz, koyu tema ve azaltılmış hareket tercihleriyle uyumludur.
+- Görsel kurallar [MakiKoç mobil tasarım sisteminde](../design-system/makiko/TASARIM-SISTEMI.md)
+  tanımlanır.
 
-A few resources to get you started if this is your first Flutter project:
+## Yerel doğrulama
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```powershell
+flutter pub get --enforce-lockfile
+flutter gen-l10n
+dart run build_runner build
+flutter analyze --fatal-infos --fatal-warnings
+flutter test
+flutter build apk --debug
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Yerel backend'e bağlı debug APK:
+
+```powershell
+flutter build apk --debug --dart-define=BACKEND_URL=http://127.0.0.1:8000
+```
+
+Fiziksel Android cihazında:
+
+```powershell
+adb reverse tcp:8000 tcp:8000
+adb install -r build\app\outputs\flutter-apk\app-debug.apk
+```
+
+## Sürüm sınırları
+
+Android üretim imzası, gerçek paket/mağaza kaydı, canlı satın alma sağlayıcısı,
+iOS imzası ve App Store profilleri Sprint 3/MVP kapsamındadır. Depoya imzalama
+anahtarı veya canlı erişim belirteci eklenmez.

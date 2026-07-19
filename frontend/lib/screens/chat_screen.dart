@@ -1,12 +1,12 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/config/api_config.dart';
-import 'package:maki_app/utils/pii_scrubber.dart';
-import 'package:maki_app/services/onboarding_service.dart';
 import 'dart:developer' as developer;
+
+import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/services/maki_api_client.dart';
+import 'package:maki_app/utils/pii_scrubber.dart';
+import 'package:maki_app/widgets/mascot.dart';
+import 'package:maki_app/widgets/source_card.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -18,14 +18,14 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  
+  final _sessionId = newSessionId();
+
   final List<ChatMessage> _messages = [];
   bool _isLoading = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Load localized initial welcome message if list is empty
     if (_messages.isEmpty) {
       final welcome = AppLocalizations.of(context)!.welcomeMessage;
       _messages.add(ChatMessage(text: welcome, isUser: false));
@@ -44,57 +44,43 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
 
     try {
-      final uri = Uri.parse('${ApiConfig.baseUrl}/api/chat');
-
       final scrubbedText = PiiScrubber.scrub(text);
-
-      // Map chat messages to history format expected by backend
-      // Filter out initial welcome message and structure as [{'role': 'user'|'model', 'text': '...'}]
-      final history = _messages
-          .skip(1) // skip welcome message
-          .take(_messages.length - 2) // skip the message we just added
-          .map((m) => {
-                'role': m.isUser ? 'user' : 'model',
-                'text': PiiScrubber.scrub(m.text),
-              })
-          .toList();
-
-      final localeCode = Localizations.localeOf(context).languageCode;
-      final goal = await OnboardingService.instance.getPrimaryGoal();
-      final response = await http.post(
-        uri,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'message': scrubbedText,
-          'history': history,
-          'primary_goal': goal,
-          'locale': localeCode,
-        }),
+      final reply = await MakiApi.instance.askCoach(
+        question: scrubbedText,
+        sessionId: _sessionId,
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(utf8.decode(response.bodyBytes));
-        final reply = data['reply'] ?? '';
+      if (mounted) {
         setState(() {
-          _messages.add(ChatMessage(text: reply, isUser: false));
+          _messages.add(
+            ChatMessage(
+              text: reply.answer,
+              isUser: false,
+              sources: reply.sources,
+            ),
+          );
         });
-      } else {
-        throw Exception('Status code: ${response.statusCode}');
       }
-    } catch (e) {
-      developer.log('Error in Maki AI Coach conversation', error: e, name: 'ChatScreen');
+    } on MakiApiException catch (error, stackTrace) {
+      developer.log(
+        'Maki koç isteği tamamlanamadı.',
+        error: error.code,
+        stackTrace: stackTrace,
+        name: 'ChatScreen',
+      );
+      if (!mounted) return;
       setState(() {
-        _messages.add(ChatMessage(
-          text: AppLocalizations.of(context)!.chatError,
-          isUser: false,
-          isError: true,
-        ));
+        _messages.add(
+          ChatMessage(text: error.userMessage, isUser: false, isError: true),
+        );
       });
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
-      _scrollToBottom();
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        _scrollToBottom();
+      }
     }
   }
 
@@ -133,9 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
           color: theme.colorScheme.primary,
         ),
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
       backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.05),
     );
@@ -151,7 +135,7 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.spa_outlined, color: theme.colorScheme.primary),
+            const Mascot.avatar(pose: MascotPose.happy, size: 28),
             const SizedBox(width: 8),
             Text(
               l10n.navCoach,
@@ -163,11 +147,12 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-          // Privacy Info Card
           Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 12.0),
             child: Card(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.3,
+              ),
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -214,7 +199,6 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
 
-          // Coaching Modules Header & Row (US-18)
           Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 12.0),
             child: Column(
@@ -237,28 +221,30 @@ class _ChatScreenState extends State<ChatScreen> {
                         context,
                         label: l10n.sessionWeeklyCheckin,
                         icon: Icons.calendar_today_outlined,
-                        triggerMsg: "[Session: Weekly Budget Check-in]",
+                        triggerMsg:
+                            "Haftalık bütçemi birlikte değerlendirelim.",
                       ),
                       const SizedBox(width: 8),
                       _buildSessionChip(
                         context,
                         label: l10n.sessionDebtStrategy,
                         icon: Icons.calculate_outlined,
-                        triggerMsg: "[Session: Debt Optimization]",
+                        triggerMsg:
+                            "Borçlarım için bir ödeme planı oluşturalım.",
                       ),
                       const SizedBox(width: 8),
                       _buildSessionChip(
                         context,
                         label: l10n.sessionInflationGuide,
                         icon: Icons.trending_up_outlined,
-                        triggerMsg: "[Session: Inflation Impact]",
+                        triggerMsg: "Enflasyonun bütçeme etkisini inceleyelim.",
                       ),
                       const SizedBox(width: 8),
                       _buildSessionChip(
                         context,
                         label: l10n.sessionSavingsHack,
                         icon: Icons.savings_outlined,
-                        triggerMsg: "[Session: Savings Hack]",
+                        triggerMsg: "Bütçeme uygun bir tasarruf önerisi ver.",
                       ),
                     ],
                   ),
@@ -267,7 +253,6 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
 
-          // Chat message list
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -277,16 +262,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (index == _messages.length) {
                   return const LoadingBubble();
                 }
-                
+
                 final msg = _messages[index];
                 return MessageBubble(message: msg);
               },
             ),
           ),
-          
-          // Input row
+
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
+            ),
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               border: Border(
@@ -304,14 +291,18 @@ class _ChatScreenState extends State<ChatScreen> {
                       decoration: InputDecoration(
                         hintText: l10n.chatPlaceholder,
                         hintStyle: TextStyle(
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(28.0),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                        fillColor: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.05,
+                        ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20.0,
                           vertical: 12.0,
@@ -323,10 +314,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    onPressed: _sendMessage,
+                    onPressed: _isLoading ? null : _sendMessage,
                     icon: Icon(
                       Icons.send_rounded,
-                      color: theme.colorScheme.primary,
+                      color: _isLoading
+                          ? theme.colorScheme.onSurface.withValues(alpha: 0.3)
+                          : theme.colorScheme.primary,
                     ),
                   ),
                 ],
@@ -343,8 +336,14 @@ class ChatMessage {
   final String text;
   final bool isUser;
   final bool isError;
+  final List<CoachSource> sources;
 
-  ChatMessage({required this.text, required this.isUser, this.isError = false});
+  ChatMessage({
+    required this.text,
+    required this.isUser,
+    this.isError = false,
+    this.sources = const <CoachSource>[],
+  });
 }
 
 class MessageBubble extends StatelessWidget {
@@ -355,60 +354,93 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textStyle = theme.textTheme.bodyMedium?.copyWith(
-      color: message.isUser
-          ? theme.colorScheme.onPrimary
-          : message.isError
+    final textStyle =
+        theme.textTheme.bodyMedium?.copyWith(
+          color: message.isUser
+              ? theme.colorScheme.onPrimary
+              : message.isError
               ? theme.colorScheme.onErrorContainer
               : theme.colorScheme.onSurface,
-    ) ?? const TextStyle();
-    
+        ) ??
+        const TextStyle();
+
     return Align(
       alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: message.isUser
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
-            if (!message.isUser) ...[
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
-                child: Icon(
-                  Icons.spa_outlined,
-                  size: 18,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 8),
-            ],
-            Flexible(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                decoration: BoxDecoration(
-                  color: message.isUser
-                      ? theme.colorScheme.primary
-                      : message.isError
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (!message.isUser) ...[
+                  Mascot.avatar(
+                    pose: message.isError
+                        ? MascotPose.thinking
+                        : MascotPose.happy,
+                    size: 32,
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: message.isUser
+                          ? theme.colorScheme.primary
+                          : message.isError
                           ? theme.colorScheme.errorContainer
                           : theme.colorScheme.onSurface.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(16.0),
-                    topRight: const Radius.circular(16.0),
-                    bottomLeft: Radius.circular(message.isUser ? 16.0 : 0.0),
-                    bottomRight: Radius.circular(message.isUser ? 0.0 : 16.0),
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(16.0),
+                        topRight: const Radius.circular(16.0),
+                        bottomLeft: Radius.circular(
+                          message.isUser ? 16.0 : 0.0,
+                        ),
+                        bottomRight: Radius.circular(
+                          message.isUser ? 0.0 : 16.0,
+                        ),
+                      ),
+                    ),
+                    child: MarkdownBody(
+                      data: message.text,
+                      styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                        p: textStyle,
+                        strong: textStyle.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
                 ),
-                child: MarkdownBody(
-                  data: message.text,
-                  styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                    p: textStyle,
-                    strong: textStyle.copyWith(fontWeight: FontWeight.bold),
-                  ),
+                if (message.isUser) const SizedBox(width: 24),
+              ],
+            ),
+            if (!message.isUser && message.sources.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(left: 40, top: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final source in message.sources)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: SourceCard(
+                          title:
+                              '${source.institution} · ${source.seriesId} · '
+                              '${source.value} ${source.unit}',
+                          url: source.sourceUrl.toString(),
+                          dataPeriod: source.period,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-            ),
-            if (message.isUser) const SizedBox(width: 24), // Add spacing on the left for user messages
           ],
         ),
       ),
@@ -430,18 +462,13 @@ class LoadingBubble extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
-              child: Icon(
-                Icons.spa_outlined,
-                size: 18,
-                color: theme.colorScheme.primary,
-              ),
-            ),
+            const Mascot.avatar(pose: MascotPose.thinking, size: 32),
             const SizedBox(width: 8),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
               decoration: BoxDecoration(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
                 borderRadius: const BorderRadius.only(
@@ -453,9 +480,7 @@ class LoadingBubble extends StatelessWidget {
               child: const SizedBox(
                 width: 24,
                 height: 12,
-                child: Center(
-                  child: LinearProgressIndicator(minHeight: 2),
-                ),
+                child: Center(child: LinearProgressIndicator(minHeight: 2)),
               ),
             ),
           ],

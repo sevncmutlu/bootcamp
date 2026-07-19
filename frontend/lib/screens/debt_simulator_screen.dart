@@ -1,30 +1,58 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/config/api_config.dart';
-import 'package:maki_app/utils/pii_scrubber.dart';
 import 'dart:developer' as developer;
 
+import 'package:flutter/material.dart';
+import 'package:maki_finance_core/maki_finance_core.dart' as finance;
+import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/utils/currency.dart';
+import 'package:maki_app/widgets/stat_card.dart';
+
 class DebtSimulatorScreen extends StatefulWidget {
-  const DebtSimulatorScreen({super.key});
+  const DebtSimulatorScreen({super.key, this.initialDebts = const []});
+
+  final List<DebtModel> initialDebts;
 
   @override
   State<DebtSimulatorScreen> createState() => _DebtSimulatorScreenState();
 }
 
 class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
-  final List<DebtModel> _debts = [];
+  late final List<DebtModel> _debts;
   final _budgetController = TextEditingController(text: '300');
-  
+  int _nextDebtId = 0;
+
   String _selectedStrategy = 'avalanche';
   bool _isLoading = false;
-  
-  // Results fields
+
   int? _monthsToFree;
   double? _totalInterestPaid;
   double? _successProbability;
   List<PayoffMonth> _schedule = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _debts = List<DebtModel>.of(widget.initialDebts);
+  }
+
+  @override
+  void dispose() {
+    _budgetController.dispose();
+    super.dispose();
+  }
+
+  void _clearSimulation() {
+    _monthsToFree = null;
+    _totalInterestPaid = null;
+    _successProbability = null;
+    _schedule = [];
+  }
+
+  void _removeDebt(String id) {
+    setState(() {
+      _debts.removeWhere((debt) => debt.id == id);
+      _clearSimulation();
+    });
+  }
 
   void _addDebtDialog() {
     final nameController = TextEditingController();
@@ -33,7 +61,7 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
     final minPayController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -60,7 +88,9 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                 children: [
                   Text(
                     l10n.addDebt,
-                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -80,7 +110,9 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: balanceController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: l10n.debtBalance,
                       errorMaxLines: 3,
@@ -99,7 +131,9 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: rateController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: l10n.interestRate,
                       errorMaxLines: 3,
@@ -118,7 +152,9 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: minPayController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: l10n.minPayment,
                       errorMaxLines: 3,
@@ -131,7 +167,8 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                       if (parsed == null || parsed <= 0) {
                         return l10n.validationDebtMinPayment;
                       }
-                      final balanceVal = double.tryParse(balanceController.text.trim()) ?? 0.0;
+                      final balanceVal =
+                          double.tryParse(balanceController.text.trim()) ?? 0.0;
                       if (parsed > balanceVal) {
                         return l10n.validationDebtMinPayment;
                       }
@@ -143,17 +180,26 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
                         final name = nameController.text.trim();
-                        final balance = double.tryParse(balanceController.text.trim()) ?? 0.0;
-                        final rate = double.tryParse(rateController.text.trim()) ?? 0.0;
-                        final minPay = double.tryParse(minPayController.text.trim()) ?? 0.0;
+                        final balance =
+                            double.tryParse(balanceController.text.trim()) ??
+                            0.0;
+                        final rate =
+                            double.tryParse(rateController.text.trim()) ?? 0.0;
+                        final minPay =
+                            double.tryParse(minPayController.text.trim()) ??
+                            0.0;
 
                         setState(() {
-                          _debts.add(DebtModel(
-                            name: name,
-                            balance: balance,
-                            interestRate: rate,
-                            minPayment: minPay,
-                          ));
+                          _debts.add(
+                            DebtModel(
+                              id: 'borc-${DateTime.now().microsecondsSinceEpoch}-${_nextDebtId++}',
+                              name: name,
+                              balance: balance,
+                              interestRate: rate,
+                              minPayment: minPay,
+                            ),
+                          );
+                          _clearSimulation();
                         });
                         Navigator.pop(context);
                       }
@@ -169,7 +215,10 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                     ),
                     child: Text(
                       l10n.addDebt,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ],
@@ -196,51 +245,84 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
     });
 
     try {
-      final uri = Uri.parse('${ApiConfig.baseUrl}/api/debt-simulator');
-
-      final payload = {
-        'debts': _debts.map((d) => {
-          'name': PiiScrubber.scrub(d.name),
-          'balance': d.balance,
-          'interest_rate': d.interestRate,
-          'min_payment': d.minPayment,
-        }).toList(),
-        'monthly_budget': budget,
-        'strategy': _selectedStrategy,
-      };
-
-      final response = await http.post(
-        uri,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(payload),
+      const currency = finance.Currency('TRY');
+      final accounts = [
+        for (final debt in _debts)
+          finance.DebtAccount(
+            id: debt.id,
+            balance: finance.Money(
+              minorUnits: (debt.balance * 100).round(),
+              currency: currency,
+            ),
+            annualRate: finance.AnnualRate(
+              basisPoints: (debt.interestRate * 100).round(),
+            ),
+            minimumPayment: finance.Money(
+              minorUnits: (debt.minPayment * 100).round(),
+              currency: currency,
+            ),
+          ),
+      ];
+      final minimumPayments = accounts.fold<int>(
+        0,
+        (sum, account) => sum + account.minimumPayment.minorUnits,
       );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final List<dynamic> scheduleRaw = data['payoff_schedule'] ?? [];
-
-        setState(() {
-          _monthsToFree = data['months_to_debt_free'] ?? 0;
-          _totalInterestPaid = (data['total_interest_paid'] ?? 0.0).toDouble();
-          _successProbability = (data['repayment_success_probability'] ?? 0.0).toDouble();
-          _schedule = scheduleRaw.map((item) => PayoffMonth.fromJson(item)).toList();
-        });
-      } else {
-        final errData = json.decode(response.body);
-        final errMsg = errData['detail'] ?? 'Simulation failed.';
-        throw Exception(errMsg);
+      final result = const finance.DebtEngine().simulate(
+        finance.DebtScenario(
+          debts: accounts,
+          monthlyBudget: finance.Money(
+            minorUnits: minimumPayments + (budget * 100).round(),
+            currency: currency,
+          ),
+          strategy: _selectedStrategy == 'snowball'
+              ? finance.DebtStrategy.snowball
+              : finance.DebtStrategy.avalanche,
+          maxMonths: 1200,
+        ),
+      );
+      if (result.status != finance.DebtSimulationStatus.paidOff) {
+        throw const finance.DebtValidationException(
+          'Bu ödeme planı borçları güvenli biçimde kapatmıyor.',
+        );
       }
-    } catch (e) {
-      developer.log('Error simulating debt payoff strategies', error: e, name: 'DebtSimulatorScreen');
+      if (mounted) {
+        setState(() {
+          _monthsToFree = result.monthsElapsed;
+          _totalInterestPaid = result.totalInterest.minorUnits / 100;
+          _successProbability = null;
+          _schedule = result.schedule
+              .map(
+                (month) => PayoffMonth(
+                  month: month.monthNumber,
+                  remainingBalance:
+                      month.lines.fold<int>(
+                        0,
+                        (sum, line) => sum + line.endingBalance.minorUnits,
+                      ) /
+                      100,
+                ),
+              )
+              .toList(growable: false);
+        });
+      }
+    } on Object catch (error, stackTrace) {
+      developer.log(
+        'Borç ödeme simülasyonu tamamlanamadı.',
+        error: error,
+        stackTrace: stackTrace,
+        name: 'DebtSimulatorScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.simulatorError)),
         );
       }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -262,7 +344,6 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Subtitle description
             Text(
               l10n.simulatorSubtitle,
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -272,7 +353,6 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Extra Budget & Strategy Selection
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -287,28 +367,40 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      initialValue: _selectedStrategy,
-                      decoration: InputDecoration(
-                        labelText: l10n.labelStrategy,
-                        prefixIcon: const Icon(Icons.insights_outlined),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        l10n.labelStrategy,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'avalanche',
-                          child: Text(l10n.strategyAvalanche),
-                        ),
-                        DropdownMenuItem(
-                          value: 'snowball',
-                          child: Text(l10n.strategySnowball),
-                        ),
-                      ],
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            _selectedStrategy = val;
-                          });
-                        }
+                    ),
+                    const SizedBox(height: 8),
+                    _StrategyOption(
+                      title: l10n.strategyAvalanche,
+                      description: l10n.strategyAvalancheDescription,
+                      icon: Icons.trending_down_rounded,
+                      selected: _selectedStrategy == 'avalanche',
+                      onTap: () {
+                        setState(() {
+                          _selectedStrategy = 'avalanche';
+                          _clearSimulation();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _StrategyOption(
+                      title: l10n.strategySnowball,
+                      description: l10n.strategySnowballDescription,
+                      icon: Icons.snowing,
+                      selected: _selectedStrategy == 'snowball',
+                      onTap: () {
+                        setState(() {
+                          _selectedStrategy = 'snowball';
+                          _clearSimulation();
+                        });
                       },
                     ),
                   ],
@@ -317,13 +409,17 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Debts List Title
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 4,
               children: [
                 Text(
                   l10n.debtListTitle,
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 TextButton.icon(
                   onPressed: _addDebtDialog,
@@ -334,7 +430,6 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
             ),
             const SizedBox(height: 8),
 
-            // Debts items list
             if (_debts.isEmpty)
               Center(
                 child: Padding(
@@ -347,33 +442,61 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                 ),
               )
             else
-              ...List.generate(_debts.length, (index) {
-                final debt = _debts[index];
+              ..._debts.map((debt) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Card(
-                    child: ListTile(
-                      title: Text(
-                        debt.name,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(
-                        '${l10n.minPayment}: \$${debt.minPayment.toStringAsFixed(0)} · ${l10n.interestRateAbbr}: ${debt.interestRate}%',
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+                    key: ValueKey('borc-${debt.id}'),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 10, 8, 14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '\$${debt.balance.toStringAsFixed(0)}',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  debt.name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                key: ValueKey('borc-sil-${debt.id}'),
+                                tooltip: l10n.deleteDebt,
+                                icon: Icon(
+                                  Icons.delete_outline_rounded,
+                                  color: theme.colorScheme.error,
+                                ),
+                                onPressed: () => _removeDebt(debt.id),
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                            onPressed: () {
-                              setState(() {
-                                _debts.removeAt(index);
-                              });
-                            },
+                          Text(
+                            formatTL(debt.balance, decimals: 0),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              _DebtDetail(
+                                icon: Icons.payments_outlined,
+                                text:
+                                    '${l10n.minPayment}: ${formatTL(debt.minPayment, decimals: 0)}',
+                              ),
+                              _DebtDetail(
+                                icon: Icons.percent_rounded,
+                                text:
+                                    '${l10n.interestRateAbbr}: ${debt.interestRate}%',
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -381,12 +504,13 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                   ),
                 );
               }),
-            
+
             const SizedBox(height: 20),
 
-            // Run simulation button
             ElevatedButton(
-              onPressed: _debts.isNotEmpty && !_isLoading ? _simulatePayoff : null,
+              onPressed: _debts.isNotEmpty && !_isLoading
+                  ? _simulatePayoff
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
@@ -400,76 +524,43 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                   ? const SizedBox(
                       width: 24,
                       height: 24,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
                     )
                   : Text(
                       l10n.simulateButton,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
             ),
-            
-            // Result summaries
+
             if (_monthsToFree != null) ...[
               const Divider(height: 40),
-              Row(
-                children: [
-                  Expanded(
-                    child: Card(
-                      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.15),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              l10n.monthsToFree,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '$_monthsToFree',
-                              style: theme.textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+              StatCard(
+                label: l10n.monthsToFree,
+                value: '$_monthsToFree',
+                icon: Icons.event_available_outlined,
+                footer: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(l10n.totalInterest),
+                    Text(
+                      formatTL(_totalInterestPaid!),
+                      style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Card(
-                      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.15),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              l10n.totalInterest,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '\$${_totalInterestPaid!.toStringAsFixed(2)}',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               if (_successProbability != null)
                 Card(
-                  color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.15),
+                  color: theme.colorScheme.secondaryContainer.withValues(
+                    alpha: 0.15,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: BorderSide(
@@ -483,7 +574,9 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.1,
+                            ),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -505,7 +598,9 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${(_successProbability! * 100).toStringAsFixed(1)}%',
+                                Money.formatRatioAsPercent(
+                                  _successProbability!,
+                                ),
                                 style: theme.textTheme.headlineMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: theme.colorScheme.primary,
@@ -527,30 +622,29 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
                 ),
               const SizedBox(height: 20),
 
-              // Payoff monthly schedule timeline
               if (_schedule.isNotEmpty)
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _schedule.length > 12 ? 12 : _schedule.length, // Limit preview list to first 12 months
+                  itemCount: _schedule.length > 12
+                      ? 12
+                      : _schedule.length, // Önizleme ilk 12 ayla sınırlıdır.
                   itemBuilder: (context, index) {
                     final item = _schedule[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: ListTile(
-                        leading: CircleAvatar(
-                          child: Text('${item.month}'),
-                        ),
+                        leading: CircleAvatar(child: Text('${item.month}')),
                         title: Text(l10n.payoffMonthLabel(item.month)),
                         trailing: Text(
-                          '\$${item.remainingBalance.toStringAsFixed(2)}',
+                          formatTL(item.remainingBalance),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     );
                   },
                 ),
-            ]
+            ],
           ],
         ),
       ),
@@ -558,27 +652,143 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
   }
 }
 
+class _StrategyOption extends StatelessWidget {
+  const _StrategyOption({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String title;
+  final String description;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: selected
+            ? scheme.primary.withValues(alpha: 0.10)
+            : scheme.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: BorderSide(
+            color: selected
+                ? scheme.primary
+                : scheme.outline.withValues(alpha: 0.18),
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 64),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
+                    color: selected ? scheme.primary : scheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          title,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: selected ? scheme.primary : scheme.onSurface,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          description,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    selected
+                        ? Icons.check_circle_rounded
+                        : Icons.radio_button_unchecked_rounded,
+                    color: selected ? scheme.primary : scheme.outline,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DebtDetail extends StatelessWidget {
+  const _DebtDetail({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class DebtModel {
+  final String id;
   final String name;
   final double balance;
   final double interestRate;
   final double minPayment;
 
-  DebtModel({
+  const DebtModel({
+    required this.id,
     required this.name,
     required this.balance,
     required this.interestRate,
     required this.minPayment,
   });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'balance': balance,
-      'interest_rate': interestRate,
-      'min_payment': minPayment,
-    };
-  }
 }
 
 class PayoffMonth {
@@ -586,11 +796,4 @@ class PayoffMonth {
   final double remainingBalance;
 
   PayoffMonth({required this.month, required this.remainingBalance});
-
-  factory PayoffMonth.fromJson(Map<String, dynamic> json) {
-    return PayoffMonth(
-      month: json['month'] ?? 0,
-      remainingBalance: (json['remaining_balance'] ?? 0.0).toDouble(),
-    );
-  }
 }

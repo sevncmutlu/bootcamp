@@ -6,22 +6,21 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {
-    // Reset the FlutterSecureStorage mock between tests
     FlutterSecureStorage.setMockInitialValues({});
   });
 
-  test('isPremium defaults to false when no value is stored', () async {
+  test('kayıt yoksa premium durumu kapalıdır', () async {
     final service = PremiumService.instance;
     expect(await service.isPremium(), isFalse);
   });
 
-  test('setPremium(true) persists and isPremium returns true', () async {
+  test('premium açıldığında kalıcılaştırılır', () async {
     final service = PremiumService.instance;
     await service.setPremium(value: true);
     expect(await service.isPremium(), isTrue);
   });
 
-  test('setPremium(false) reverts premium status to false', () async {
+  test('premium kapatıldığında durum geri alınır', () async {
     final service = PremiumService.instance;
     await service.setPremium(value: true);
     await service.setPremium(value: false);

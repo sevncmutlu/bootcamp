@@ -3,11 +3,6 @@ import 'package:maki_app/database/connection/connection.dart' as conn;
 
 part 'database.g.dart';
 
-// =============================================================================
-// Database Tables Definitions
-// =============================================================================
-
-/// Table representing local user expenses.
 @DataClassName('Expense')
 class Expenses extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -18,16 +13,15 @@ class Expenses extends Table {
   TextColumn get notes => text().nullable()();
 }
 
-/// Table representing expense categories.
 @DataClassName('Category')
 class Categories extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 50).unique()();
-  TextColumn get colorHex => text().withLength(min: 7, max: 9)(); // Hex format e.g., #FFFFFFFF
+  TextColumn get colorHex =>
+      text().withLength(min: 7, max: 9)(); // Onaltılık renk: #FFFFFFFF
   TextColumn get iconName => text().withLength(min: 1, max: 50)();
 }
 
-/// Table representing local user incomes.
 @DataClassName('Income')
 class Incomes extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -38,7 +32,6 @@ class Incomes extends Table {
   TextColumn get notes => text().nullable()();
 }
 
-/// Table representing user's level, XP, and badges.
 @DataClassName('UserGamificationState')
 class UserGamificationStates extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -47,7 +40,6 @@ class UserGamificationStates extends Table {
   TextColumn get badges => text().withDefault(const Constant(''))();
 }
 
-/// Table representing active and completed challenges.
 @DataClassName('DailyChallenge')
 class DailyChallenges extends Table {
   TextColumn get id => text().withLength(min: 1, max: 100)();
@@ -61,33 +53,36 @@ class DailyChallenges extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// Table representing LinTS multi-armed bandit state.
 @DataClassName('NotificationBanditState')
 class NotificationBanditStates extends Table {
-  TextColumn get arm => text().withLength(min: 1, max: 50)(); // 'morning', 'afternoon', 'evening'
-  TextColumn get precisionMatrixJson => text()(); // e.g. [[1.0, 0.0], [0.0, 1.0]]
-  TextColumn get projectionVectorJson => text()(); // e.g. [0.0, 0.0]
+  TextColumn get arm =>
+      text().withLength(min: 1, max: 50)(); // Sabah, öğle veya akşam kolu.
+  TextColumn get precisionMatrixJson => text()(); // 2x2 hassasiyet matrisi.
+  TextColumn get projectionVectorJson => text()(); // İki elemanlı vektör.
 
   @override
   Set<Column> get primaryKey => {arm};
 }
 
-// =============================================================================
-// Drift Database Orchestration
-// =============================================================================
-
-@DriftDatabase(tables: [Expenses, Categories, Incomes, UserGamificationStates, DailyChallenges, NotificationBanditStates])
+@DriftDatabase(
+  tables: [
+    Expenses,
+    Categories,
+    Incomes,
+    UserGamificationStates,
+    DailyChallenges,
+    NotificationBanditStates,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(conn.connect());
 
-  /// Testing constructor to run in-memory executions
   AppDatabase.forTesting(super.executor);
 
-  /// Thread-safe singleton instance
   static final AppDatabase instance = AppDatabase();
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -102,19 +97,24 @@ class AppDatabase extends _$AppDatabase {
       if (from < 3) {
         await m.createTable(notificationBanditStates);
       }
+      if (from < 4) {
+        await _localizeLegacyCategories();
+      }
     },
   );
 
-  // ===========================================================================
-  // Expense Management Queries
-  // ===========================================================================
-
   Stream<List<Expense>> watchAllExpenses() {
-    return (select(expenses)..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)])).watch();
+    return (select(expenses)..orderBy([
+          (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+        ]))
+        .watch();
   }
 
   Future<List<Expense>> getAllExpenses() {
-    return (select(expenses)..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)])).get();
+    return (select(expenses)..orderBy([
+          (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+        ]))
+        .get();
   }
 
   Future<int> insertExpense(ExpensesCompanion companion) {
@@ -129,10 +129,6 @@ class AppDatabase extends _$AppDatabase {
     return (delete(expenses)..where((t) => t.id.equals(id))).go();
   }
 
-  // ===========================================================================
-  // Income Management Queries
-  // ===========================================================================
-
   Future<List<Income>> getAllIncomes() {
     return select(incomes).get();
   }
@@ -141,14 +137,9 @@ class AppDatabase extends _$AppDatabase {
     return into(incomes).insert(companion);
   }
 
-  // ===========================================================================
-  // Gamification & Challenges Queries
-  // ===========================================================================
-
   Future<UserGamificationState?> getGamificationState() async {
     final list = await select(userGamificationStates).get();
     if (list.isEmpty) {
-      // Auto-insert default state
       final id = await into(userGamificationStates).insert(
         UserGamificationStatesCompanion.insert(
           level: const Value(1),
@@ -168,22 +159,20 @@ class AppDatabase extends _$AppDatabase {
   Future<List<DailyChallenge>> getChallengesForDate(DateTime date) {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
-    return (select(dailyChallenges)
-          ..where((t) => t.date.isBetweenValues(startOfDay, endOfDay)))
-        .get();
+    return (select(
+      dailyChallenges,
+    )..where((t) => t.date.isBetweenValues(startOfDay, endOfDay))).get();
   }
 
   Future<void> insertChallenge(DailyChallenge challenge) {
-    return into(dailyChallenges).insert(challenge, mode: InsertMode.insertOrReplace);
+    return into(
+      dailyChallenges,
+    ).insert(challenge, mode: InsertMode.insertOrReplace);
   }
 
   Future<void> updateChallenge(DailyChallenge challenge) {
     return update(dailyChallenges).replace(challenge);
   }
-
-  // ===========================================================================
-  // LinTS Bandit Queries
-  // ===========================================================================
 
   Future<List<NotificationBanditState>> getBanditStates() {
     return select(notificationBanditStates).get();
@@ -194,33 +183,90 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> insertBanditState(NotificationBanditState state) {
-    return into(notificationBanditStates).insert(state, mode: InsertMode.insertOrReplace);
+    return into(
+      notificationBanditStates,
+    ).insert(state, mode: InsertMode.insertOrReplace);
   }
-
-  // ===========================================================================
-  // Category Management & Seeding
-  // ===========================================================================
 
   Future<List<Category>> getAllCategories() {
     return select(categories).get();
   }
 
   Future<void> seedDefaultCategories() async {
-    final existing = await select(categories).get();
-    if (existing.isEmpty) {
-      final defaults = [
-        CategoriesCompanion.insert(name: 'Market', colorHex: '#FFFF9F00', iconName: 'shopping_cart'),
-        CategoriesCompanion.insert(name: 'Restaurant', colorHex: '#FFFF453A', iconName: 'restaurant'),
-        CategoriesCompanion.insert(name: 'Rent', colorHex: '#FF30D158', iconName: 'home'),
-        CategoriesCompanion.insert(name: 'Bills', colorHex: '#FF5E5CE6', iconName: 'receipt'),
-        CategoriesCompanion.insert(name: 'Transport', colorHex: '#FF64D2FF', iconName: 'directions_bus'),
-        CategoriesCompanion.insert(name: 'Fun', colorHex: '#FFBF5AF2', iconName: 'sports_esports'),
-      ];
-      
-      for (final companion in defaults) {
-        await into(categories).insert(companion);
-      }
+    await _localizeLegacyCategories();
+    final defaults = [
+      CategoriesCompanion.insert(
+        name: 'Market',
+        colorHex: '#FFFF9F00',
+        iconName: 'shopping_cart',
+      ),
+      CategoriesCompanion.insert(
+        name: 'Restoran',
+        colorHex: '#FFFF453A',
+        iconName: 'restaurant',
+      ),
+      CategoriesCompanion.insert(
+        name: 'Kira',
+        colorHex: '#FF30D158',
+        iconName: 'home',
+      ),
+      CategoriesCompanion.insert(
+        name: 'Faturalar',
+        colorHex: '#FF5E5CE6',
+        iconName: 'receipt',
+      ),
+      CategoriesCompanion.insert(
+        name: 'Ulaşım',
+        colorHex: '#FF64D2FF',
+        iconName: 'directions_bus',
+      ),
+      CategoriesCompanion.insert(
+        name: 'Eğlence',
+        colorHex: '#FFBF5AF2',
+        iconName: 'sports_esports',
+      ),
+    ];
+
+    for (final companion in defaults) {
+      await into(categories).insert(companion, mode: InsertMode.insertOrIgnore);
     }
+  }
+
+  Future<void> _localizeLegacyCategories() async {
+    const translations = <String, String>{
+      'Restaurant': 'Restoran',
+      'Dining': 'Restoran',
+      'Rent': 'Kira',
+      'Bills': 'Faturalar',
+      'Transport': 'Ulaşım',
+      'Fun': 'Eğlence',
+      'Shopping': 'Alışveriş',
+    };
+
+    await transaction(() async {
+      for (final entry in translations.entries) {
+        await (update(expenses)..where((row) => row.category.equals(entry.key)))
+            .write(ExpensesCompanion(category: Value(entry.value)));
+
+        final oldCategory = await (select(
+          categories,
+        )..where((row) => row.name.equals(entry.key))).getSingleOrNull();
+        if (oldCategory == null) continue;
+
+        final localizedCategory = await (select(
+          categories,
+        )..where((row) => row.name.equals(entry.value))).getSingleOrNull();
+        if (localizedCategory == null) {
+          await (update(categories)
+                ..where((row) => row.id.equals(oldCategory.id)))
+              .write(CategoriesCompanion(name: Value(entry.value)));
+        } else {
+          await (delete(
+            categories,
+          )..where((row) => row.id.equals(oldCategory.id))).go();
+        }
+      }
+    });
   }
 
   Future<void> clearAllData() async {
@@ -233,5 +279,3 @@ class AppDatabase extends _$AppDatabase {
     });
   }
 }
-
-

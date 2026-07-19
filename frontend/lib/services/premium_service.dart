@@ -1,27 +1,34 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:maki_app/services/maki_api_client.dart';
 
-/// Manages the premium subscription state.
-///
-/// Uses [FlutterSecureStorage] for persistence - the same secure hardware
-/// storage backend used by [SecureKeyHelper] for the database encryption key.
 class PremiumService {
   PremiumService._();
 
-  /// Thread-safe singleton instance.
   static final PremiumService instance = PremiumService._();
 
-  static const String _premiumKey = 'is_premium';
+  static const _debugPremiumKey = 'debug_is_premium';
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  /// Returns `true` if the user has an active premium subscription.
   Future<bool> isPremium() async {
-    final value = await _storage.read(key: _premiumKey);
-    return value == 'true';
+    if (kDebugMode) {
+      final override = await _storage.read(key: _debugPremiumKey);
+      if (override != null) {
+        return override == 'true';
+      }
+    }
+    try {
+      return await MakiApi.instance.hasActiveEntitlement();
+    } on MakiApiException {
+      return false;
+    }
   }
 
-  /// Persists the premium subscription status.
   Future<void> setPremium({required bool value}) async {
-    await _storage.write(key: _premiumKey, value: value.toString());
+    if (!kDebugMode) {
+      throw StateError('Üretim abonelik hakkı yerelden değiştirilemez.');
+    }
+    await _storage.write(key: _debugPremiumKey, value: value.toString());
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/widgets/brand_wordmark.dart';
+import 'package:maki_app/widgets/mascot.dart';
 
-/// Screen representing the user's initial onboarding questionnaire.
 class OnboardingScreen extends StatefulWidget {
-  final Function(String) onCompleted;
+  final void Function(String) onCompleted;
 
   const OnboardingScreen({super.key, required this.onCompleted});
 
@@ -19,7 +20,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    // List of localized goal options
     final goals = [
       l10n.goalTrack,
       l10n.goalSave,
@@ -36,20 +36,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Spacer(),
-              // Icon Meta
-              Icon(
-                Icons.spa_outlined,
-                size: 80,
-                color: theme.colorScheme.primary,
-              ),
+              const SizedBox(height: 8),
+              const Center(child: Mascot(pose: MascotPose.wave, size: 120)),
+              const SizedBox(height: 16),
+              const Center(child: BrandWordmark(fontSize: 30)),
               const SizedBox(height: 24),
-              // Title
               Text(
                 l10n.onboardingTitle,
                 textAlign: TextAlign.center,
@@ -59,7 +55,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              // Subtitle
               Text(
                 l10n.onboardingSubtitle,
                 textAlign: TextAlign.center,
@@ -68,8 +63,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   height: 1.5,
                 ),
               ),
-              const Spacer(),
-              // Goal Options List
+              const SizedBox(height: 24),
               ...List.generate(goals.length, (index) {
                 final isSelected = _selectedGoalIndex == index;
                 return Padding(
@@ -93,11 +87,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           border: Border.all(
                             color: isSelected
                                 ? theme.colorScheme.primary
-                                : theme.colorScheme.outline.withValues(alpha: 0.15),
+                                : theme.colorScheme.outline.withValues(
+                                    alpha: 0.15,
+                                  ),
                             width: isSelected ? 2.0 : 1.0,
                           ),
                           color: isSelected
-                              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.15)
+                              ? theme.colorScheme.primaryContainer.withValues(
+                                  alpha: 0.15,
+                                )
                               : theme.colorScheme.surface,
                         ),
                         child: Row(
@@ -113,7 +111,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               child: Text(
                                 goals[index],
                                 style: theme.textTheme.bodyLarge?.copyWith(
-                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
                                   color: isSelected
                                       ? theme.colorScheme.primary
                                       : theme.colorScheme.onSurface,
@@ -132,8 +132,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 );
               }),
-              const Spacer(),
-              // Continue button
+              const SizedBox(height: 4),
               ElevatedButton(
                 onPressed: _selectedGoalIndex != null
                     ? () {
@@ -141,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           'track_spending',
                           'save_goal',
                           'pay_debt',
-                          'learn_invest'
+                          'learn_invest',
                         ];
                         widget.onCompleted(goalsMapping[_selectedGoalIndex!]);
                       }

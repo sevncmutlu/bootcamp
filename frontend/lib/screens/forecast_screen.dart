@@ -1,10 +1,11 @@
-import 'dart:convert';
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:maki_app/utils/dates.dart';
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/config/api_config.dart';
-import 'dart:developer' as developer;
+import 'package:maki_app/services/maki_api_client.dart';
+import 'package:maki_app/utils/currency.dart';
 
 class ForecastScreen extends StatefulWidget {
   final bool showAppBar;
@@ -18,6 +19,7 @@ class ForecastScreenState extends State<ForecastScreen> {
   void refresh() {
     _fetchAndCalculateForecast();
   }
+
   final _database = AppDatabase.instance;
   List<ForecastDay> _forecast = [];
   bool _isLoading = false;
@@ -41,55 +43,76 @@ class ForecastScreenState extends State<ForecastScreen> {
 
     try {
       final expenses = await _database.getAllExpenses();
-      
-      // Calculate unique transaction days
-      final uniqueDays = expenses.map((e) => e.date.toIso8601String().substring(0, 10)).toSet();
-      if (uniqueDays.length < 3) {
+      final today = DateTime.now();
+      final start = DateTime(
+        today.year,
+        today.month,
+        today.day,
+      ).subtract(const Duration(days: 55));
+      final totals = List<double>.filled(56, 0);
+      final observedDays = <int>{};
+      for (final expense in expenses) {
+        final date = DateTime(
+          expense.date.year,
+          expense.date.month,
+          expense.date.day,
+        );
+        final day = date.difference(start).inDays;
+        if (day >= 0 && day < totals.length) {
+          totals[day] += expense.amount;
+          observedDays.add(day);
+        }
+      }
+      if (observedDays.length < 3) {
         setState(() {
           _hasInsufficientHistory = true;
+          _forecast = [];
         });
+        return;
       }
 
-      // Map local Drift expenses to JSON request format
-      final transactionsPayload = expenses.map((e) {
-        final dateStr = '${e.date.year}-${e.date.month.toString().padLeft(2, '0')}-${e.date.day.toString().padLeft(2, '0')}';
-        return {
-          'date': dateStr,
-          'amount': e.amount,
-        };
-      }).toList();
-
-      final uri = Uri.parse('${ApiConfig.baseUrl}/api/forecast');
-
-      final response = await http.post(
-        uri,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'transactions': transactionsPayload,
-        }),
+      final mean = totals.reduce((left, right) => left + right) / totals.length;
+      final scale = mean + 1;
+      final relativeIndexes = totals
+          .map((amount) => ((amount + 1) / scale) * 100)
+          .toList(growable: false);
+      final reply = await MakiApi.instance.forecast(
+        relativeIndexes: relativeIndexes,
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final List<dynamic> list = data['forecast'] ?? [];
-        
-        setState(() {
-          _forecast = list.map((item) => ForecastDay.fromJson(item)).toList();
-        });
-      } else {
-        throw Exception('Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      developer.log('Error calculating expense forecast', error: e, name: 'ForecastScreen');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.forecastError)),
-        );
+        setState(() {
+          _forecast = [
+            for (var index = 0; index < reply.predictions.length; index++)
+              ForecastDay(
+                date: DateTime(today.year, today.month, today.day)
+                    .add(Duration(days: index + 1))
+                    .toIso8601String()
+                    .substring(0, 10),
+                predictedAmount: ((reply.predictions[index] / 100) * scale - 1)
+                    .clamp(0, double.infinity),
+              ),
+          ];
+        });
+      }
+    } on MakiApiException catch (error, stackTrace) {
+      developer.log(
+        'Harcama tahmini tamamlanamadı.',
+        error: error.code,
+        stackTrace: stackTrace,
+        name: 'ForecastScreen',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.userMessage)));
       }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -99,13 +122,15 @@ class ForecastScreenState extends State<ForecastScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: widget.showAppBar ? AppBar(
-        title: Text(
-          l10n.forecastTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ) : null,
+      appBar: widget.showAppBar
+          ? AppBar(
+              title: Text(
+                l10n.forecastTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              centerTitle: true,
+            )
+          : null,
       body: RefreshIndicator(
         onRefresh: _fetchAndCalculateForecast,
         child: _isLoading
@@ -117,7 +142,10 @@ class ForecastScreenState extends State<ForecastScreen> {
                     const SizedBox(height: 16),
                     Text(
                       l10n.forecastLoading,
-                      style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -125,130 +153,150 @@ class ForecastScreenState extends State<ForecastScreen> {
             : SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Forecast Description Card
-                  Card(
-                    color: theme.colorScheme.primaryContainer.withValues(alpha: 0.15),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.auto_awesome, color: theme.colorScheme.primary),
-                              const SizedBox(width: 12),
-                              Text(
-                                l10n.projectedSpend,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            l10n.forecastSubtitle,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Card(
+                      color: theme.colorScheme.primaryContainer.withValues(
+                        alpha: 0.15,
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Insufficient history warning banner
-                  if (_hasInsufficientHistory)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.errorContainer.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(16.0),
-                          border: Border.all(
-                            color: theme.colorScheme.error.withValues(alpha: 0.2),
-                          ),
-                        ),
-                        child: Row(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.info_outline, color: theme.colorScheme.error),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                l10n.forecastEmpty,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onErrorContainer,
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.auto_awesome,
+                                  color: theme.colorScheme.primary,
                                 ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  l10n.projectedSpend,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              l10n.forecastSubtitle,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                height: 1.4,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
 
-                  // Daily predicted values list
-                  if (_forecast.isNotEmpty)
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _forecast.length,
-                      itemBuilder: (context, index) {
-                        final item = _forecast[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(18.0),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
-                                    child: Icon(Icons.calendar_month, color: theme.colorScheme.primary),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Text(
-                                      item.date,
-                                      style: theme.textTheme.bodyLarge?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    '\$${item.predictedAmount.toStringAsFixed(2)}',
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: theme.colorScheme.onSurface,
-                                    ),
-                                  ),
-                                ],
+                    if (_hasInsufficientHistory)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.errorContainer.withValues(
+                              alpha: 0.2,
+                            ),
+                            borderRadius: BorderRadius.circular(16.0),
+                            border: Border.all(
+                              color: theme.colorScheme.error.withValues(
+                                alpha: 0.2,
                               ),
                             ),
                           ),
-                        );
-                      },
-                    )
-                  else if (!_isLoading)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 40.0),
-                        child: Text(
-                          l10n.noExpenses,
-                          style: const TextStyle(color: Colors.grey),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                color: theme.colorScheme.error,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  l10n.forecastEmpty,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onErrorContainer,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                ],
+
+                    if (_forecast.isNotEmpty)
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _forecast.length,
+                        itemBuilder: (context, index) {
+                          final item = _forecast[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(18.0),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundColor: theme.colorScheme.primary
+                                          .withValues(alpha: 0.1),
+                                      child: Icon(
+                                        Icons.calendar_month,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Text(
+                                        Dates.fromIso(
+                                          item.date,
+                                          Localizations.localeOf(
+                                            context,
+                                          ).toString(),
+                                        ),
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    ),
+                                    Text(
+                                      formatTL(item.predictedAmount),
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.onSurface,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    else if (!_isLoading)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40.0),
+                          child: Text(
+                            l10n.noExpenses,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
       ),
     );
   }
@@ -259,11 +307,4 @@ class ForecastDay {
   final double predictedAmount;
 
   ForecastDay({required this.date, required this.predictedAmount});
-
-  factory ForecastDay.fromJson(Map<String, dynamic> json) {
-    return ForecastDay(
-      date: json['date'] ?? '',
-      predictedAmount: (json['predicted_amount'] ?? 0.0).toDouble(),
-    );
-  }
 }

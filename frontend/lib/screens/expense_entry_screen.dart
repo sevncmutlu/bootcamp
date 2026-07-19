@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/utils/currency.dart';
+import 'package:maki_app/utils/dates.dart';
 
 import 'package:maki_app/screens/receipt_scanner_screen.dart';
 import 'package:maki_app/screens/settings_screen.dart';
+import 'package:maki_app/theme/app_tokens.dart';
+import 'package:maki_app/widgets/stat_card.dart';
+import 'package:maki_app/widgets/empty_state.dart';
+import 'package:maki_app/widgets/money_text.dart';
+import 'package:maki_app/widgets/mascot.dart';
 
 class ExpenseEntryScreen extends StatefulWidget {
   const ExpenseEntryScreen({super.key});
@@ -24,7 +31,6 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
   }
 
   Future<void> _loadCategoriesAndSeed() async {
-    // Check and seed default categories
     await _database.seedDefaultCategories();
     final categories = await _database.getAllCategories();
     setState(() {
@@ -63,10 +69,12 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
   void _showAddExpenseDialog() {
     final titleController = TextEditingController();
     final amountController = TextEditingController();
-    Category? selectedCategory = _categories.isNotEmpty ? _categories.first : null;
+    Category? selectedCategory = _categories.isNotEmpty
+        ? _categories.first
+        : null;
     DateTime selectedDate = DateTime.now();
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -94,7 +102,6 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Title
                     Text(
                       l10n.manualExpense,
                       style: theme.textTheme.titleLarge?.copyWith(
@@ -102,7 +109,6 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Title Field
                     TextFormField(
                       controller: titleController,
                       decoration: InputDecoration(
@@ -118,10 +124,11 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    // Amount Field
                     TextFormField(
                       controller: amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       decoration: InputDecoration(
                         labelText: l10n.labelAmount,
                         prefixIcon: const Icon(Icons.attach_money),
@@ -138,7 +145,6 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    // Category Dropdown
                     DropdownButtonFormField<Category>(
                       initialValue: selectedCategory,
                       decoration: InputDecoration(
@@ -174,7 +180,6 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    // Date Picker Selector
                     InkWell(
                       onTap: () async {
                         final picked = await showDatePicker(
@@ -197,7 +202,9 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                         ),
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: theme.colorScheme.outline.withValues(alpha: 0.15),
+                            color: theme.colorScheme.outline.withValues(
+                              alpha: 0.15,
+                            ),
                           ),
                           borderRadius: BorderRadius.circular(16.0),
                         ),
@@ -206,7 +213,10 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                             const Icon(Icons.calendar_today_outlined),
                             const SizedBox(width: 16),
                             Text(
-                              '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}',
+                              Dates.long(
+                                selectedDate,
+                                Localizations.localeOf(context).toString(),
+                              ),
                               style: theme.textTheme.bodyLarge,
                             ),
                           ],
@@ -214,12 +224,13 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Save Button
                     ElevatedButton(
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
                           final title = titleController.text.trim();
-                          final amount = double.parse(amountController.text.trim());
+                          final amount = double.parse(
+                            amountController.text.trim(),
+                          );
 
                           await _database.insertExpense(
                             ExpensesCompanion.insert(
@@ -289,7 +300,9 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ReceiptScannerScreen()),
+                MaterialPageRoute<void>(
+                  builder: (context) => const ReceiptScannerScreen(),
+                ),
               );
             },
           ),
@@ -304,48 +317,38 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
           }
 
           final list = snapshot.data ?? [];
-          final total = list.fold<double>(0.0, (sum, item) => sum + item.amount);
+          final total = list.fold<double>(
+            0.0,
+            (sum, item) => sum + item.amount,
+          );
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Top Stats Card
               Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Card(
-                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.15),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          l10n.totalExpense,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '\$${total.toStringAsFixed(2)}',
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: StatCard(
+                  label: l10n.totalExpense,
+                  value: formatTL(total),
+                  icon: Icons.account_balance_wallet_outlined,
+                  footer: Row(
+                    children: [
+                      const Mascot(pose: MascotPose.happy, size: 28),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        l10n.expenseCountLabel(list.length),
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              // List view
               Expanded(
                 child: list.isEmpty
-                    ? Center(
-                        child: Text(
-                          l10n.noExpenses,
-                          style: const TextStyle(color: Colors.grey),
-                        ),
+                    ? EmptyState(
+                        title: l10n.noExpenses,
+                        message: l10n.emptyExpensesHint,
+                        pose: MascotPose.wave,
                       )
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -353,7 +356,6 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                         itemBuilder: (context, index) {
                           final item = list[index];
 
-                          // Resolve category details
                           final cat = _categories.firstWhere(
                             (c) => c.name == item.category,
                             orElse: () => const Category(
@@ -387,7 +389,9 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                               child: Card(
                                 child: ListTile(
                                   leading: CircleAvatar(
-                                    backgroundColor: _parseHexColor(cat.colorHex).withValues(alpha: 0.15),
+                                    backgroundColor: _parseHexColor(
+                                      cat.colorHex,
+                                    ).withValues(alpha: 0.15),
                                     child: Icon(
                                       _getCategoryIcon(cat.iconName),
                                       color: _parseHexColor(cat.colorHex),
@@ -395,18 +399,17 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                                   ),
                                   title: Text(
                                     item.title,
-                                    style: const TextStyle(fontWeight: FontWeight.w600),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                   subtitle: Text(
-                                    '${item.date.year}-${item.date.month.toString().padLeft(2, '0')}-${item.date.day.toString().padLeft(2, '0')} · ${item.category}',
+                                    '${Dates.medium(item.date, Localizations.localeOf(context).toString())} · ${item.category}',
                                   ),
-                                  trailing: Text(
-                                    '\$${item.amount.toStringAsFixed(2)}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: theme.colorScheme.onSurface,
-                                    ),
+                                  trailing: MoneyText(
+                                    item.amount,
+                                    kind: MoneyKind.expense,
+                                    style: theme.textTheme.titleMedium,
                                   ),
                                 ),
                               ),

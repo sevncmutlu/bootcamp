@@ -4,15 +4,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureKeyHelper {
   static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
-  
+
   static const _keyName = 'maki_db_encryption_key';
 
-  /// Asynchronously retrieves the encryption key from hardware secure storage.
-  /// If it does not exist yet, a secure 256-bit key is generated and saved.
   static Future<String> getOrCreateEncryptionKey() async {
     try {
       String? key = await _storage.read(key: _keyName);
@@ -22,7 +18,6 @@ class SecureKeyHelper {
       }
       return key;
     } catch (e) {
-      // Return a robust runtime fallback in case of secure store errors
       return 'maki_secure_encryption_key_120_hardware_fallback';
     }
   }

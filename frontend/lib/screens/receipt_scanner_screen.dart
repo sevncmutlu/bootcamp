@@ -1,15 +1,12 @@
-import 'dart:convert';
+import 'dart:developer' as developer;
 import 'dart:io';
-import 'package:flutter/foundation.dart' hide Category;
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
+
 import 'package:drift/drift.dart' as drift;
+import 'package:flutter/material.dart';
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/config/api_config.dart';
-import 'dart:developer' as developer;
+import 'package:maki_app/services/maki_api_client.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ReceiptScannerScreen extends StatefulWidget {
   const ReceiptScannerScreen({super.key});
@@ -21,11 +18,10 @@ class ReceiptScannerScreen extends StatefulWidget {
 class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
   final _database = AppDatabase.instance;
   final _picker = ImagePicker();
-  
+
   XFile? _selectedImage;
   bool _isUploading = false;
-  
-  // Scanned results fields
+
   bool _hasResult = false;
   final _storeController = TextEditingController();
   final _amountController = TextEditingController();
@@ -60,11 +56,15 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
       if (pickedFile != null) {
         setState(() {
           _selectedImage = pickedFile;
-          _hasResult = false; // Reset previous result if any
+          _hasResult = false;
         });
       }
     } catch (e) {
-      developer.log('Error selecting image from picker', error: e, name: 'ReceiptScannerScreen');
+      developer.log(
+        'Fiş görseli seçilemedi.',
+        error: e,
+        name: 'ReceiptScannerScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.ocrError)),
@@ -81,73 +81,46 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
     });
 
     try {
-      // Resolve local host depending on simulator platform
-      // Android emulator points to 10.0.2.2, iOS / Desktop points to localhost
-      final uri = Uri.parse('${ApiConfig.baseUrl}/api/ocr');
-      
-      final request = http.MultipartRequest('POST', uri);
-      final byteData = await _selectedImage!.readAsBytes();
-      
-      String mimeType = 'image/jpeg';
+      final bytes = await _selectedImage!.readAsBytes();
+      var mediaType = 'image/jpeg';
       final fileNameLower = _selectedImage!.name.toLowerCase();
       if (fileNameLower.endsWith('.png')) {
-        mimeType = 'image/png';
-      } else if (fileNameLower.endsWith('.webp')) {
-        mimeType = 'image/webp';
-      } else if (fileNameLower.endsWith('.gif')) {
-        mimeType = 'image/gif';
+        mediaType = 'image/png';
       }
-      final parts = mimeType.split('/');
-
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          byteData,
-          filename: _selectedImage!.name,
-          contentType: MediaType(parts[0], parts[1]),
-        ),
+      final scan = await MakiApi.instance.scanReceipt(
+        bytes: bytes,
+        fileName: _selectedImage!.name,
+        mediaType: mediaType,
       );
 
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        
+      if (mounted) {
         setState(() {
-          _storeController.text = data['store_name'] ?? '';
-          _amountController.text = (data['total'] ?? 0.0).toString();
-          
-          final categoryName = data['category'] ?? '';
-          // Ensure category parsed exists in local DB
-          if (_categories.any((c) => c.name.toLowerCase() == categoryName.toLowerCase())) {
-            _selectedCategory = _categories.firstWhere(
-              (c) => c.name.toLowerCase() == categoryName.toLowerCase(),
-            ).name;
-          }
-
-          try {
-            _selectedDate = DateTime.parse(data['date']);
-          } catch (_) {
-            _selectedDate = DateTime.now();
-          }
-
+          _storeController.text = scan.merchantName ?? '';
+          _amountController.text = scan.totalMinor == null
+              ? ''
+              : (scan.totalMinor! / 100).toStringAsFixed(2);
+          _selectedDate = DateTime.now();
           _hasResult = true;
         });
-      } else {
-        throw Exception('Server returned status: ${response.statusCode}');
       }
-    } catch (e) {
-      developer.log('Error parsing receipt with backend OCR', error: e, name: 'ReceiptScannerScreen');
+    } on MakiApiException catch (error, stackTrace) {
+      developer.log(
+        'Fiş çözümleme işlemi tamamlanamadı.',
+        error: error.code,
+        stackTrace: stackTrace,
+        name: 'ReceiptScannerScreen',
+      );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.ocrError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.userMessage)));
       }
     } finally {
-      setState(() {
-        _isUploading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+        });
+      }
     }
   }
 
@@ -205,15 +178,12 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.scanReceipt),
-      ),
+      appBar: AppBar(title: Text(l10n.scanReceipt)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Image Preview Area
             Container(
               height: 250,
               decoration: BoxDecoration(
@@ -221,20 +191,17 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                 border: Border.all(
                   color: theme.colorScheme.outline.withValues(alpha: 0.15),
                 ),
-                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.05),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.05,
+                ),
               ),
               child: _selectedImage != null
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      child: kIsWeb
-                          ? Image.network(
-                              _selectedImage!.path,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.file(
-                              File(_selectedImage!.path),
-                              fit: BoxFit.cover,
-                            ),
+                      child: Image.file(
+                        File(_selectedImage!.path),
+                        fit: BoxFit.cover,
+                      ),
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -242,7 +209,9 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                         Icon(
                           Icons.receipt_long_outlined,
                           size: 64,
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -265,8 +234,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                     ),
             ),
             const SizedBox(height: 20),
-            
-            // Image action buttons
+
             if (_selectedImage != null && !_hasResult && !_isUploading)
               Row(
                 children: [
@@ -290,8 +258,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                   ),
                 ],
               ),
-              
-            // Loading Indicator
+
             if (_isUploading)
               Column(
                 children: [
@@ -308,7 +275,6 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                 ],
               ),
 
-            // Scanned review form
             if (_hasResult) ...[
               const Divider(height: 40),
               Text(
@@ -328,7 +294,9 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: l10n.labelTotalAmount,
                   prefixIcon: const Icon(Icons.attach_money_outlined),
@@ -422,7 +390,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                   ),
                 ),
               ),
-            ]
+            ],
           ],
         ),
       ),

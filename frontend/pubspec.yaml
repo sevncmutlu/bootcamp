@@ -1,5 +1,5 @@
 name: maki_app
-description: "A new Flutter project."
+description: "Maki kişisel finans uygulaması."
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -19,13 +19,14 @@ dependencies:
   path_provider: ^2.1.3
   path: ^1.9.0
   cupertino_icons: ^1.0.8
-  google_fonts: ^6.2.1
   image_picker: ^1.1.2
   http: ^1.2.2
   fl_chart: ^0.70.2
   flutter_secure_storage: ^9.2.2
   http_parser: ^4.1.0
   flutter_markdown_plus: ^1.0.12
+  maki_finance_core:
+    path: ../packages/maki_finance_core
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +40,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/mascot/
 
 hooks:
   user_defines:

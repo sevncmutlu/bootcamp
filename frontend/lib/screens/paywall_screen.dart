@@ -1,8 +1,10 @@
+import 'dart:developer' as developer;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/services/premium_service.dart';
-import 'package:maki_app/screens/chat_screen.dart';
-import 'dart:developer' as developer;
+import 'package:maki_app/widgets/mascot.dart';
 
 class PaywallScreen extends StatefulWidget {
   const PaywallScreen({super.key});
@@ -17,17 +19,27 @@ class _PaywallScreenState extends State<PaywallScreen> {
   Future<void> _purchase() async {
     setState(() => _isPurchasing = true);
     try {
-      await PremiumService.instance.setPremium(value: true);
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute<void>(builder: (_) => const ChatScreen()),
+      if (!kDebugMode) {
+        throw StateError(
+          'Mağaza satın alma bağlantısı Sprint 3 kapsamında etkinleştirilecek.',
         );
       }
-    } catch (e) {
-      developer.log('Error activating premium', error: e, name: 'PaywallScreen');
+      await PremiumService.instance.setPremium(value: true);
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
+    } on Object catch (error, stackTrace) {
+      developer.log(
+        'Abonelik etkinleştirilemedi.',
+        error: error,
+        stackTrace: stackTrace,
+        name: 'PaywallScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.chatError)),
+          const SnackBar(
+            content: Text('Mağaza satın alma bağlantısı henüz etkin değil.'),
+          ),
         );
       }
     } finally {
@@ -36,9 +48,17 @@ class _PaywallScreenState extends State<PaywallScreen> {
   }
 
   Future<void> _restore() async {
-    // In a real store integration this would call StoreKit / Play Billing.
-    // For the prototype, treat restore the same as purchase.
-    await _purchase();
+    setState(() => _isPurchasing = true);
+    final active = await PremiumService.instance.isPremium();
+    if (!mounted) return;
+    setState(() => _isPurchasing = false);
+    if (active) {
+      Navigator.of(context).pop(true);
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Etkin abonelik bulunamadı.')));
   }
 
   @override
@@ -67,13 +87,20 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 16.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 28.0,
+              vertical: 16.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 24),
 
-                // Crown icon
+                const Center(
+                  child: Mascot(pose: MascotPose.celebrate, size: 96),
+                ),
+                const SizedBox(height: 16),
+
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(20.0),
@@ -90,7 +117,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Title
                 Text(
                   l10n.paywallTitle,
                   textAlign: TextAlign.center,
@@ -101,7 +127,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Subtitle
                 Text(
                   l10n.paywallSubtitle,
                   textAlign: TextAlign.center,
@@ -112,23 +137,35 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 ),
                 const SizedBox(height: 36),
 
-                // Benefits list
-                _BenefitRow(icon: Icons.chat_bubble_outline_rounded, label: l10n.paywallBenefit1),
+                _BenefitRow(
+                  icon: Icons.chat_bubble_outline_rounded,
+                  label: l10n.paywallBenefit1,
+                ),
                 const SizedBox(height: 16),
-                _BenefitRow(icon: Icons.trending_up_rounded, label: l10n.paywallBenefit2),
+                _BenefitRow(
+                  icon: Icons.trending_up_rounded,
+                  label: l10n.paywallBenefit2,
+                ),
                 const SizedBox(height: 16),
-                _BenefitRow(icon: Icons.lightbulb_outline_rounded, label: l10n.paywallBenefit3),
+                _BenefitRow(
+                  icon: Icons.lightbulb_outline_rounded,
+                  label: l10n.paywallBenefit3,
+                ),
                 const SizedBox(height: 40),
 
-                // Price badge
                 Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 10.0,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(24.0),
                       border: Border.all(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.25),
+                        color: theme.colorScheme.primary.withValues(
+                          alpha: 0.25,
+                        ),
                       ),
                     ),
                     child: Text(
@@ -142,7 +179,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Primary CTA
                 FilledButton(
                   onPressed: _isPurchasing ? null : _purchase,
                   style: FilledButton.styleFrom(
@@ -167,7 +203,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Restore link
                 Center(
                   child: TextButton(
                     onPressed: _isPurchasing ? null : _restore,

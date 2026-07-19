@@ -43,25 +43,28 @@
   "labelTotalAmount": "Toplam Tutar",
   "addToExpenses": "Harcamalara Ekle",
   "chatError": "Üzgünüm, şu anda bağlantı sorunu yaşıyorum. Lütfen tekrar deneyin.",
-  "navExpenses": "Harcamalar",
-  "navCoach": "Maki Koçu",
+  "navExpenses": "Harcama",
+  "navCoach": "Koç",
   "navForecast": "Tahminler",
   "forecastTitle": "Harcama Tahmini",
   "forecastSubtitle": "Maki'nin önümüzdeki 7 gün için yapay zeka tabanlı günlük harcama tahminleri.",
   "forecastLoading": "Harcama tahminleri hesaplanıyor...",
   "forecastEmpty": "Tahmin oluşturmak için yeterli işlem geçmişi yok. Maki'nin farklı günlerde yapılmış harcama verilerine ihtiyacı var.",
   "projectedSpend": "Tahmini Harcama",
-  "navSimulator": "Borç Simülatörü",
+  "navSimulator": "Borç",
   "simulatorTitle": "Borç Ödeme Simülatörü",
   "simulatorSubtitle": "Borçlarınızdan ne kadar sürede kurtulabileceğinizi görmek için ödeme stratejilerini simüle edin.",
   "strategyAvalanche": "Çığ (En Yüksek Faiz)",
   "strategySnowball": "Kar Topu (En Düşük Bakiye)",
+  "strategyAvalancheDescription": "Önce maliyeti en yüksek borcu kapatır.",
+  "strategySnowballDescription": "Önce en küçük borcu kapatıp ivme kazandırır.",
   "extraBudget": "Ek Aylık Bütçe",
   "monthsToFree": "Borçsuz Kalma Süresi",
   "totalInterest": "Ödenen Toplam Faiz",
   "debtListTitle": "Borçlarım",
   "noDebts": "Henüz borç eklenmedi. Simüle etmek için kredi kartı veya kredi ekleyin.",
   "addDebt": "Borç Ekle",
+  "deleteDebt": "Borcu sil",
   "debtName": "Borç Adı",
   "debtBalance": "Kalan Borç Tutarı",
   "interestRate": "Yıllık Faiz Oranı (%)",
@@ -80,13 +83,42 @@
   "categoryLabel": "Kategori",
   "forecastError": "Harcama tahmini hesaplanamadı. Lütfen daha sonra tekrar deneyin.",
   "inflationError": "Kişisel enflasyon hesaplanamadı. Lütfen daha sonra tekrar deneyin.",
+  "inflationDataTitle": "Eşleşmiş fiyat sepeti gerekiyor",
+  "inflationDataRequired": "Kişisel enflasyon için aynı ürünlerin geçmiş ve güncel birim fiyatları gerekir. Maki yalnızca harcama toplamlarından yanıltıcı bir oran üretmez.",
   "simulatorError": "Borç kapatma simülasyonu başarısız oldu. Lütfen bilgilerinizi kontrol edin.",
   "ocrError": "Fiş görseli taranamadı. Lütfen daha sonra tekrar deneyin.",
   "privacyTitle": "Gizlilik Öncelikli Yapay Zekâ Koçu",
   "privacyMessage": "Maki tüm işlem kayıtlarınızı cihazınızda saklar. Sohbet mesajlarındaki telefon, kart numaraları veya IBAN bilgileri sunucuya gönderilmeden önce temizlenir.",
   "navForest": "Orman",
   "forestTitle": "Maki Ormanı",
-  "forestSubtitle": "Günlük görevleri tamamlayarak ağacınızı büyütün.",
+  "forestSubtitle": "Günlük görevleri tamamlayarak ormanınızı büyütün.",
+  "forestStage": "Aşama {stage} / 5",
+  "@forestStage": {
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "forestHealth": "Orman sağlığı",
+  "forestHealthValue": "%{percent}",
+  "@forestHealthValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "forestHealthNoIncome": "Bu hafta gelir eklediğinizde orman sağlığı hesaplanır.",
+  "forestGrowthProgress": "Büyüme ilerlemesi",
+  "forestSceneSemantics": "{stage} aşamasındaki Maki ormanı ve maskot",
+  "@forestSceneSemantics": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
   "currentLevel": "Seviye {level}",
   "@currentLevel": {
     "placeholders": {
@@ -101,7 +133,7 @@
   "levelTitleTree": "Olgun Meşe",
   "levelTitleForest": "Meşe Muhafızı",
   "challengesHeader": "Günlük Tasarruf Görevleri",
-  "xpNeeded": "{xp} / {maxXp} XP - Seviye {nextLevel} için",
+  "xpNeeded": "{xp} / {maxXp} DP · Seviye {nextLevel} için",
   "@xpNeeded": {
     "placeholders": {
       "xp": {
@@ -115,7 +147,7 @@
       }
     }
   },
-  "claimXp": "{xp} XP Kazan",
+  "claimXp": "{xp} DP Kazan",
   "@claimXp": {
     "placeholders": {
       "xp": {
@@ -172,7 +204,7 @@
   "notificationsSubtitle": "Cihaz içi yapay zekâ zamanlama tahminlerini yapılandırın.",
   "settingsTitle": "Bildirim Ayarları",
   "smartOptimizationEnable": "Akıllı Yapay Zekâ Optimizasyonunu Etkinleştir",
-  "smartOptimizationDesc": "Bildirimleri en çok açma olasılığınız olan saatlerde (Sabah, Öğle veya Akşam) iletmek üzere cihaz içi Thompson Örneklemesi takviyeli öğrenme algoritması kullanır, pil tasarrufu sağlar ve bildirim yorgunluğunu önler.",
+  "smartOptimizationDesc": "Bildirimleri açma olasılığınızın en yüksek olduğu zaman aralığını cihazınızda öğrenir; pil tasarrufu sağlar ve bildirim yorgunluğunu azaltır.",
   "preferredTriggerHour": "Öngörülen En Uygun Saat",
   "preferredTriggerHourValue": "{hour}:00",
   "@preferredTriggerHourValue": {
@@ -182,8 +214,8 @@
       }
     }
   },
-  "simulationSection": "Thompson Örneklemesi Simülatörü",
-  "simulationDesc": "Bandit modelini cihaz içinde eğitmek için yapay uygulama açma simülasyonu yapın.",
+  "simulationSection": "Akıllı Zamanlama Denemesi",
+  "simulationDesc": "Zamanlama modelini cihazınızda eğitmek için örnek bir uygulama açılışı oluşturun.",
   "simulateOpenButton": "Kullanıcı Tıklaması Simüle Et",
   "morningArm": "Sabah (09:00)",
   "afternoonArm": "Öğleden Sonra (14:00)",
@@ -192,7 +224,7 @@
   "projectionVectorLabel": "Projeksiyon vektörü b",
   "rewardSuccess": "Model eğitildi! Seçilen periyodun ödül parametreleri güncellendi.",
   "closeButton": "Kapat",
-  "xpClaimed": "+{xp} XP kazanıldı!",
+  "xpClaimed": "+{xp} DP kazanıldı!",
   "@xpClaimed": {
     "placeholders": {
       "xp": {
@@ -203,7 +235,7 @@
   "paywallTitle": "Maki Pro'ya Geç",
   "paywallSubtitle": "Yapay zeka destekli kişisel finans koçunun kilidini aç ve paranın kontrolünü eline al.",
   "paywallBenefit1": "Sınırsız yapay zeka koçluk konuşmaları",
-  "paywallBenefit2": "RAG destekli makroekonomik içgörüler",
+  "paywallBenefit2": "Güncel ekonomik verilerle desteklenen içgörüler",
   "paywallBenefit3": "Sana özel akıllı bütçe tavsiyeleri",
   "paywallPriceLabel": "₺49,99 / ay",
   "paywallCtaButton": "Ücretsiz Denemeyi Başlat",
@@ -220,13 +252,13 @@
       }
     }
   },
-  "sessionWeeklyCheckin": "Haftalık Analiz",
-  "sessionDebtStrategy": "Borç Yönetimi",
-  "sessionInflationGuide": "Enflasyon Rehberi",
-  "sessionSavingsHack": "Tasarruf Sırları",
-  "sessionHeader": "Koçluk Modülleri",
+  "sessionWeeklyCheckin": "Haftalık Değerlendirme",
+  "sessionDebtStrategy": "Borç Planı",
+  "sessionInflationGuide": "Enflasyon Etkisi",
+  "sessionSavingsHack": "Tasarruf Önerisi",
+  "sessionHeader": "Koçluk Konuları",
   "feasibilityLabel": "Plan Gerçekleşme Endeksi",
-  "predictedByLgbm": "Plan gerçekleşme olasılığı (LightGBM ile tahmin edilen)",
+  "predictedByLgbm": "Geçmiş ödeme düzeninize göre hesaplanır.",
   "labelStrategy": "Ödeme Stratejisi",
   "validationTitle": "Lütfen bir başlık girin",
   "validationAmount": "Lütfen 0'dan büyük geçerli bir tutar girin",
@@ -246,12 +278,22 @@
   "resetDataTitle": "Sıfırlamayı Onayla",
   "resetDataConfirmation": "Tüm işlem kayıtlarını silmek ve hedefinizi sıfırlamak istediğinizden emin misiniz? Bu işlem geri alınamaz.",
   "resetButtonLabel": "Her Şeyi Sıfırla",
-  "navInsights": "Analizler",
+  "navInsights": "Analiz",
   "settingsThemeTitle": "Uygulama Teması",
   "settingsThemeSystem": "Sistem Varsayılanı",
   "settingsThemeLight": "Açık Tema",
   "settingsThemeDark": "Koyu Tema",
-  "settingsLanguageTitle": "Dil",
-  "settingsLanguageEnglish": "English",
-  "settingsLanguageTurkish": "Türkçe"
+  "expenseCountLabel": "{count} harcama kaydı",
+  "@expenseCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "emptyExpensesHint": "İlk harcamanı eklemek için aşağıdaki butona dokun.",
+  "leaderboardPrivacyTitle": "Gizlilik",
+  "leaderboardYourStanding": "Senin durumun",
+  "leaderboardEstimateNote": "Bu değer yalnızca senin cihazındaki verilerden hesaplanan tahmini bir orandır.",
+  "leaderboardCohortPending": "Anonim karşılaştırma için henüz yeterli sayıda anonim kullanıcı yok. Yeterli katılım oluştuğunda buradan göreceksin."
 }
