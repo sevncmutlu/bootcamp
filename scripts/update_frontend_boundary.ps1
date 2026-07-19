@@ -10,6 +10,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+. (Join-Path $PSScriptRoot 'frontend_boundary_hash.ps1')
+
 $root = (Resolve-Path -LiteralPath $ProjectRoot).Path.TrimEnd('\')
 $libRoot = Join-Path $root 'frontend\lib'
 $files = @(
@@ -17,7 +19,7 @@ $files = @(
         ForEach-Object {
             [ordered]@{
                 path = $_.FullName.Substring($root.Length + 1).Replace('\', '/')
-                sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+                sha256 = Get-FrontendBoundaryHash -LiteralPath $_.FullName
                 size_bytes = $_.Length
             }
         } |

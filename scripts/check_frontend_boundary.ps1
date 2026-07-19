@@ -5,6 +5,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+. (Join-Path $PSScriptRoot 'frontend_boundary_hash.ps1')
+
 $root = (Resolve-Path -LiteralPath $ProjectRoot).Path.TrimEnd('\')
 $baseline = Get-Content -LiteralPath $BaselinePath -Raw | ConvertFrom-Json
 $expected = @(
@@ -29,7 +31,7 @@ $actual = @(
                 $relativePath -ne 'frontend/lib/database/database.g.dart' -and
                 $relativePath -notlike 'frontend/lib/l10n/app_localizations*.dart'
             ) {
-                $sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+                $sha256 = Get-FrontendBoundaryHash -LiteralPath $_.FullName
                 '{0}|{1}' -f $relativePath, $sha256
             }
         } |

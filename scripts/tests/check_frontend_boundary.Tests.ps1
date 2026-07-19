@@ -5,7 +5,12 @@ Describe 'check_frontend_boundary.ps1' {
         New-Item -ItemType Directory -Path $frontendRoot -Force | Out-Null
 
         $dartPath = Join-Path $frontendRoot 'ornek.dart'
-        Set-Content -LiteralPath $dartPath -Value 'void main() {}' -Encoding UTF8
+        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+        [System.IO.File]::WriteAllText(
+            $dartPath,
+            "void main() {}`n",
+            $utf8NoBom
+        )
 
         $manifestPath = Join-Path $TestDrive 'baseline.json'
         $manifest = @{
@@ -29,6 +34,30 @@ Describe 'check_frontend_boundary.ps1' {
     }
 
     It 'değişmemiş frontend alanını kabul eder' {
+        {
+            & $script:boundaryScript `
+                -ProjectRoot $script:projectRoot `
+                -BaselinePath $script:manifestPath
+        } | Should Not Throw
+    }
+
+    It 'satır sonu farkını kaynak değişikliği saymaz' {
+        $dartPath = Join-Path $script:projectRoot 'frontend\lib\ornek.dart'
+        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+        $lfContent = "void main() {`n  print('aynı');`n}`n"
+        [System.IO.File]::WriteAllText($dartPath, $lfContent, $utf8NoBom)
+
+        $manifest = Get-Content -LiteralPath $script:manifestPath -Raw |
+            ConvertFrom-Json
+        $manifest.current_source.files[0].sha256 = (
+            Get-FileHash -LiteralPath $dartPath -Algorithm SHA256
+        ).Hash
+        $manifest | ConvertTo-Json -Depth 8 |
+            Set-Content -LiteralPath $script:manifestPath -Encoding UTF8
+
+        $crlfContent = $lfContent.Replace("`n", "`r`n")
+        [System.IO.File]::WriteAllText($dartPath, $crlfContent, $utf8NoBom)
+
         {
             & $script:boundaryScript `
                 -ProjectRoot $script:projectRoot `
