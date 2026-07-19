@@ -43,6 +43,21 @@ def test_ci_uretim_guvenlik_kapilarini_calistirir() -> None:
     assert "docker build" in icerik
 
 
+def test_trivy_duzeltilebilir_yuksek_aciklarda_derlemeyi_durdurur() -> None:
+    is_akisi = yaml.safe_load((KOK / ".github/workflows/ci.yaml").read_text(encoding="utf-8"))
+    trivy_adimi = next(
+        adim
+        for adim in is_akisi["jobs"]["backend"]["steps"]
+        if "aquasecurity/trivy-action" in adim.get("uses", "")
+    )
+    trivy_politikasi = yaml.safe_load((KOK / "security/trivy.yaml").read_text(encoding="utf-8"))
+
+    assert trivy_adimi["with"]["ignore-unfixed"] is True
+    assert trivy_politikasi["ignore-unfixed"] is True
+    assert set(trivy_politikasi["severity"]) == {"HIGH", "CRITICAL"}
+    assert trivy_politikasi["exit-code"] == 1
+
+
 def test_surum_adayi_imzasiz_yayimlanamaz() -> None:
     icerik = (KOK / ".github/workflows/release-candidate.yaml").read_text(encoding="utf-8")
 

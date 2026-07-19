@@ -105,6 +105,7 @@ jobs:
         with:
           image-ref: maki-api:${{ github.sha }}
           trivy-config: security/trivy.yaml
+          ignore-unfixed: true
           version: v0.69.3
 
       - name: Sözleşme farkını hazırla
