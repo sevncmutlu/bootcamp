@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/banner.png" alt="Maki Finans Koçu" width="100%" />
+  <img src="./assets/maki-sprint-2-github-banner.png" alt="Maki Finans Koçu" width="100%" />
 </p>
 
 # Takım İsmi
