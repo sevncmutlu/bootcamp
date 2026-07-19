@@ -1,0 +1,16 @@
+format: table
+exit-code: 1
+severity:
+  - HIGH
+  - CRITICAL
+ignore-unfixed: true
+scanners:
+  - vuln
+  - secret
+  - misconfig
+skip-dirs:
+  - .git
+  - .worktrees
+  - backend/.venv
+  - frontend/.dart_tool
+  - frontend/build

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "zero-interest-single-debt",
+      "input": {
+        "currency": "TRY",
+        "balanceMinorUnits": 100000,
+        "annualRateBasisPoints": 0,
+        "minimumPaymentMinorUnits": 10000,
+        "monthlyBudgetMinorUnits": 25000,
+        "strategy": "avalanche",
+        "maxMonths": 360
+      },
+      "expected": {
+        "status": "paidOff",
+        "monthsElapsed": 4,
+        "totalInterestMinorUnits": 0,
+        "totalPaidMinorUnits": 100000,
+        "remainingBalanceMinorUnits": 0
+      }
+    }
+  ]
+}

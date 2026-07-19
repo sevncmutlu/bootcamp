@@ -1,0 +1,20 @@
+{
+  "totalCount": 2,
+  "version": "2026-07-03",
+  "items": [
+    {
+      "Tarih": "01-05-2026",
+      "TP_FG_J0": "87.25",
+      "UNIXTIME": {
+        "$numberLong": "1777582800"
+      }
+    },
+    {
+      "Tarih": "01-06-2026",
+      "TP_FG_J0": "88.10",
+      "UNIXTIME": {
+        "$numberLong": "1780261200"
+      }
+    }
+  ]
+}

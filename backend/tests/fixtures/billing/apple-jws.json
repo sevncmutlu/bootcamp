@@ -1,0 +1,12 @@
+{
+  "transactionId": "2000000123456789",
+  "originalTransactionId": "2000000123450000",
+  "bundleId": "com.team120.maki.makiApp",
+  "productId": "maki_debt_pro",
+  "purchaseDate": 1784376000000,
+  "expiresDate": 1787054400000,
+  "signedDate": 1784462400000,
+  "environment": "Production",
+  "appAccountToken": "11111111-1111-4111-8111-111111111111",
+  "type": "Auto-Renewable Subscription"
+}

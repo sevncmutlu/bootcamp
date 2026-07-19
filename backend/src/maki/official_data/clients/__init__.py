@@ -1,0 +1,1 @@
+"""Resmî veri sağlayıcı adaptörleri."""

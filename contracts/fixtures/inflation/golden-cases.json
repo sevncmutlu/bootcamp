@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "roundingMode": "halfEven",
+  "cases": [
+    {
+      "id": "matched-basket",
+      "currency": "TRY",
+      "items": [
+        {
+          "id": "food",
+          "categoryId": "market",
+          "baseUnitPriceMinor": 1000,
+          "currentUnitPriceMinor": 1200,
+          "baseQuantity": 2,
+          "match": "matched"
+        },
+        {
+          "id": "transport",
+          "categoryId": "ulasim",
+          "baseUnitPriceMinor": 2000,
+          "currentUnitPriceMinor": 2200,
+          "baseQuantity": 1,
+          "match": "matched"
+        }
+      ],
+      "expected": {
+        "status": "normal",
+        "indexBasisPoints": 11500,
+        "coverageBasisPoints": 10000
+      }
+    },
+    {
+      "id": "insufficient-coverage",
+      "currency": "TRY",
+      "items": [
+        {
+          "id": "included",
+          "categoryId": "market",
+          "baseUnitPriceMinor": 6000,
+          "currentUnitPriceMinor": 6600,
+          "baseQuantity": 1,
+          "match": "proxy"
+        },
+        {
+          "id": "excluded",
+          "categoryId": "konut",
+          "baseUnitPriceMinor": 4000,
+          "currentUnitPriceMinor": 8000,
+          "baseQuantity": 1,
+          "match": "excluded"
+        }
+      ],
+      "expected": {
+        "status": "insufficientCoverage",
+        "indexBasisPoints": 11000,
+        "coverageBasisPoints": 6000
+      }
+    }
+  ]
+}

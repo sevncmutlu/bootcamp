@@ -1,0 +1,38 @@
+surum: 1
+hatalar:
+  - kod: DOGRULAMA_BASARISIZ
+    http_durumu: 422
+    tekrar_denenebilir: false
+    mesaj: İstek alanları doğrulanamadı.
+  - kod: GIZLILIK_ALANI_REDDEDILDI
+    http_durumu: 422
+    tekrar_denenebilir: false
+    mesaj: İstek gizlilik politikasına uymuyor.
+  - kod: ISTEK_COK_BUYUK
+    http_durumu: 413
+    tekrar_denenebilir: false
+    mesaj: İstek gövdesi izin verilen sınırı aşıyor.
+  - kod: HIZ_SINIRI_ASILDI
+    http_durumu: 429
+    tekrar_denenebilir: true
+    mesaj: Hız sınırı aşıldı.
+  - kod: KAYNAK_BULUNAMADI
+    http_durumu: 404
+    tekrar_denenebilir: false
+    mesaj: İstenen kaynak bulunamadı.
+  - kod: YONTEME_IZIN_VERILMIYOR
+    http_durumu: 405
+    tekrar_denenebilir: false
+    mesaj: Bu yönteme izin verilmiyor.
+  - kod: TEKRARLAMA_ANAHTARI_CAKISTI
+    http_durumu: 409
+    tekrar_denenebilir: false
+    mesaj: Tekrarlama anahtarı farklı bir istek için kullanılmış.
+  - kod: SERVIS_HAZIR_DEGIL
+    http_durumu: 503
+    tekrar_denenebilir: true
+    mesaj: Servis henüz hazır değil.
+  - kod: BEKLENMEYEN_HATA
+    http_durumu: 500
+    tekrar_denenebilir: false
+    mesaj: Beklenmeyen bir hata oluştu.

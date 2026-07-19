@@ -1,0 +1,19 @@
+{
+  "version": "2026-07-03",
+  "data": [
+    {
+      "seriesCode": "TUFE_GENEL",
+      "period": "2026-05",
+      "value": "119,25",
+      "unit": "index",
+      "releaseDate": "2026-06-03"
+    },
+    {
+      "seriesCode": "TUFE_GENEL",
+      "period": "2026-06",
+      "value": "123,45",
+      "unit": "index",
+      "releaseDate": "2026-07-03"
+    }
+  ]
+}

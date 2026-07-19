@@ -1,0 +1,16 @@
+name: maki_finance_core
+description: Maki için cihaz içi nicel finans çekirdeği.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  cryptography: 2.9.0
+  meta: '>=1.18.0 <2.0.0'
+
+dev_dependencies:
+  lints: 6.1.0
+  test: 1.31.0
+  yaml: 3.1.3

@@ -1,0 +1,1 @@
+"""Ortak sözleşmeler ve ayarlar."""

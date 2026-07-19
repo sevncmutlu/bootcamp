@@ -1,0 +1,1 @@
+"""İdempotent iş yaşam döngüsü."""

@@ -1,0 +1,1 @@
+"""K-anonim liderlik alanı."""

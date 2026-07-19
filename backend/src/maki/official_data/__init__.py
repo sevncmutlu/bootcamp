@@ -1,0 +1,1 @@
+"""Resmî ekonomik veri alanı."""

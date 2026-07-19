@@ -1,0 +1,17 @@
+{
+  "kind": "androidpublisher#subscriptionPurchaseV2",
+  "subscriptionState": "SUBSCRIPTION_STATE_ACTIVE",
+  "acknowledgementState": "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED",
+  "latestOrderId": "GPA.1234-5678-9012-34567",
+  "startTime": "2026-07-01T00:00:00Z",
+  "regionCode": "TR",
+  "externalAccountIdentifiers": {
+    "obfuscatedExternalAccountId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "lineItems": [
+    {
+      "productId": "maki_debt_pro",
+      "expiryTime": "2026-08-01T00:00:00Z"
+    }
+  ]
+}

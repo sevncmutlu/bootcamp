@@ -1,0 +1,12 @@
+{
+  "ayrintilar": [
+    {
+      "alan": "$.meta.debt_balance",
+      "neden": "Bu alan gönderilemez."
+    }
+  ],
+  "istek_kimligi": "01K0A1B2C3D4E5F6G7H8J9K0MN",
+  "kod": "GIZLILIK_ALANI_REDDEDILDI",
+  "mesaj": "İstek gizlilik politikasına uymuyor.",
+  "tekrar_denenebilir": false
+}

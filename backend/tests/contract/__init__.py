@@ -1,0 +1,1 @@
+"""Dış API sözleşmesi testleri."""

@@ -1,0 +1,7 @@
+# Varsayılan kod sahibi
+* @emirhuseynrmx
+
+# Güvenlik ve dağıtım değişiklikleri
+/.github/ @emirhuseynrmx
+/backend/src/maki/security/ @emirhuseynrmx
+/infra/ @emirhuseynrmx

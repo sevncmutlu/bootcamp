@@ -1,0 +1,44 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Istanbul
+    groups:
+      ci-aksiyonlari:
+        patterns: ["*"]
+    open-pull-requests-limit: 5
+  - package-ecosystem: pip
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Istanbul
+    groups:
+      python-bagimliliklari:
+        patterns: ["*"]
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: pub
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Istanbul
+    groups:
+      mobil-bagimliliklari:
+        patterns: ["*"]
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: pub
+    directory: /packages/maki_finance_core
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Istanbul
+    groups:
+      finans-cekirdegi-bagimliliklari:
+        patterns: ["*"]
+    open-pull-requests-limit: 5

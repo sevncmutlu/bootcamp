@@ -1,0 +1,84 @@
+{
+  "lines": [
+    {
+      "text": "MAKI MARKET",
+      "confidence": 0.99,
+      "box": {
+        "left": 10,
+        "top": 10,
+        "right": 190,
+        "bottom": 28
+      }
+    },
+    {
+      "text": "EKMEK",
+      "confidence": 0.96,
+      "box": {
+        "left": 10,
+        "top": 50,
+        "right": 70,
+        "bottom": 68
+      }
+    },
+    {
+      "text": "2 x 15,00 30,00",
+      "confidence": 0.95,
+      "box": {
+        "left": 80,
+        "top": 51,
+        "right": 220,
+        "bottom": 69
+      }
+    },
+    {
+      "text": "SÜT 1,5 x 20,00 30,00",
+      "confidence": 0.94,
+      "box": {
+        "left": 10,
+        "top": 80,
+        "right": 220,
+        "bottom": 98
+      }
+    },
+    {
+      "text": "ARA TOPLAM 60,00",
+      "confidence": 0.98,
+      "box": {
+        "left": 10,
+        "top": 120,
+        "right": 220,
+        "bottom": 138
+      }
+    },
+    {
+      "text": "KDV 6,00",
+      "confidence": 0.97,
+      "box": {
+        "left": 10,
+        "top": 145,
+        "right": 220,
+        "bottom": 163
+      }
+    },
+    {
+      "text": "İNDİRİM 5,00",
+      "confidence": 0.96,
+      "box": {
+        "left": 10,
+        "top": 170,
+        "right": 220,
+        "bottom": 188
+      }
+    },
+    {
+      "text": "GENEL TOPLAM 61,00",
+      "confidence": 0.99,
+      "box": {
+        "left": 10,
+        "top": 200,
+        "right": 220,
+        "bottom": 218
+      }
+    }
+  ]
+}

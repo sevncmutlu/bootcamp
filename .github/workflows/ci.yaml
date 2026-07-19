@@ -1,0 +1,169 @@
+name: Üretim CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uretim-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  UV_VERSION: "0.11.29"
+  FLUTTER_VERSION: "3.44.6"
+
+jobs:
+  backend:
+    name: Backend, güvenlik ve konteyner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Kaynak kodu al
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Python ve uv kur
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Kilitli ortamı kur
+        working-directory: backend
+        run: uv sync --frozen --all-extras --group dev
+
+      - name: Kilit dosyasını doğrula
+        working-directory: backend
+        run: uv lock --check
+
+      - name: Biçim ve lint denetimi
+        working-directory: backend
+        run: |
+          uv run ruff format --check .
+          uv run ruff check .
+
+      - name: Sıkı tür denetimi
+        working-directory: backend
+        run: uv run mypy src
+
+      - name: Test ve dal kapsamı
+        working-directory: backend
+        run: |
+          mkdir -p ../artifacts
+          uv run pytest \
+            --cov=maki \
+            --cov-branch \
+            --cov-fail-under=70 \
+            --cov-report=term-missing \
+            --cov-report=xml:../artifacts/coverage.xml
+
+      - name: Bağımlılık açığı denetimi
+        working-directory: backend
+        run: |
+          uv export \
+            --quiet \
+            --frozen \
+            --all-extras \
+            --no-dev \
+            --no-emit-project \
+            --output-file ../artifacts/audit-requirements.txt
+          uv run pip-audit \
+            --strict \
+            --require-hashes \
+            -r ../artifacts/audit-requirements.txt
+
+      - name: OpenAPI sözleşmesini doğrula
+        run: uv run --project backend python scripts/export_openapi.py --check
+
+      - name: Python SBOM üret
+        working-directory: backend
+        run: >-
+          uv run cyclonedx-py environment .venv/bin/python
+          --pyproject pyproject.toml
+          --output-reproducible
+          --of JSON
+          -o ../artifacts/backend.cdx.json
+
+      - name: Üretim hedeflerini derle
+        shell: bash
+        run: |
+          set -euo pipefail
+          for target in api dispatcher worker-coach worker-forecast worker-ocr worker-data; do
+            docker build --target "$target" --tag "maki-$target:${GITHUB_SHA}" backend
+          done
+
+      - name: İmaj güvenlik taraması
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: maki-api:${{ github.sha }}
+          trivy-config: security/trivy.yaml
+          version: v0.69.3
+
+      - name: Sözleşme farkını hazırla
+        if: always() && github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          git diff -- contracts/openapi.yaml > artifacts/openapi.diff
+
+      - name: Kanıtları yükle
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: backend-kanitlari
+          path: |
+            artifacts/backend.cdx.json
+            artifacts/coverage.xml
+            artifacts/openapi.diff
+          if-no-files-found: warn
+          retention-days: 14
+
+  mobile:
+    name: Mobil ve finans çekirdeği
+    runs-on: windows-2025
+    timeout-minutes: 35
+    steps:
+      - name: Kaynak kodu al
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Flutter kur
+        uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+          cache-key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}
+          pub-cache-key: flutter-pub-${{ runner.os }}-${{ hashFiles('frontend/pubspec.lock', 'packages/maki_finance_core/pubspec.lock') }}
+
+      - name: Sevinç alanını doğrula
+        shell: powershell
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check_frontend_boundary.ps1
+
+      - name: Finans çekirdeğini doğrula
+        working-directory: packages/maki_finance_core
+        shell: powershell
+        run: |
+          dart pub get --enforce-lockfile
+          dart format --output=none --set-exit-if-changed lib test
+          dart analyze --fatal-infos --fatal-warnings
+          dart test
+
+      - name: Mobil uygulamayı doğrula
+        working-directory: frontend
+        shell: powershell
+        run: |
+          flutter pub get --enforce-lockfile
+          flutter gen-l10n
+          dart run build_runner build
+          dart format --output=none --set-exit-if-changed test
+          flutter analyze --fatal-infos --fatal-warnings
+          flutter test
+          flutter build apk --debug

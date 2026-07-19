@@ -1,0 +1,1 @@
+"""İş yaşam döngüsü testleri."""

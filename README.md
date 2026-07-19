@@ -14,9 +14,9 @@
 
 **Maki Finans Koçu**
 
-### Product Backlog URL
+### Ürün Backlog Panosu
 
-[Takım 120 Miro Backlog Board](https://miro.com/welcomeonboard/NXRRV0ovYXp6emtKV0lKWFdyUEZQSjhoNkVVMW5GdTRoVDRXZlNlci9VTXZvUzRwSDRBS2RWWEtRbVFCUE85ak9iQ09xYUhRUXpOR2hyaGdNdHA3a2tXRVlmR2hqbGFXcFp6RWVZemVzeU1iM09aNHA4S2hodllURlBFSEV6Si9nbHpza3F6REdEcmNpNEFOMmJXWXBBPT0hdjE=?share_link_id=239367518026)
+[Takım 120 Miro Backlog Board](https://miro.com/welcomeonboard/NXRRV0ovYXp6emtKV0lKWFdyUEZQSjhoNkVVMW5GdTRoVDRXZlNlci9VTXZvUzRwSDRBS2RWWEtRbVFCUE85ak9iQ09xYUhRUXpOR2hyaGdNdHA3a2tXRVlmR2hqbGFXcFp6RWVZemVzeU1BbnNDUVViaFpQc2E5U3VkSEowWldBd044SHFHaVlWYWk0d3NxeHNmeG9BPT0hdjE=?share_link_id=32213079148)
 
 ### Takım Elemanları
 
@@ -31,13 +31,13 @@ Maki Finans Koçu; kullanıcının kendi harcamalarını yönetmesini sağlayan,
 ### Ürün Özellikleri
 
 - **Veri egemenliği:** Tüm kişisel finans verisi cihazda kalır; sunucuya yalnızca anonim sinyaller gider.
-- **Fiş OCR:** Market fişini fotoğraflayarak otomatik harcama girişi (Gemini Multimodal ile doğrudan alan çıkarımı).
-- **Yapay zeka koçu (MakiKoç):** TR + EN çift dilli, şefkatli ve yargılamayan, kaynaklı (RAG) finans koçluğu.
+- **Fiş OCR:** Market fişini fotoğraflayarak otomatik harcama girişi (PaddleOCR, Türkçe fiş desteği).
+- **Yapay zeka koçu (MakiKoç):** Türkçe, şefkatli, yargılamayan ve kaynaklı (RAG) finans koçluğu.
 - **Kişisel enflasyon:** Kullanıcının kendi enflasyonunu hesaplayıp TÜİK rakamıyla karşılaştıran grafik.
 - **Harcama tahmini:** Prophet ile basit harcama öngörüsü.
 - **Masum gamification:** Günlük meydan okumalar, XP/seviye sistemi, rozetler, yüzde bazlı kimliksiz leaderboard.
 - **Hafif orman katmanı:** Motivasyon için görsel ilerleme (fidan/orman) — ikincil, destekleyici katman.
-- **Akıllı bildirimler:** LinTS Simülasyonu ile kişiye özel (yalnızca anonim özelliklere dayalı) bildirim optimizasyonu.
+- **Akıllı bildirimler:** LinTS ile kişiye özel (yalnızca anonim özelliklere dayalı) bildirim optimizasyonu.
 - **Borç simülatörü (Premium):** LightGBM tabanlı sanal borçtan çıkma planı.
 
 ### Hedef Kitle
@@ -50,34 +50,35 @@ Maki Finans Koçu; kullanıcının kendi harcamalarını yönetmesini sağlayan,
 
 ---
 
-## Mimari (Gizlilik Öncelikli)
+## 🏗️ Mimari (Gizlilik Öncelikli)
 
 > Temel ilke: **kişisel finans verisi cihazdan çıkmaz.** Sunucuya yalnızca kimliksiz/anonim sinyaller gider.
 
 ```mermaid
 flowchart TB
-    subgraph Cihaz["Kullanıcının Cihazı (Flutter)"]
+    subgraph Cihaz["📱 Kullanıcının Cihazı (Flutter)"]
         UI["Arayüz + MakiKoç Sohbeti"]
-        LDB[("Drift + sqlite3mc<br/>Şifreli Yerel DB<br/>harcama · kategori · gelir")]
+        LDB[("🔒 Isar/Drift<br/>Şifreli Yerel DB<br/>harcama · kategori · gelir")]
         OCRD["Fiş Fotoğrafı"]
         UI --> LDB
         OCRD --> UI
     end
 
-    subgraph Sunucu["Backend (Python + FastAPI)"]
+    subgraph Sunucu["☁️ Backend (Python + FastAPI)"]
+        OCR["PaddleOCR<br/>Fiş → Metin"]
         RAG["RAG<br/>Chroma/FAISS"]
-        ML["Modeller<br/>Prophet · LightGBM · LinTS Simülasyonu"]
-        LLM["Gemini<br/>TR+EN Koç & OCR"]
+        ML["Modeller<br/>Prophet · LightGBM · LinTS"]
+        LLM["🤖 Claude<br/>Türkçe Koç"]
     end
 
-    subgraph Kaynak["Kaynak Veri"]
+    subgraph Kaynak["📚 Kaynak Veri"]
         TUIK["TÜİK"]
         MB["Merkez Bankası"]
     end
 
     LDB -. "yalnızca ANONİM sinyal" .-> ML
-    OCRD -- "fiş görüntüsü" --> LLM
-    LLM -- "ayrıştırılmış alanlar (JSON)" --> UI
+    OCRD -- "fiş görüntüsü (geçici)" --> OCR
+    OCR -- "çıkarılan alanlar" --> UI
     UI -- "soru (kişisel veri YOK)" --> LLM
     RAG --> LLM
     TUIK --> RAG
@@ -88,17 +89,17 @@ flowchart TB
     classDef server fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
     classDef src fill:#fff3e0,stroke:#ef6c00,color:#e65100;
     class UI,LDB,OCRD device;
-    class RAG,ML,LLM server;
+    class OCR,RAG,ML,LLM server;
     class TUIK,MB src;
 ```
 
 ---
 
-# Sprint 1 — Planlama & Proje Belirleme
+# 🚀 Sprint 1 — Planlama & Proje Belirleme
 
-**Tarih:** 19 Haziran – 5 Temmuz · **Durum:** [Tamamlandı]
+**Tarih:** 19 Haziran – 5 Temmuz · **Durum:** ✅ Tamamlandı
 
-- **Sprint Notları:** Bu sprint tamamen planlama ve proje belirlemeye ayrıldı; kod yazılmadı. Ürün vizyonu, hedef kitle, teknoloji yığını, ürün kimliği (MakiKoç) ve gizlilik mimarisi kararları verildi. Detaylı sprint dokümanları [Sprint-1.md](./Sprint-1.md) master dosyasında yer almaktadır.
+- **Sprint Notları:** Bu sprint tamamen planlama ve proje belirlemeye ayrıldı; kod yazılmadı. Ürün vizyonu, hedef kitle, teknoloji yığını, ürün kimliği (MakiKoç) ve gizlilik mimarisi kararları verildi. Detaylı sprint dokümanları [Sprint-1 klasöründe](./Sprint-1) yer almaktadır.
 
 - **Sprint içinde tamamlanması tahmin edilen puan:** 100 Puan
 
@@ -121,7 +122,7 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
 
 </details>
 
-- **Daily Scrum:** Daily Scrum toplantıları takım küçük olduğu için kısa senkron görüşme + **Slack** üzerinden yürütülmüştür. Toplantı notları: [Sprint-1.md#daily-scrum-notları](./Sprint-1.md#daily-scrum-notları)
+- **Daily Scrum:** Daily Scrum toplantıları takım küçük olduğu için kısa senkron görüşme + **Slack** üzerinden yürütülmüştür. Toplantı notları: [Daily-Scrum-Notes.md](./Sprint-1/Daily-Scrum-Notes.md)
 
 - **Sprint Board Update:** Sprint board, tüm planlama kalemleri **Tamamlandı** sütununa taşınarak tamamlanmıştır. Sprint 2'ye devreden işler Backlog'da, kapsam dışı bırakılan kararlar Reddedildi sütununda yer almaktadır.
 
@@ -129,9 +130,7 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
 
 - **Ürün Durumu:** Sprint 1 planlama sprinti olduğu için henüz çalışan ekran yoktur. Çıktılar: netleşmiş ürün vizyonu, teknoloji & mimari kararları, ürün kimliği (MakiKoç) ve gizlilik mimarisi, 3 sprintlik yol haritası ve risk listesi. _(Mimari şeması yukarıda yer almaktadır.)_
 
-- **Sprint Review:** Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu. Teknoloji yığını, geliştirmeye başlamak için yeterli detayda belirlendi. Gizlilik öncelikli mimari, projenin en kritik farklılaştırıcısı olarak onaylandı. Sprint hedeflerine %100 ulaşıldı, kapsam dışına çıkılmadı. Detay: [Sprint-1.md#sprint-review](./Sprint-1.md#sprint-review)
-
-![Sprint 1 Review Toplantısı](./assets/sprint-1-review-meeting.png)
+- **Sprint Review:** Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu. Teknoloji yığını, geliştirmeye başlamak için yeterli detayda belirlendi. Gizlilik öncelikli mimari, projenin en kritik farklılaştırıcısı olarak onaylandı. Sprint hedeflerine %100 ulaşıldı, kapsam dışına çıkılmadı. Detay: [Sprint-1-Review.md](./Sprint-1/Sprint-1-Review.md)
 
 - **Sprint Review Katılımcıları:** Emir Hüseyin İnci, Sevinç Mutlu
 
@@ -141,34 +140,113 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
   - Türkçe fiş OCR doğruluğu Sprint 2 başında birkaç örnek fişle erken test edilmeli.
   - Modeller için "önce basit çalışan sürüm, sonra iyileştir" yaklaşımı disiplinli uygulanmalı.
   - Daily Scrum'lar daha yapılandırılmış (sabit saat) hâle getirilmeli.
-  - Detay: [Sprint-1.md#sprint-retrospective](./Sprint-1.md#sprint-retrospective)
+  - Detay: [Sprint-1-Retrospective.md](./Sprint-1/Sprint-1-Retrospective.md)
 
 ---
 
-# Sprint 2 — Temel + Fiş OCR + AI Koçluk (Başlangıç)
+# ✅ Sprint 2 — Üretim Yeniden Yapılandırması ve Mobil Teslim
 
-**Tarih:** 6 – 19 Temmuz · **Durum:** [Planlandı]
+**Tarih:** 6 – 19 Temmuz · **Durum:** ✅ Tamamlandı
 
-- **Sprint Notları:** _(Sprint sonunda doldurulacak.)_
-- **Sprint içinde tamamlanması tahmin edilen puan:** 100 Puan
-- **Puan Tamamlama Mantığı:** Temel & altyapı, harcama yönetimi, fiş OCR ve AI koçluk başlangıcı kalemleri dağıtıldı.
-- **Daily Scrum:** _(Slack notları eklenecek.)_
-- **Sprint Board Update:** _(Ekran görüntüsü eklenecek.)_
-- **Ürün Durumu:** _(Ekran görüntüleri eklenecek.)_
-- **Sprint Review:** _(Eklenecek.)_
-- **Sprint Retrospective:** _(Eklenecek.)_
+Sprint 1'de belirlenen ürün fikri ve Sevinç'in görsel tasarım kararları korunarak
+mobil uygulama, finans çekirdeği, API sözleşmeleri, gözlemlenebilirlik ve teslim
+altyapısı uçtan uca yeniden yapılandırıldı.
+
+Sprint kayıtları: [Sprint 2 özeti](./Sprint-2.md) ·
+[Backlog](./Sprint-2/Sprint-2-Backlog.md) ·
+[Review](./Sprint-2/Sprint-2-Review.md) ·
+[Retrospective](./Sprint-2/Sprint-2-Retrospective.md)
+
+### Tamamlanan kapsam
+
+- Android ve iOS hedefli, tamamı Türkçe Flutter uygulaması
+- Cihazda şifreli yerel veri ve güvenli erişim belirteci saklama
+- Sürüm kontrollü FastAPI uçları ve Pydantic v2 sözleşmeleri
+- Para birimi güvenli ve deterministik finans hesaplama çekirdeği
+- Kişisel enflasyon, Prophet aday seçimi ve borç kapatma motoru
+- OpenTelemetry izleri, metrikleri ve hata sözleşmeleri
+- K-anonim karşılaştırma ve mağaza abonelik doğrulama sınırları
+- CI kalite, güvenlik, SBOM ve yük testi kapıları
+- MakiKoç açılış animasyonu ve gerçek veriye bağlı Maki Ormanı
+- Borç silme sonrası anlık ekran güncellemesi ve taşma hatalarının giderilmesi
+
+### Sprint 2 ekranları
+
+![Sprint 2 Miro Panosu](./assets/sprint-2-board.png)
+
+<p align="center">
+  <img src="./docs/assets/screenshots/sprint-2-harcama-ekle.png"
+       width="300"
+       alt="Maki harcama ekleme ekranı">
+  <img src="./docs/assets/screenshots/sprint-2-maki-ormani.png"
+       width="300"
+       alt="Maki Ormanı ilerleme ekranı">
+</p>
+
+### Teknik teslim
+
+```text
+backend/                    FastAPI uygulaması ve servis katmanı
+frontend/                   Flutter Android/iOS uygulaması
+packages/maki_finance_core/ Ortak finans hesaplama çekirdeği
+infra/                      Konteyner ve gözlemlenebilirlik altyapısı
+contracts/                  API, hata ve model sözleşmeleri
+docs/                       Mimari, işletim ve doğrulama kanıtları
+```
+
+Yerel kalite kapıları:
+
+```powershell
+.\scripts\verify.ps1
+```
+
+Android cihazda yerel backend bağlantısı:
+
+```powershell
+adb reverse tcp:8000 tcp:8000
+cd frontend
+flutter run --dart-define=BACKEND_URL=http://127.0.0.1:8000
+```
+
+Doğrulama sonucunda backend testleri, statik tip denetimi, Ruff, finans çekirdeği
+testleri, Flutter analizi ve Flutter testleri başarıyla tamamlandı. Telefon üzerinde
+çalışan referans APK'nın kimliği ve SHA-256 parmak izi
+[teslim kanıtında](./docs/evidence/sprint-2-apk.md) kayıt altındadır.
+
+- **Sprint içinde tamamlanan puan:** 100 Puan
+- **Ürün Durumu:** Uygulama fiziksel Android cihazda çalıştırıldı ve Sprint 2
+  referans APK'sı kaydedildi.
+- **Sprint Review:** Harcama yönetimi, kişisel enflasyon, tahmin, borç planlama,
+  finans koçluğu, orman ilerlemesi ve gözlemlenebilir backend birlikte doğrulandı.
+- **Sprint Retrospective:** Üretim imzalama, mağaza kimlikleri, canlı servis
+  anahtarları ve iOS dağıtım profilleri Sprint 3/MVP kapsamına bırakıldı.
 
 ---
 
-# Sprint 3 — Enflasyon, Gamification, Bildirim & Premium İskelesi
+# 🏁 Sprint 3 — Frontend Tam Yeniden Yapılandırma
 
-**Tarih:** 20 Temmuz – 2 Ağustos · **Durum:** [Planlandı]
+**Tarih:** 20 Temmuz – 2 Ağustos · **Durum:** ⏳ Planlandı
 
-- **Sprint Notları:** _(Sprint sonunda doldurulacak.)_
+- **Ana hedef:** Mobil frontend; bilgi mimarisi, gezinme, ekranlar, ortak
+  bileşenler, durum yönetimi ve erişilebilirlik katmanlarıyla tamamen yeniden
+  yapılandırılacaktır.
+- **Korunacak temel:** Sprint 2 backend'i, sürümlü API sözleşmeleri,
+  `maki_finance_core`, MakiKoç marka kimliği, maskot ve orman fikri korunacaktır.
+- **Yaklaşım:** Eski ekranları yama zinciriyle büyütmek yerine yeni frontend özellik
+  eşitliğine ulaşana kadar paralel geliştirilecek, ardından kontrollü olarak yerini
+  alacaktır.
+- **Kalite ölçütü:** Tamamı Türkçe kullanıcı deneyimi; dar ekran, büyük yazı ve
+  klavye durumlarında taşmasız düzen; erişilebilirlik, widget, görsel regresyon ve
+  kritik uçtan uca akış testleri.
 - **Sprint içinde tamamlanması tahmin edilen puan:** 100 Puan
-- **Puan Tamamlama Mantığı:** Kişisel enflasyon, gamification, bildirim optimizasyonu ve premium borç simülatörü kalemleri dağıtıldı.
-- **Daily Scrum:** _(Slack notları eklenecek.)_
-- **Sprint Board Update:** _(Ekran görüntüsü eklenecek.)_
-- **Ürün Durumu:** _(Ekran görüntüleri eklenecek.)_
-- **Sprint Review:** _(Eklenecek.)_
-- **Sprint Retrospective:** _(Eklenecek.)_
+- **Birincil backlog işi:** `S3-FE-01` — Frontend tam yeniden yapılandırma, 21 SP,
+  yüksek öncelik.
+- **Tamamlayıcı kapsam:** Kişisel enflasyon, orman ilerlemesi, bildirim
+  optimizasyonu ve premium borç simülatörü yeni frontend mimarisine taşınacaktır.
+
+---
+
+## Depo Standartları
+
+- [Mobil tasarım sistemi](./design-system/makiko/TASARIM-SISTEMI.md)
+- [Lisans](./LICENSE.md)

@@ -1,0 +1,81 @@
+groups:
+  - name: maki-production
+    interval: 30s
+    rules:
+      - alert: MakiHigh5xxRate
+        expr: >-
+          sum(rate(maki_http_requests_total{http_response_status_code=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(maki_http_requests_total[5m])), 1)
+          > 0.01
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: API 5xx oranı yüzde 1 sınırını aştı.
+          runbook: docs/operations/alarms.md#yüksek-5xx-oranı
+
+      - alert: MakiQueueAgeHigh
+        expr: >-
+          histogram_quantile(
+            0.95,
+            sum(rate(maki_queue_age_ms_bucket[5m])) by (le)
+          ) > 30000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Kuyruk yaşı p95 değeri 30 saniyeyi aştı.
+          runbook: docs/operations/alarms.md#yüksek-kuyruk-yaşı
+
+      - alert: MakiFailedJobs
+        expr: >-
+          sum(increase(maki_jobs_completed_total{job_outcome="failed"}[5m])) > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Beş dakikada beşten fazla iş kalıcı olarak hata verdi.
+          runbook: docs/operations/alarms.md#hatalı-iş-artışı
+
+      - alert: MakiProviderTimeouts
+        expr: >-
+          sum(
+            rate(
+              maki_provider_failures_total{
+                error_code=~".*TIMEOUT.*|.*ZAMAN_ASIMI.*"
+              }[5m]
+            )
+          ) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Dış sağlayıcı zaman aşımı oranı yükseldi.
+          runbook: docs/operations/alarms.md#sağlayıcı-zaman-aşımı
+
+      - alert: MakiPrivacyRejectionsRising
+        expr: sum(increase(maki_privacy_rejected_total[15m])) > 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Gizlilik politikası retleri olağan seviyenin üzerine çıktı.
+          runbook: docs/operations/alarms.md#gizlilik-reddi-artışı
+
+      - alert: MakiReadinessDown
+        expr: >-
+          sum(
+            rate(
+              maki_http_requests_total{
+                http_route="/health/ready",
+                http_response_status_code="503"
+              }[5m]
+            )
+          ) > 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: API hazırlık denetimi iki dakikadır başarısız.
+          runbook: docs/operations/alarms.md#hazırlık-denetimi-düşüşü

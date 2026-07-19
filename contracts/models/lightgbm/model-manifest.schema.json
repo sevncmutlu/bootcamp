@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://maki.local/contracts/model-manifest.schema.json",
+  "title": "Maki imzalı model manifesti",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "modelVersion",
+    "featureNames",
+    "trainedUntil",
+    "modelSha256",
+    "signature"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "modelVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "featureNames": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "trainedUntil": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "modelSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "signature": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "minLength": 88,
+      "maxLength": 88
+    }
+  }
+}

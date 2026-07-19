@@ -1,0 +1,26 @@
+from enum import StrEnum
+
+from maki.common.models import ApiModel
+
+
+class ErrorCode(StrEnum):
+    VALIDATION_FAILED = "DOGRULAMA_BASARISIZ"
+    PRIVACY_FIELD_REJECTED = "GIZLILIK_ALANI_REDDEDILDI"
+    BODY_TOO_LARGE = "ISTEK_COK_BUYUK"
+    RATE_LIMITED = "HIZ_SINIRI_ASILDI"
+    NOT_FOUND = "KAYNAK_BULUNAMADI"
+    METHOD_NOT_ALLOWED = "YONTEME_IZIN_VERILMIYOR"
+    IDEMPOTENCY_CONFLICT = "TEKRARLAMA_ANAHTARI_CAKISTI"
+    NOT_READY = "SERVIS_HAZIR_DEGIL"
+    BILLING_NOT_READY = "ODEME_DOGRULAMA_HAZIR_DEGIL"
+    BILLING_VERIFICATION_FAILED = "ODEME_DOGRULANAMADI"
+    UNAUTHORIZED = "OTURUM_GECERSIZ"
+    INTERNAL = "BEKLENMEYEN_HATA"
+
+
+class Problem(ApiModel):
+    kod: ErrorCode
+    mesaj: str
+    istek_kimligi: str
+    tekrar_denenebilir: bool
+    ayrintilar: tuple[dict[str, str], ...] = ()

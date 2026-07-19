@@ -1,47 +1,56 @@
-# Virtual Environments
-.venv/
-venv/
-env/
-ENV/
-pyvenv.cfg
+.worktrees/
 
-# Python Cache and Compilations
+# İşletim sistemi ve editör
+Thumbs.db
+.DS_Store
+.venv/
+.dart_tool/
+.idea/
+.vscode/
+
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.hypothesis/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
 
-# IDEs and Editors
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.swp
+# Derleme ve çalışma çıktıları
+build/
+dist/
+coverage/
+artifacts/
+*.egg-info/
+*.log
+*.apk
+*.aab
+*.ipa
 
-# Database and Generated Files
+# Yerel veriler ve model önbelleği
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
-*.log
-local_data/
+models/cache/
 
-# Environment Variables & Keys (Secrets)
+# Gizli bilgiler ve imzalama malzemeleri
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
 *.pem
-*.key
-credentials.json
-google_client_secret.json
-
-# Local Dev Artifacts
-build/
-frontend/build/
-frontend/.dart_tool/
-frontend/lib/l10n/app_localizations*.dart
+*.mobileprovision
+key.properties
+google-services.json
+GoogleService-Info.plist
+infra/compose/secrets/*
+!infra/compose/secrets/README.md
