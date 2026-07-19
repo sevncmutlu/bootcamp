@@ -249,4 +249,3 @@ testleri, Flutter analizi ve Flutter testleri başarıyla tamamlandı. Telefon �
 ## Depo Standartları
 
 - [Mobil tasarım sistemi](./design-system/makiko/TASARIM-SISTEMI.md)
-- [Lisans](./LICENSE.md)
