@@ -143,7 +143,7 @@ jobs:
           cache-key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}
           pub-cache-key: flutter-pub-${{ runner.os }}-${{ hashFiles('frontend/pubspec.lock', 'packages/maki_finance_core/pubspec.lock') }}
 
-      - name: Sevinç alanını doğrula
+      - name: Frontend kaynak sınırını doğrula
         shell: powershell
         run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check_frontend_boundary.ps1
 

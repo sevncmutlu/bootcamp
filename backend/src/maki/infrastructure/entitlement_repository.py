@@ -51,6 +51,7 @@ class SqlAlchemyEntitlementRepository:
                 return _to_entitlement(entitlement_row)
 
             session.add(_transaction_row(transaction))
+            await session.flush()
             if entitlement_row is None:
                 session.add(_entitlement_row(proposed))
                 return proposed

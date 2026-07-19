@@ -120,6 +120,7 @@ class SqlAlchemyOfficialDataRepository:
                 published_at=None,
             )
             session.add(row)
+            await session.flush()
             session.add_all(
                 [
                     SeriesPointTable(

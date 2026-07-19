@@ -153,6 +153,7 @@ class SqlAlchemyJobRepository:
             if existing is not None:
                 return await self._resolve_existing(session, existing, idempotency)
             session.add(self._job_row(job))
+            await session.flush()
             session.add(self._outbox_row(outbox))
             session.add(self._idempotency_row(idempotency))
         return job
