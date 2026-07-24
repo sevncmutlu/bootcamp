@@ -2,7 +2,8 @@
 echo ========================================================
 echo Building Release APK for Android...
 echo ========================================================
-cd frontend
+set SCRIPT_DIR=%~dp0
+cd /d "%SCRIPT_DIR%frontend"
 flutter build apk --release --dart-define=BACKEND_URL=http://localhost:8000
 echo ========================================================
 echo Build complete. Output APK location:
