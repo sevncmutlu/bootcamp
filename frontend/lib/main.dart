@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/theme/app_theme.dart';
@@ -69,6 +70,10 @@ class MyAppState extends State<MyApp> {
       loc = const Locale('en');
     }
 
+    if (loc != null) {
+      Intl.defaultLocale = loc.toString();
+    }
+
     if (mounted) {
       setState(() {
         _hasCompletedOnboarding = completed;
@@ -93,6 +98,9 @@ class MyAppState extends State<MyApp> {
   }
 
   void setLocale(Locale? locale) {
+    if (locale != null) {
+      Intl.defaultLocale = locale.toString();
+    }
     setState(() {
       _locale = locale;
     });

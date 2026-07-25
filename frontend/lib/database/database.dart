@@ -129,12 +129,26 @@ class AppDatabase extends _$AppDatabase {
     return (delete(expenses)..where((t) => t.id.equals(id))).go();
   }
 
+  Stream<List<Income>> watchAllIncomes() {
+    return (select(incomes)..orderBy([
+          (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+        ]))
+        .watch();
+  }
+
   Future<List<Income>> getAllIncomes() {
-    return select(incomes).get();
+    return (select(incomes)..orderBy([
+          (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+        ]))
+        .get();
   }
 
   Future<int> insertIncome(IncomesCompanion companion) {
     return into(incomes).insert(companion);
+  }
+
+  Future<int> deleteIncome(int id) {
+    return (delete(incomes)..where((t) => t.id.equals(id))).go();
   }
 
   Future<UserGamificationState?> getGamificationState() async {

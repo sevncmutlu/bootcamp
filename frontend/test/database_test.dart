@@ -87,4 +87,27 @@ void main() {
     final expensesAfterDelete = await db.getAllExpenses();
     expect(expensesAfterDelete.isEmpty, isTrue);
   });
+
+  test('gelirler eklenip sorgulanabilir ve silinebilir', () async {
+    final companion = IncomesCompanion.insert(
+      title: 'Maaş',
+      amount: 15000.0,
+      date: DateTime(2026, 7, 25),
+      source: 'Maaş',
+    );
+
+    final insertedId = await db.insertIncome(companion);
+    expect(insertedId, greaterThan(0));
+
+    final incomes = await db.getAllIncomes();
+    expect(incomes.length, equals(1));
+    expect(incomes.first.title, equals('Maaş'));
+    expect(incomes.first.amount, equals(15000.0));
+
+    final deletedRows = await db.deleteIncome(insertedId);
+    expect(deletedRows, equals(1));
+
+    final incomesAfterDelete = await db.getAllIncomes();
+    expect(incomesAfterDelete.isEmpty, isTrue);
+  });
 }

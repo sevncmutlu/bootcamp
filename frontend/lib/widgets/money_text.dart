@@ -47,7 +47,7 @@ class MoneyText extends StatelessWidget {
         );
 
     return Text(
-      '$prefix${formatTL(amount, decimals: decimals)}',
+      '$prefix${formatTL(amount, decimals: decimals, context: context)}',
       style: baseStyle,
     );
   }

@@ -237,7 +237,7 @@
   "paywallBenefit1": "Unlimited AI coaching conversations",
   "paywallBenefit2": "Real-time economic insights and forecasts",
   "paywallBenefit3": "Personalized smart budget recommendations",
-  "paywallPriceLabel": "$4.99 / month",
+  "paywallPriceLabel": "₺49.99 / month",
   "paywallCtaButton": "Start Free Trial",
   "paywallRestoreButton": "Restore Purchase",
   "cameraButton": "Camera",
@@ -336,5 +336,30 @@
     }
   },
   "paywallStoreNotActive": "Store checkout link is not active yet.",
-  "paywallNoActiveSubscription": "No active subscription found."
+  "paywallNoActiveSubscription": "No active subscription found.",
+  "totalIncome": "Total Income",
+  "netBalance": "Net Balance",
+  "tabExpenses": "Expenses",
+  "tabIncome": "Income",
+  "addIncome": "Add Income",
+  "noIncomes": "No income recorded yet.",
+  "emptyIncomesHint": "Tap the button below to add your first income.",
+  "incomeCountLabel": "{count} income records",
+  "@incomeCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labelSource": "Source",
+  "validationSource": "Please enter an income source.",
+  "labelIncomeTitle": "Income Title",
+  "defaultIncomeSource": "Salary",
+  "sourceSalary": "Salary",
+  "sourceFreelance": "Freelance / Side Project",
+  "sourceInvestment": "Investment",
+  "sourceRent": "Rental Income",
+  "sourceBonus": "Bonus & Gift",
+  "sourceOther": "Other"
 }

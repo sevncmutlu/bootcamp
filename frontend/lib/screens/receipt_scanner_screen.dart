@@ -300,7 +300,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                 ),
                 decoration: InputDecoration(
                   labelText: l10n.labelTotalAmount,
-                  prefixIcon: const Icon(Icons.attach_money_outlined),
+                  prefixIcon: const Icon(Icons.currency_lira),
                 ),
               ),
               const SizedBox(height: 16),

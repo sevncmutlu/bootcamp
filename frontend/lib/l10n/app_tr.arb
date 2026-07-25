@@ -337,5 +337,30 @@
     }
   },
   "paywallStoreNotActive": "Mağaza satın alma bağlantısı henüz etkin değil.",
-  "paywallNoActiveSubscription": "Etkin abonelik bulunamadı."
+  "paywallNoActiveSubscription": "Etkin abonelik bulunamadı.",
+  "totalIncome": "Toplam Gelir",
+  "netBalance": "Net Bakiye",
+  "tabExpenses": "Giderler",
+  "tabIncome": "Gelirler",
+  "addIncome": "Gelir Ekle",
+  "noIncomes": "Henüz gelir kaydedilmedi.",
+  "emptyIncomesHint": "İlk gelirini eklemek için aşağıdaki butona dokun.",
+  "incomeCountLabel": "{count} gelir kaydı",
+  "@incomeCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labelSource": "Kaynak",
+  "validationSource": "Lütfen bir gelir kaynağı girin.",
+  "labelIncomeTitle": "Gelir Başlığı",
+  "defaultIncomeSource": "Maaş",
+  "sourceSalary": "Maaş",
+  "sourceFreelance": "Freelance / Ek Gelir",
+  "sourceInvestment": "Yatırım",
+  "sourceRent": "Kira / Mülk",
+  "sourceBonus": "Prim / Hediye",
+  "sourceOther": "Diğer"
 }

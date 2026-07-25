@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:drift/drift.dart' as drift;
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/utils/currency.dart';
 import 'package:maki_app/utils/dates.dart';
 import 'package:maki_app/utils/category_l10n.dart';
 
 import 'package:maki_app/screens/receipt_scanner_screen.dart';
 import 'package:maki_app/screens/settings_screen.dart';
 import 'package:maki_app/theme/app_tokens.dart';
-import 'package:maki_app/widgets/stat_card.dart';
+import 'package:maki_app/widgets/net_balance_card.dart';
 import 'package:maki_app/widgets/empty_state.dart';
 import 'package:maki_app/widgets/money_text.dart';
 import 'package:maki_app/widgets/mascot.dart';
@@ -21,14 +19,27 @@ class ExpenseEntryScreen extends StatefulWidget {
   State<ExpenseEntryScreen> createState() => _ExpenseEntryScreenState();
 }
 
-class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
+class _ExpenseEntryScreenState extends State<ExpenseEntryScreen>
+    with SingleTickerProviderStateMixin {
   final _database = AppDatabase.instance;
+  late TabController _tabController;
   List<Category> _categories = [];
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (!mounted) return;
+      setState(() {});
+    });
     _loadCategoriesAndSeed();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadCategoriesAndSeed() async {
@@ -55,6 +66,54 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
         return Icons.sports_esports_outlined;
       default:
         return Icons.category_outlined;
+    }
+  }
+
+  IconData _getIncomeSourceIcon(String source) {
+    switch (source.toLowerCase()) {
+      case 'salary':
+      case 'maaş':
+        return Icons.work_outline;
+      case 'freelance':
+      case 'ek gelir':
+        return Icons.laptop_chromebook_outlined;
+      case 'investment':
+      case 'yatırım':
+        return Icons.trending_up_rounded;
+      case 'rent':
+      case 'kira':
+        return Icons.real_estate_agent_outlined;
+      case 'bonus':
+      case 'prim':
+        return Icons.card_giftcard_outlined;
+      default:
+        return Icons.account_balance_wallet_outlined;
+    }
+  }
+
+  String _getLocalizedIncomeSource(BuildContext context, String source) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (source.toLowerCase()) {
+      case 'salary':
+      case 'maaş':
+        return l10n.sourceSalary;
+      case 'freelance':
+      case 'ek gelir':
+        return l10n.sourceFreelance;
+      case 'investment':
+      case 'yatırım':
+        return l10n.sourceInvestment;
+      case 'rent':
+      case 'kira':
+        return l10n.sourceRent;
+      case 'bonus':
+      case 'prim':
+        return l10n.sourceBonus;
+      case 'other':
+      case 'diğer':
+        return l10n.sourceOther;
+      default:
+        return source;
     }
   }
 
@@ -132,7 +191,7 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                       ),
                       decoration: InputDecoration(
                         labelText: l10n.labelAmount,
-                        prefixIcon: const Icon(Icons.attach_money),
+                        prefixIcon: const Icon(Icons.currency_lira),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -150,7 +209,6 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                       initialValue: selectedCategory,
                       decoration: InputDecoration(
                         labelText: l10n.labelCategory,
-                        prefixIcon: const Icon(Icons.category_outlined),
                       ),
                       items: _categories.map((cat) {
                         return DropdownMenuItem<Category>(
@@ -214,10 +272,7 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                             const Icon(Icons.calendar_today_outlined),
                             const SizedBox(width: 16),
                             Text(
-                              Dates.long(
-                                selectedDate,
-                                Localizations.localeOf(context).toString(),
-                              ),
+                              '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}',
                               style: theme.textTheme.bodyLarge,
                             ),
                           ],
@@ -239,9 +294,9 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                               amount: amount,
                               date: selectedDate,
                               category: selectedCategory!.name,
-                              notes: const drift.Value(null),
                             ),
                           );
+
                           if (context.mounted) {
                             Navigator.pop(context);
                           }
@@ -258,6 +313,211 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                       ),
                       child: Text(
                         l10n.saveExpense,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showAddIncomeDialog() {
+    final titleController = TextEditingController();
+    final amountController = TextEditingController();
+    String selectedSource = 'Salary';
+    DateTime selectedDate = DateTime.now();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final l10n = AppLocalizations.of(context)!;
+            final theme = Theme.of(context);
+            final formKey = GlobalKey<FormState>();
+
+            final incomeSources = const [
+              'Salary',
+              'Freelance',
+              'Investment',
+              'Rent',
+              'Bonus',
+              'Other',
+            ];
+
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 24.0,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24.0,
+              ),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n.addIncome,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        labelText: l10n.labelIncomeTitle,
+                        prefixIcon: const Icon(Icons.title),
+                      ),
+                      textCapitalization: TextCapitalization.sentences,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.validationTitle;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: amountController,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: InputDecoration(
+                        labelText: l10n.labelAmount,
+                        prefixIcon: const Icon(Icons.currency_lira),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.validationAmount;
+                        }
+                        final amount = double.tryParse(value.trim());
+                        if (amount == null || amount <= 0) {
+                          return l10n.validationAmount;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedSource,
+                      decoration: InputDecoration(
+                        labelText: l10n.labelSource,
+                      ),
+                      items: incomeSources.map((srcKey) {
+                        return DropdownMenuItem<String>(
+                          value: srcKey,
+                          child: Row(
+                            children: [
+                              Icon(
+                                _getIncomeSourceIcon(srcKey),
+                                size: 20,
+                                color: theme.colorScheme.primary,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(_getLocalizedIncomeSource(context, srcKey)),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setModalState(() {
+                            selectedSource = val;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    InkWell(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime.now(),
+                        );
+                        if (picked != null) {
+                          setModalState(() {
+                            selectedDate = picked;
+                          });
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(16.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 18.0,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: theme.colorScheme.outline.withValues(
+                              alpha: 0.15,
+                            ),
+                          ),
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.calendar_today_outlined),
+                            const SizedBox(width: 16),
+                            Text(
+                              '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}',
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          final title = titleController.text.trim();
+                          final amount = double.parse(
+                            amountController.text.trim(),
+                          );
+
+                          await _database.insertIncome(
+                            IncomesCompanion.insert(
+                              title: title,
+                              amount: amount,
+                              date: selectedDate,
+                              source: selectedSource,
+                            ),
+                          );
+
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        l10n.addIncome,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -312,123 +572,247 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
       ),
       body: StreamBuilder<List<Expense>>(
         stream: _database.watchAllExpenses(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final list = snapshot.data ?? [];
-          final total = list.fold<double>(
+        builder: (context, expSnapshot) {
+          final expensesList = expSnapshot.data ?? [];
+          final totalExpenses = expensesList.fold<double>(
             0.0,
             (sum, item) => sum + item.amount,
           );
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: StatCard(
-                  label: l10n.totalExpense,
-                  value: formatTL(total),
-                  icon: Icons.account_balance_wallet_outlined,
-                  footer: Row(
-                    children: [
-                      const Mascot(pose: MascotPose.happy, size: 28),
-                      const SizedBox(width: AppSpacing.sm),
-                      Text(
-                        l10n.expenseCountLabel(list.length),
-                        style: const TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                    ],
+          return StreamBuilder<List<Income>>(
+            stream: _database.watchAllIncomes(),
+            builder: (context, incSnapshot) {
+              final incomesList = incSnapshot.data ?? [];
+              final totalIncome = incomesList.fold<double>(
+                0.0,
+                (sum, item) => sum + item.amount,
+              );
+              final netBalance = totalIncome - totalExpenses;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: NetBalanceCard(
+                      netBalance: netBalance,
+                      totalIncome: totalIncome,
+                      totalExpenses: totalExpenses,
+                    ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: list.isEmpty
-                    ? EmptyState(
-                        title: l10n.noExpenses,
-                        message: l10n.emptyExpensesHint,
-                        pose: MascotPose.wave,
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        itemCount: list.length,
-                        itemBuilder: (context, index) {
-                          final item = list[index];
 
-                          final cat = _categories.firstWhere(
-                            (c) => c.name == item.category,
-                            orElse: () => const Category(
-                              id: 0,
-                              name: 'Default',
-                              colorHex: '#FF7F7F7F',
-                              iconName: 'category',
-                            ),
-                          );
-
-                          return Dismissible(
-                            key: ValueKey(item.id),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 24.0),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.errorContainer,
-                                borderRadius: BorderRadius.circular(16.0),
-                              ),
-                              child: Icon(
-                                Icons.delete_outline,
-                                color: theme.colorScheme.onErrorContainer,
-                              ),
-                            ),
-                            onDismissed: (_) async {
-                              await _database.deleteExpense(item.id);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Card(
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: _parseHexColor(
-                                      cat.colorHex,
-                                    ).withValues(alpha: 0.15),
-                                    child: Icon(
-                                      _getCategoryIcon(cat.iconName),
-                                      color: _parseHexColor(cat.colorHex),
-                                    ),
-                                  ),
-                                  title: Text(
-                                    item.title,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    '${Dates.medium(item.date, Localizations.localeOf(context).toString())} · ${getLocalizedCategoryName(context, item.category)}',
-                                  ),
-                                  trailing: MoneyText(
-                                    item.amount,
-                                    kind: MoneyKind.expense,
-                                    style: theme.textTheme.titleMedium,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest
+                          .withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: TabBar(
+                      controller: _tabController,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
+                      indicator: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: theme.colorScheme.primary,
                       ),
-              ),
-            ],
+                      labelColor: theme.colorScheme.onPrimary,
+                      unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                      tabs: [
+                        Tab(text: l10n.tabExpenses),
+                        Tab(text: l10n.tabIncome),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Expenses Tab
+                        expensesList.isEmpty
+                            ? EmptyState(
+                                title: l10n.noExpenses,
+                                message: l10n.emptyExpensesHint,
+                                pose: MascotPose.happy,
+                              )
+                            : ListView.builder(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
+                                itemCount: expensesList.length,
+                                itemBuilder: (context, index) {
+                                  final item = expensesList[index];
+                                  final cat = _categories.firstWhere(
+                                    (c) => c.name == item.category,
+                                    orElse: () => const Category(
+                                      id: 0,
+                                      name: 'Default',
+                                      colorHex: '#FF7F7F7F',
+                                      iconName: 'category',
+                                    ),
+                                  );
+
+                                  return Dismissible(
+                                    key: ValueKey('exp-${item.id}'),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.only(
+                                        right: 24.0,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.errorContainer,
+                                        borderRadius: BorderRadius.circular(
+                                          16.0,
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        Icons.delete_outline,
+                                        color:
+                                            theme.colorScheme.onErrorContainer,
+                                      ),
+                                    ),
+                                    onDismissed: (_) async {
+                                      await _database.deleteExpense(item.id);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 8.0,
+                                      ),
+                                      child: Card(
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundColor: _parseHexColor(
+                                              cat.colorHex,
+                                            ).withValues(alpha: 0.15),
+                                            child: Icon(
+                                              _getCategoryIcon(cat.iconName),
+                                              color: _parseHexColor(
+                                                cat.colorHex,
+                                              ),
+                                            ),
+                                          ),
+                                          title: Text(
+                                            item.title,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            '${Dates.medium(item.date, Localizations.localeOf(context).toString())} · ${getLocalizedCategoryName(context, item.category)}',
+                                          ),
+                                          trailing: MoneyText(
+                                            item.amount,
+                                            kind: MoneyKind.expense,
+                                            style: theme.textTheme.titleMedium,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+
+                        // Income Tab
+                        incomesList.isEmpty
+                            ? EmptyState(
+                                title: l10n.noIncomes,
+                                message: l10n.emptyIncomesHint,
+                                pose: MascotPose.celebrate,
+                              )
+                            : ListView.builder(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
+                                itemCount: incomesList.length,
+                                itemBuilder: (context, index) {
+                                  final item = incomesList[index];
+
+                                  return Dismissible(
+                                    key: ValueKey('inc-${item.id}'),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.only(
+                                        right: 24.0,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.errorContainer,
+                                        borderRadius: BorderRadius.circular(
+                                          16.0,
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        Icons.delete_outline,
+                                        color:
+                                            theme.colorScheme.onErrorContainer,
+                                      ),
+                                    ),
+                                    onDismissed: (_) async {
+                                      await _database.deleteIncome(item.id);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 8.0,
+                                      ),
+                                      child: Card(
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundColor: Colors.teal
+                                                .withValues(alpha: 0.15),
+                                            child: Icon(
+                                              _getIncomeSourceIcon(item.source),
+                                              color: Colors.teal,
+                                            ),
+                                          ),
+                                          title: Text(
+                                            item.title,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            '${Dates.medium(item.date, Localizations.localeOf(context).toString())} · ${_getLocalizedIncomeSource(context, item.source)}',
+                                          ),
+                                          trailing: MoneyText(
+                                            item.amount,
+                                            kind: MoneyKind.income,
+                                            style: theme.textTheme.titleMedium,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddExpenseDialog,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.manualExpense),
-        elevation: 0,
-      ),
+      floatingActionButton: _tabController.index == 0
+          ? FloatingActionButton.extended(
+              key: const ValueKey('fab-expense'),
+              onPressed: _showAddExpenseDialog,
+              icon: const Icon(Icons.add),
+              label: Text(l10n.manualExpense),
+              elevation: 0,
+            )
+          : FloatingActionButton.extended(
+              key: const ValueKey('fab-income'),
+              onPressed: _showAddIncomeDialog,
+              icon: const Icon(Icons.add),
+              label: Text(l10n.addIncome),
+              backgroundColor: Colors.teal,
+              foregroundColor: Colors.white,
+              elevation: 0,
+            ),
     );
   }
 }
