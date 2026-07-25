@@ -56,4 +56,8 @@ class OnboardingService {
   Future<void> setLanguage(String lang) async {
     await _storage.write(key: _languageKey, value: lang);
   }
+
+  Future<void> resetAllSettings() async {
+    await _storage.deleteAll();
+  }
 }

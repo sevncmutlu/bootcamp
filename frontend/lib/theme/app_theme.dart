@@ -149,7 +149,10 @@ class AppTheme {
           elevation: 0,
           backgroundColor: scheme.primary,
           foregroundColor: scheme.onPrimary,
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xl,
+            vertical: AppSpacing.lg,
+          ),
           textStyle: textTheme.titleMedium,
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.card),
         ),

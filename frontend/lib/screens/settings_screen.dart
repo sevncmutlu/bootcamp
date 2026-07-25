@@ -324,6 +324,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _confirmReset() async {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final myAppState = MyApp.of(context);
 
     final confirm = await showDialog<bool>(
       context: context,
@@ -353,8 +354,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (confirm == true) {
       await AppDatabase.instance.clearAllData();
-      await OnboardingService.instance.setCompletedOnboarding(false);
-      await OnboardingService.instance.setPrimaryGoal('track_spending');
+      await OnboardingService.instance.resetAllSettings();
+      myAppState?.setLocale(null);
+      myAppState?.setThemeMode(ThemeMode.system);
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute<void>(builder: (_) => const MyApp()),
@@ -408,7 +410,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           ListTile(
             leading: Icon(
-              Icons.color_lens_outlined,
+              Icons.format_color_fill_outlined,
               color: BrandAccents.colorForKey(_selectedAccent),
             ),
             title: Text(l10n.settingsAccentTitle),
@@ -442,7 +444,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           if (kDebugMode)
             SwitchListTile(
               secondary: const Icon(Icons.bug_report_outlined),
-              title: const Text('GELİŞTİRME: Pro erişimi'),
+              title: Text(l10n.settingsDevProAccess),
               value: _isPremium,
               onChanged: (val) async {
                 await PremiumService.instance.setPremium(value: val);

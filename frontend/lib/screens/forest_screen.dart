@@ -108,6 +108,26 @@ class ForestScreenState extends State<ForestScreen> {
         return l10n.challengeNoShopping;
       case 'challengeSaveTen':
         return l10n.challengeSaveTen;
+      case 'challengeIncomeAchiever':
+        return l10n.challengeIncomeAchiever;
+      case 'challengeCoffeeSaver':
+        return l10n.challengeCoffeeSaver;
+      case 'challengeReceiptMaster':
+        return l10n.challengeReceiptMaster;
+      case 'challengeSuperSaver':
+        return l10n.challengeSuperSaver;
+      case 'challengeCommuteSmart':
+        return l10n.challengeCommuteSmart;
+      case 'challengeEntertainmentControl':
+        return l10n.challengeEntertainmentControl;
+      case 'challengeSubscriptionAudit':
+        return l10n.challengeSubscriptionAudit;
+      case 'challengeBudgetGuardian':
+        return l10n.challengeBudgetGuardian;
+      case 'challengeMicroSaver':
+        return l10n.challengeMicroSaver;
+      case 'challengeWeeklyReviewer':
+        return l10n.challengeWeeklyReviewer;
       default:
         return key;
     }
@@ -124,6 +144,26 @@ class ForestScreenState extends State<ForestScreen> {
         return l10n.challengeNoShoppingDesc;
       case 'challengeSaveTenDesc':
         return l10n.challengeSaveTenDesc;
+      case 'challengeIncomeAchieverDesc':
+        return l10n.challengeIncomeAchieverDesc;
+      case 'challengeCoffeeSaverDesc':
+        return l10n.challengeCoffeeSaverDesc;
+      case 'challengeReceiptMasterDesc':
+        return l10n.challengeReceiptMasterDesc;
+      case 'challengeSuperSaverDesc':
+        return l10n.challengeSuperSaverDesc;
+      case 'challengeCommuteSmartDesc':
+        return l10n.challengeCommuteSmartDesc;
+      case 'challengeEntertainmentControlDesc':
+        return l10n.challengeEntertainmentControlDesc;
+      case 'challengeSubscriptionAuditDesc':
+        return l10n.challengeSubscriptionAuditDesc;
+      case 'challengeBudgetGuardianDesc':
+        return l10n.challengeBudgetGuardianDesc;
+      case 'challengeMicroSaverDesc':
+        return l10n.challengeMicroSaverDesc;
+      case 'challengeWeeklyReviewerDesc':
+        return l10n.challengeWeeklyReviewerDesc;
       default:
         return key;
     }
@@ -246,8 +286,9 @@ class ForestScreenState extends State<ForestScreen> {
                                   ),
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    decoration: isClaimed
-                                        ? TextDecoration.lineThrough
+                                    color: isClaimed
+                                        ? theme.colorScheme.onSurface
+                                            .withValues(alpha: 0.4)
                                         : null,
                                   ),
                                 ),
@@ -255,7 +296,10 @@ class ForestScreenState extends State<ForestScreen> {
                                 Text(
                                   _getLocalizedDesc(context, challenge.descKey),
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
+                                    color: isClaimed
+                                        ? theme.colorScheme.onSurfaceVariant
+                                            .withValues(alpha: 0.5)
+                                        : theme.colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -269,6 +313,10 @@ class ForestScreenState extends State<ForestScreen> {
                                 backgroundColor: ForestColors.emerald,
                                 foregroundColor: Colors.white,
                                 elevation: 0,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 10.0,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),

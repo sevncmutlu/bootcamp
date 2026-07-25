@@ -222,12 +222,24 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                               onPressed: () => _pickImage(ImageSource.camera),
                               icon: const Icon(Icons.camera_alt_outlined),
                               label: Text(l10n.cameraButton),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 12.0,
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 12),
                             ElevatedButton.icon(
                               onPressed: () => _pickImage(ImageSource.gallery),
                               icon: const Icon(Icons.photo_library_outlined),
                               label: Text(l10n.galleryButton),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 12.0,
+                                ),
+                              ),
                             ),
                           ],
                         ),
