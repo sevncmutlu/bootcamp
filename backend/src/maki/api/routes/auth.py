@@ -7,12 +7,11 @@ from pydantic import BaseModel, EmailStr, Field
 
 router = APIRouter(prefix="/v1/auth", tags=["auth"])
 
-# Secret key for JWT signing
 _JWT_SECRET = "maki_finance_auth_secret_key_2026"
 _JWT_ALGORITHM = "HS256"
 
-# In-memory store for development / demo mode
 _USERS_DB: dict[str, dict] = {}
+_EMAIL_TO_USER_ID: dict[str, str] = {}
 
 
 def _hash_password(password: str) -> str:
@@ -82,7 +81,7 @@ def _verify_token(token: str) -> dict:
 @router.post("/register", response_model=AuthTokenResponse)
 async def register(req: RegisterRequest):
     email_clean = req.email.strip().lower()
-    if email_clean in _USERS_DB:
+    if email_clean in _EMAIL_TO_USER_ID:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Bu e-posta adresi ile zaten kayıtlı bir hesap var.",
@@ -100,7 +99,8 @@ async def register(req: RegisterRequest):
         "financial_goal": "track_spending",
         "created_at": created_at,
     }
-    _USERS_DB[email_clean] = user_record
+    _USERS_DB[user_id] = user_record
+    _EMAIL_TO_USER_ID[email_clean] = user_id
 
     token = _create_token(user_id, email_clean)
     return AuthTokenResponse(
@@ -116,7 +116,8 @@ async def register(req: RegisterRequest):
 @router.post("/login", response_model=AuthTokenResponse)
 async def login(req: LoginRequest):
     email_clean = req.email.strip().lower()
-    user = _USERS_DB.get(email_clean)
+    user_id = _EMAIL_TO_USER_ID.get(email_clean)
+    user = _USERS_DB.get(user_id) if user_id else None
 
     if not user or user["password_hash"] != _hash_password(req.password):
         raise HTTPException(
@@ -138,12 +139,14 @@ async def login(req: LoginRequest):
 @router.get("/me", response_model=UserProfileResponse)
 async def get_current_user(authorization: str = Header(...)):
     payload = _verify_token(authorization)
+    user_id = payload.get("sub")
     email = payload.get("email", "").lower()
-    user = _USERS_DB.get(email)
+    user = _USERS_DB.get(user_id)
 
     if not user:
+        user_id = user_id or f"usr_{hashlib.md5(email.encode()).hexdigest()[:12]}"
         user = {
-            "user_id": payload.get("sub", f"usr_{hashlib.md5(email.encode()).hexdigest()[:12]}"),
+            "user_id": user_id,
             "email": email,
             "password_hash": "",
             "display_name": email.split("@")[0].capitalize() if "@" in email else "User",
@@ -151,7 +154,8 @@ async def get_current_user(authorization: str = Header(...)):
             "financial_goal": "track_spending",
             "created_at": datetime.now(UTC).isoformat(),
         }
-        _USERS_DB[email] = user
+        _USERS_DB[user_id] = user
+        _EMAIL_TO_USER_ID[email] = user_id
 
     return UserProfileResponse(
         user_id=user["user_id"],
@@ -166,12 +170,14 @@ async def get_current_user(authorization: str = Header(...)):
 @router.put("/profile", response_model=UserProfileResponse)
 async def update_profile(req: UpdateProfileRequest, authorization: str = Header(...)):
     payload = _verify_token(authorization)
+    user_id = payload.get("sub")
     email = payload.get("email", "").lower()
-    user = _USERS_DB.get(email)
+    user = _USERS_DB.get(user_id)
 
     if not user:
+        user_id = user_id or f"usr_{hashlib.md5(email.encode()).hexdigest()[:12]}"
         user = {
-            "user_id": payload.get("sub", f"usr_{hashlib.md5(email.encode()).hexdigest()[:12]}"),
+            "user_id": user_id,
             "email": email,
             "password_hash": "",
             "display_name": email.split("@")[0].capitalize() if "@" in email else "User",
@@ -179,21 +185,22 @@ async def update_profile(req: UpdateProfileRequest, authorization: str = Header(
             "financial_goal": "track_spending",
             "created_at": datetime.now(UTC).isoformat(),
         }
-        _USERS_DB[email] = user
+        _USERS_DB[user_id] = user
+        _EMAIL_TO_USER_ID[email] = user_id
 
     if req.display_name is not None:
         user["display_name"] = req.display_name.strip()
     if req.email is not None:
         new_email = req.email.strip().lower()
-        if new_email != email:
-            if new_email in _USERS_DB:
+        if new_email != user["email"]:
+            if new_email in _EMAIL_TO_USER_ID and _EMAIL_TO_USER_ID[new_email] != user_id:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Bu e-posta adresi başka bir hesap tarafından kullanılıyor.",
                 )
-            _USERS_DB.pop(email, None)
+            _EMAIL_TO_USER_ID.pop(user["email"], None)
             user["email"] = new_email
-            _USERS_DB[new_email] = user
+            _EMAIL_TO_USER_ID[new_email] = user_id
     if req.avatar_url is not None:
         user["avatar_url"] = req.avatar_url
     if req.financial_goal is not None:
