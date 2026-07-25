@@ -173,9 +173,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   static const int _debtTabIndex = 2;
+  static const int _coachTabIndex = 4;
 
   Future<void> _onTabSelected(int index) async {
-    if (index == _debtTabIndex) {
+    if (index == _debtTabIndex || index == _coachTabIndex) {
       final isPremium = await PremiumService.instance.isPremium();
       if (!isPremium) {
         if (!mounted) return;

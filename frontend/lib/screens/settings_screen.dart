@@ -6,6 +6,7 @@ import 'package:maki_app/services/onboarding_service.dart';
 import 'package:maki_app/services/premium_service.dart';
 import 'package:maki_app/theme/app_tokens.dart';
 import 'package:maki_app/screens/notification_settings_dialog.dart';
+import 'package:maki_app/screens/paywall_screen.dart';
 import 'package:maki_app/main.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -440,6 +441,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: Text(
               _isPremium ? l10n.settingsProActive : l10n.settingsProInactive,
             ),
+            trailing: _isPremium ? null : const Icon(Icons.chevron_right),
+            onTap: () async {
+              if (!_isPremium) {
+                final result = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                );
+                if (result == true) {
+                  _loadSettings();
+                }
+              }
+            },
           ),
           if (kDebugMode)
             SwitchListTile(

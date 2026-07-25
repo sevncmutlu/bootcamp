@@ -97,22 +97,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 const SizedBox(height: 24),
 
                 const Center(
-                  child: Mascot(pose: MascotPose.celebrate, size: 96),
-                ),
-                const SizedBox(height: 16),
-
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(20.0),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.workspace_premium_rounded,
-                      size: 56,
-                      color: theme.colorScheme.primary,
-                    ),
+                  child: Mascot(
+                    pose: MascotPose.celebrate,
+                    size: 110,
+                    withBadge: true,
                   ),
                 ),
                 const SizedBox(height: 24),

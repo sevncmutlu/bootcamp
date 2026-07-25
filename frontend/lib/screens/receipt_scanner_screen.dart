@@ -8,6 +8,8 @@ import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/services/maki_api_client.dart';
 import 'package:maki_app/utils/category_l10n.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:maki_app/screens/paywall_screen.dart';
+import 'package:maki_app/services/premium_service.dart';
 
 class ReceiptScannerScreen extends StatefulWidget {
   const ReceiptScannerScreen({super.key});
@@ -76,6 +78,15 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
 
   Future<void> _uploadAndParseReceipt() async {
     if (_selectedImage == null) return;
+
+    final isPro = await PremiumService.instance.isPremium();
+    if (!isPro) {
+      if (!mounted) return;
+      final unlocked = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(builder: (_) => const PaywallScreen()),
+      );
+      if (unlocked != true) return;
+    }
 
     setState(() {
       _isUploading = true;
