@@ -18,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   bool _isLoading = false;
+  bool _obscurePassword = true;
   String? _errorMessage;
 
   @override
@@ -53,6 +54,87 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  Future<void> _showForgotPasswordDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final emailController = TextEditingController(text: _emailController.text);
+    final newPasswordController = TextEditingController();
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            l10n.resetPasswordTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: l10n.emailLabel,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: newPasswordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: l10n.newPasswordLabel,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.cancelButton),
+            ),
+            TextButton(
+              onPressed: () async {
+                final email = emailController.text.trim();
+                final newPass = newPasswordController.text;
+                if (email.isNotEmpty && newPass.length >= 6) {
+                  final nav = Navigator.of(context);
+                  try {
+                    await AuthService.instance.resetPassword(
+                      email: email,
+                      newPassword: newPass,
+                    );
+                    if (mounted) {
+                      setState(() {
+                        _emailController.text = email;
+                        _passwordController.text = newPass;
+                        _errorMessage = null;
+                      });
+                    }
+                    nav.pop();
+                  } catch (e) {
+                    if (mounted) {
+                      setState(() {
+                        _errorMessage = e.toString().replaceAll('Exception: ', '');
+                      });
+                    }
+                    nav.pop();
+                  }
+                }
+              },
+              child: Text(l10n.saveButton),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -123,6 +205,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (val == null || val.trim().isEmpty) {
                       return l10n.emailLabel;
                     }
+                    final emailRegex =
+                        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                    if (!emailRegex.hasMatch(val.trim())) {
+                      return l10n.invalidEmail;
+                    }
                     return null;
                   },
                 ),
@@ -130,10 +217,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: l10n.passwordLabel,
                     prefixIcon: const Icon(Icons.lock_outlined),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                   ),
                   validator: (val) {
                     if (val == null || val.isEmpty) {
@@ -142,7 +241,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: AppSpacing.xxl),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _showForgotPasswordDialog,
+                    child: Text(
+                      l10n.forgotPassword,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
 
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submitLogin,

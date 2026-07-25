@@ -406,5 +406,22 @@
   "makiMascotOption": "Maki Maskotu",
   "editDisplayNameTitle": "Ad Soyad Düzenle",
   "editEmailTitle": "E-posta Adresi Düzenle",
-  "saveButton": "Kaydet"
+  "saveButton": "Kaydet",
+  "deleteAccountButton": "Hesabı Sil",
+  "deleteAccountTitle": "Hesabı Sil",
+  "deleteAccountConfirmation": "Hesabınızı kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+  "forgotPassword": "Şifrenizi mi unuttunuz?",
+  "resetPasswordTitle": "Şifreyi Sıfırla",
+  "newPasswordLabel": "Yeni Şifre",
+  "passwordWeak": "Zayıf",
+  "passwordMedium": "Orta",
+  "passwordStrong": "Güçlü",
+  "reqMinLength": "En az 6 karakter",
+  "reqNumber": "En az 1 rakam (0-9)",
+  "reqUpper": "En az 1 büyük harf (A-Z)",
+  "reqSpecial": "En az 1 özel karakter (!@#$...)",
+  "changePasswordTitle": "Şifreyi Değiştir",
+  "currentPasswordLabel": "Mevcut Şifre",
+  "changePasswordSuccess": "Şifreniz başarıyla değiştirildi",
+  "invalidEmail": "Lütfen geçerli bir e-posta adresi girin"
 }

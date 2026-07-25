@@ -163,4 +163,86 @@ class AuthService extends ChangeNotifier {
     await _storage.delete(key: _userKey);
     notifyListeners();
   }
+
+  Future<void> deleteAccount() async {
+    if (_accessToken != null) {
+      try {
+        await http.delete(
+          Uri.parse('${ApiConfig.baseUrl}/v1/auth/account'),
+          headers: {
+            'Authorization': 'Bearer $_accessToken',
+          },
+        );
+      } catch (e) {
+        debugPrint('Delete account error: $e');
+      }
+    }
+    await logout();
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    final response = await http.post(
+      Uri.parse('${ApiConfig.baseUrl}/v1/auth/reset-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'new_password': newPassword,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final msg = body['detail'] ?? 'Password reset failed';
+      throw Exception(msg.toString());
+    }
+  }
+
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    if (_accessToken == null) return;
+    final response = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}/v1/auth/change-password'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $_accessToken',
+      },
+      body: jsonEncode({
+        'old_password': oldPassword,
+        'new_password': newPassword,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      String errorMessage = '';
+      try {
+        final rawBody = response.body;
+        if (rawBody.isNotEmpty) {
+          final body = jsonDecode(rawBody);
+          if (body is Map<String, dynamic>) {
+            final detail = body['detail'];
+            if (detail is String && detail.isNotEmpty) {
+              errorMessage = detail;
+            } else if (detail is List && detail.isNotEmpty) {
+              final firstErr = detail.first;
+              if (firstErr is Map && firstErr.containsKey('msg')) {
+                errorMessage = firstErr['msg'].toString();
+              }
+            }
+          }
+        }
+      } catch (_) {}
+
+      if (errorMessage.isEmpty) {
+        errorMessage = response.statusCode == 400
+            ? 'Mevcut şifre yanlış.'
+            : 'Change password failed (${response.statusCode})';
+      }
+      throw Exception(errorMessage);
+    }
+  }
 }

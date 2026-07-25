@@ -361,6 +361,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (confirm == true) {
       await AppDatabase.instance.clearAllData();
       await OnboardingService.instance.resetAllSettings();
+      await AuthService.instance.logout();
       myAppState?.setLocale(null);
       myAppState?.setThemeMode(ThemeMode.system);
       if (mounted) {
@@ -404,39 +405,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: ListView(
         children: [
-          ListTile(
-            leading: CircleAvatar(
-              radius: 20,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              backgroundImage: _getAvatarImage(
-                AuthService.instance.currentUser?.avatarUrl,
-              ),
-            ),
-            title: Text(
-              AuthService.instance.currentUser?.displayName ?? l10n.guestUser,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              AuthService.instance.currentUser?.email ?? l10n.loginSubtitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () async {
-              if (AuthService.instance.isLoggedIn) {
-                await Navigator.of(context).push<void>(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const ProfileScreen(),
-                  ),
-                );
-              } else {
-                await Navigator.of(context).push<bool?>(
-                  MaterialPageRoute<bool?>(
-                    builder: (_) => const LoginScreen(),
-                  ),
-                );
-              }
-              setState(() {});
+          ListenableBuilder(
+            listenable: AuthService.instance,
+            builder: (context, _) {
+              final user = AuthService.instance.currentUser;
+              return ListTile(
+                leading: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: theme.colorScheme.primaryContainer,
+                  backgroundImage: _getAvatarImage(user?.avatarUrl),
+                ),
+                title: Text(
+                  user?.displayName ?? l10n.guestUser,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  user?.email ?? l10n.loginSubtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  if (AuthService.instance.isLoggedIn) {
+                    await Navigator.of(context).push<void>(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const ProfileScreen(),
+                      ),
+                    );
+                  } else {
+                    await Navigator.of(context).push<bool?>(
+                      MaterialPageRoute<bool?>(
+                        builder: (_) => const LoginScreen(),
+                      ),
+                    );
+                  }
+                  if (mounted) setState(() {});
+                },
+              );
             },
           ),
           const Divider(height: 1),

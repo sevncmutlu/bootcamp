@@ -405,5 +405,22 @@
   "makiMascotOption": "Maki Mascot",
   "editDisplayNameTitle": "Edit Display Name",
   "editEmailTitle": "Edit Email Address",
-  "saveButton": "Save"
+  "saveButton": "Save",
+  "deleteAccountButton": "Delete Account",
+  "deleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmation": "Are you sure you want to permanently delete your account? This action cannot be undone.",
+  "forgotPassword": "Forgot Password?",
+  "resetPasswordTitle": "Reset Password",
+  "newPasswordLabel": "New Password",
+  "passwordWeak": "Weak",
+  "passwordMedium": "Medium",
+  "passwordStrong": "Strong",
+  "reqMinLength": "At least 6 characters",
+  "reqNumber": "At least 1 number (0-9)",
+  "reqUpper": "At least 1 uppercase letter (A-Z)",
+  "reqSpecial": "At least 1 special character (!@#$...)",
+  "changePasswordTitle": "Change Password",
+  "currentPasswordLabel": "Current Password",
+  "changePasswordSuccess": "Password changed successfully",
+  "invalidEmail": "Please enter a valid email address"
 }
