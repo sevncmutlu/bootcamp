@@ -122,6 +122,7 @@ def _verify_token(token: str) -> dict:
 
 @router.post("/register", response_model=AuthTokenResponse)
 async def register(req: RegisterRequest):
+    _load_users_from_disk()
     email_clean = req.email.strip().lower()
     if email_clean in _EMAIL_TO_USER_ID:
         raise HTTPException(
@@ -158,6 +159,7 @@ async def register(req: RegisterRequest):
 
 @router.post("/login", response_model=AuthTokenResponse)
 async def login(req: LoginRequest):
+    _load_users_from_disk()
     email_clean = req.email.strip().lower()
     user_id = _EMAIL_TO_USER_ID.get(email_clean)
     user = _USERS_DB.get(user_id) if user_id else None

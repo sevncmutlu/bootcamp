@@ -1,13 +1,13 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/services/maki_api_client.dart';
 import 'package:maki_app/theme/app_tokens.dart';
 import 'package:maki_app/widgets/mascot.dart';
-import 'package:maki_app/widgets/privacy_notice.dart';
 
-class LeaderboardScreen extends StatefulWidget {
+class LeaderboardScreen extends StatelessWidget {
   const LeaderboardScreen({
     required this.scoreBasisPoints,
     required this.userLevel,
@@ -18,45 +18,163 @@ class LeaderboardScreen extends StatefulWidget {
   final int userLevel;
 
   @override
-  State<LeaderboardScreen> createState() => _LeaderboardScreenState();
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          l10n.leaderboardTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: LeaderboardView(
+        scoreBasisPoints: scoreBasisPoints,
+        userLevel: userLevel,
+      ),
+    );
+  }
 }
 
-class _LeaderboardScreenState extends State<LeaderboardScreen> {
-  String? _ageBand;
-  String? _householdBand;
+class LeaderboardView extends StatefulWidget {
+  const LeaderboardView({
+    required this.scoreBasisPoints,
+    required this.userLevel,
+    super.key,
+  });
+
+  final int scoreBasisPoints;
+  final int userLevel;
+
+  @override
+  State<LeaderboardView> createState() => _LeaderboardViewState();
+}
+
+class _LeaderboardViewState extends State<LeaderboardView>
+    with AutomaticKeepAliveClientMixin {
+  static const _storage = FlutterSecureStorage();
+  static const _ageBandKey = 'maki_leaderboard_age_band';
+  static const _householdKey = 'maki_leaderboard_household_band';
+
+  String _ageBand = '25-34';
+  String _householdBand = '1';
   LeaderboardStanding? _standing;
   bool _isLoading = false;
   String? _error;
 
-  Future<void> _loadStanding() async {
-    if (_ageBand == null || _householdBand == null) {
-      setState(() {
-        _error = AppLocalizations.of(context)!.leaderboardSelectDemographics;
-      });
-      return;
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initAndLoad();
+  }
+
+  @override
+  void didUpdateWidget(covariant LeaderboardView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.scoreBasisPoints != widget.scoreBasisPoints) {
+      _loadStanding();
     }
+  }
+
+  Future<void> _initAndLoad() async {
+    try {
+      final savedAge = await _storage.read(key: _ageBandKey);
+      final savedHousehold = await _storage.read(key: _householdKey);
+      if (mounted) {
+        setState(() {
+          if (savedAge != null) _ageBand = savedAge;
+          if (savedHousehold != null) _householdBand = savedHousehold;
+        });
+      }
+    } catch (_) {}
+    await _loadStanding();
+  }
+
+  Future<void> _onAgeBandChanged(String? value) async {
+    if (value == null || value == _ageBand) return;
+    setState(() => _ageBand = value);
+    await _storage.write(key: _ageBandKey, value: value);
+    await _loadStanding();
+  }
+
+  Future<void> _onHouseholdBandChanged(String? value) async {
+    if (value == null || value == _householdBand) return;
+    setState(() => _householdBand = value);
+    await _storage.write(key: _householdKey, value: value);
+    await _loadStanding();
+  }
+
+  bool _isEstimated = false;
+
+  int _estimatePercentile(int scoreBasisPoints) {
+    if (scoreBasisPoints <= 0) return 25;
+    final savingsPercent = (scoreBasisPoints / 100).round();
+    final raw = (100 - savingsPercent * 0.85).clamp(5, 95).round();
+    return (raw / 5).round() * 5;
+  }
+
+  Future<void> _loadStanding() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
     try {
       final standing = await MakiApi.instance.leaderboard(
-        ageBand: _ageBand!,
-        householdBand: _householdBand!,
+        ageBand: _ageBand,
+        householdBand: _householdBand,
         scoreBasisPoints: widget.scoreBasisPoints,
       );
       if (mounted) {
-        setState(() => _standing = standing);
+        if (!standing.available) {
+          final estimatedPercentile = _estimatePercentile(widget.scoreBasisPoints);
+          setState(() {
+            _standing = LeaderboardStanding(
+              available: true,
+              percentile: estimatedPercentile,
+              cohortSize: standing.cohortSize,
+            );
+            _isEstimated = true;
+          });
+        } else {
+          setState(() {
+            _standing = standing;
+            _isEstimated = false;
+          });
+        }
       }
     } on MakiApiException catch (error, stackTrace) {
       developer.log(
         'Anonim karşılaştırma tamamlanamadı.',
         error: error.code,
         stackTrace: stackTrace,
-        name: 'LeaderboardScreen',
+        name: 'LeaderboardView',
       );
       if (mounted) {
-        setState(() => _error = error.userMessage);
+        final estimatedPercentile = _estimatePercentile(widget.scoreBasisPoints);
+        setState(() {
+          _standing = LeaderboardStanding(
+            available: true,
+            percentile: estimatedPercentile,
+            cohortSize: '50-99',
+          );
+          _isEstimated = true;
+          _error = null;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        final estimatedPercentile = _estimatePercentile(widget.scoreBasisPoints);
+        setState(() {
+          _standing = LeaderboardStanding(
+            available: true,
+            percentile: estimatedPercentile,
+            cohortSize: '50-99',
+          );
+          _isEstimated = true;
+        });
       }
     } finally {
       if (mounted) {
@@ -67,6 +185,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final trees = widget.userLevel <= 1
@@ -77,115 +196,188 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         ? 2
         : widget.userLevel - 2;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          l10n.leaderboardTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            PrivacyNotice(
-              title: l10n.leaderboardPrivacyTitle,
-              message: l10n.leaderboardSubtitle,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
             ),
-            const SizedBox(height: AppSpacing.xl),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: theme.colorScheme.primary.withValues(alpha: 0.15),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.shield_outlined,
+                  color: theme.colorScheme.primary,
+                  size: 16,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    l10n.leaderboardSubtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            l10n.leaderboardAgeBandLabel,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (final band in const ['18-24', '25-34', '35-44', '45-54', '55+']) ...[
+                  ChoiceChip(
+                    label: Text(band),
+                    selected: _ageBand == band,
+                    onSelected: (selected) {
+                      if (selected) _onAgeBandChanged(band);
+                    },
+                    showCheckmark: false,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            l10n.leaderboardHouseholdBandLabel,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Wrap(
+            spacing: AppSpacing.xs,
+            children: [
+              ChoiceChip(
+                label: Text(l10n.personSingle),
+                selected: _householdBand == '1',
+                onSelected: (selected) {
+                  if (selected) _onHouseholdBandChanged('1');
+                },
+                showCheckmark: false,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              ChoiceChip(
+                label: Text(l10n.personDouble),
+                selected: _householdBand == '2',
+                onSelected: (selected) {
+                  if (selected) _onHouseholdBandChanged('2');
+                },
+                showCheckmark: false,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              ChoiceChip(
+                label: Text(l10n.personMultiple),
+                selected: _householdBand == '3+',
+                onSelected: (selected) {
+                  if (selected) _onHouseholdBandChanged('3+');
+                },
+                showCheckmark: false,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ],
+          ),
+          if (_error != null) ...[
+            const SizedBox(height: AppSpacing.md),
             Card(
+              color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
               child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Row(
                   children: [
-                    DropdownButtonFormField<String>(
-                      initialValue: _ageBand,
-                      decoration: InputDecoration(
-                        labelText: l10n.leaderboardAgeBandLabel,
-                        prefixIcon: const Icon(Icons.person_outline),
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: '18-24', child: Text('18–24')),
-                        DropdownMenuItem(value: '25-34', child: Text('25–34')),
-                        DropdownMenuItem(value: '35-44', child: Text('35–44')),
-                        DropdownMenuItem(value: '45-54', child: Text('45–54')),
-                        DropdownMenuItem(value: '55+', child: Text('55+')),
-                      ],
-                      onChanged: (value) => setState(() => _ageBand = value),
+                    Icon(
+                      Icons.error_outline,
+                      color: theme.colorScheme.error,
+                      size: 20,
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    DropdownButtonFormField<String>(
-                      initialValue: _householdBand,
-                      decoration: InputDecoration(
-                        labelText: l10n.leaderboardHouseholdBandLabel,
-                        prefixIcon: const Icon(Icons.groups_outlined),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        _error!,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onErrorContainer,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      items: [
-                        DropdownMenuItem(value: '1', child: Text(l10n.personSingle)),
-                        DropdownMenuItem(value: '2', child: Text(l10n.personDouble)),
-                        DropdownMenuItem(value: '3+', child: Text(l10n.personMultiple)),
-                      ],
-                      onChanged: (value) =>
-                          setState(() => _householdBand = value),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    FilledButton.icon(
-                      onPressed: _isLoading ? null : _loadStanding,
-                      icon: _isLoading
-                          ? const SizedBox.square(
-                              dimension: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.query_stats_outlined),
-                      label: Text(l10n.leaderboardCalculateCta),
                     ),
                   ],
                 ),
               ),
             ),
-            if (_error != null) ...[
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: theme.colorScheme.error),
+          ],
+          const SizedBox(height: AppSpacing.xl),
+          if (_isLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(AppSpacing.xl),
+                child: CircularProgressIndicator(),
               ),
-            ],
-            const SizedBox(height: AppSpacing.xl),
-            if (_standing case final standing?)
-              _StandingCard(
-                standing: standing,
-                trees: trees,
-                level: widget.userLevel,
-              )
-            else
-              Card(
-                color: theme.colorScheme.surfaceContainerHighest.withValues(
-                  alpha: 0.3,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Row(
-                    children: [
-                      const Mascot(pose: MascotPose.thinking, size: 44),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Text(
-                          l10n.leaderboardCohortPending,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            height: 1.35,
-                          ),
+            )
+          else if (_standing case final standing?)
+            _StandingCard(
+              standing: standing,
+              trees: trees,
+              level: widget.userLevel,
+              isEstimated: _isEstimated,
+            )
+          else
+            Card(
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.3,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Row(
+                  children: [
+                    const Mascot(pose: MascotPose.thinking, size: 44),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        l10n.leaderboardCohortPending,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          height: 1.35,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -196,11 +388,13 @@ class _StandingCard extends StatelessWidget {
     required this.standing,
     required this.trees,
     required this.level,
+    this.isEstimated = false,
   });
 
   final LeaderboardStanding standing;
   final int trees;
   final int level;
+  final bool isEstimated;
 
   @override
   Widget build(BuildContext context) {
@@ -240,9 +434,21 @@ class _StandingCard extends StatelessWidget {
               '${l10n.leaderboardTrees(trees)} · ${l10n.currentLevel(level)}',
               style: theme.textTheme.bodySmall,
             ),
+            if (isEstimated) ...[
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                l10n.leaderboardEstimateNote,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 }
+

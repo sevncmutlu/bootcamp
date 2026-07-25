@@ -15,10 +15,14 @@ class ForecastScreen extends StatefulWidget {
   State<ForecastScreen> createState() => ForecastScreenState();
 }
 
-class ForecastScreenState extends State<ForecastScreen> {
+class ForecastScreenState extends State<ForecastScreen>
+    with AutomaticKeepAliveClientMixin {
   void refresh() {
     _fetchAndCalculateForecast();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   final _database = AppDatabase.instance;
   List<ForecastDay> _forecast = [];
@@ -103,10 +107,20 @@ class ForecastScreenState extends State<ForecastScreen> {
         name: 'ForecastScreen',
       );
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error.userMessage)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.userMessage),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
+    } catch (error, stackTrace) {
+      developer.log(
+        'Harcama tahmini beklenmeyen hata.',
+        error: error,
+        stackTrace: stackTrace,
+        name: 'ForecastScreen',
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -118,6 +132,7 @@ class ForecastScreenState extends State<ForecastScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 

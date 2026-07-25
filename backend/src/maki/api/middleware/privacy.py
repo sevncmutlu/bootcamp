@@ -81,7 +81,7 @@ class PrivacyMiddleware:
         async def receive() -> Message:
             nonlocal sent
             if sent:
-                return {"type": "http.request", "body": b"", "more_body": False}
+                return {"type": "http.disconnect"}
             sent = True
             return {"type": "http.request", "body": body, "more_body": False}
 

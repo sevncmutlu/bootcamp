@@ -209,10 +209,11 @@ def _register_framework_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(HTTPException)
     async def http_error_handler(request: Request, error: HTTPException) -> Response:
-        code, message = _HTTP_ERROR_MAP.get(
+        code, default_message = _HTTP_ERROR_MAP.get(
             error.status_code,
             (ErrorCode.VALIDATION_FAILED, "İstek işlenemedi."),
         )
+        message = str(error.detail) if error.detail else default_message
         return problem_response(
             status_code=error.status_code,
             code=code,

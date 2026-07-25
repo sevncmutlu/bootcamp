@@ -3,7 +3,7 @@
   "appTitle": "Maki Finans Koçu",
   "welcomeMessage": "Merhaba! Bugün paranızı yönetmenize nasıl yardımcı olabilirim?",
   "chatPlaceholder": "Bir mesaj yazın...",
-  "manualExpense": "Manuel Harcama Ekle",
+  "manualExpense": "Harcama Ekle",
   "scanReceipt": "Fiş Tara",
   "totalExpense": "Toplam Harcama",
   "onboardingTitle": "Maki'ye Hoş Geldiniz",
@@ -320,6 +320,7 @@
   "settingsLanguageSystem": "Sistem Varsayılanı",
   "settingsLanguageTr": "Türkçe",
   "settingsLanguageEn": "İngilizce",
+  "upgradeButton": "Yükselt",
   "appTagline": "Kişisel Finans Koçunuz",
   "accentForest": "Orman Yeşili",
   "accentEmerald": "Zümrüt",
@@ -423,5 +424,8 @@
   "changePasswordTitle": "Şifreyi Değiştir",
   "currentPasswordLabel": "Mevcut Şifre",
   "changePasswordSuccess": "Şifreniz başarıyla değiştirildi",
-  "invalidEmail": "Lütfen geçerli bir e-posta adresi girin"
+  "invalidEmail": "Lütfen geçerli bir e-posta adresi girin",
+  "tierFree": "ÜCRETSİZ",
+  "tierPro": "PRO",
+  "appVersionLabel": "Maki Finans v1.0.0"
 }

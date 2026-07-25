@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:maki_finance_core/maki_finance_core.dart' as finance;
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/main.dart';
 import 'package:maki_app/utils/currency.dart';
 import 'package:maki_app/widgets/stat_card.dart';
 
@@ -333,6 +334,10 @@ class _DebtSimulatorScreenState extends State<DebtSimulatorScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => MainNavigationScreen.openDrawer(),
+        ),
         title: Text(
           l10n.simulatorTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),

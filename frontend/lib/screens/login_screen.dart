@@ -19,7 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = false;
   bool _obscurePassword = true;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -32,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
     try {
@@ -45,9 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _errorMessage = e.toString().replaceAll('Exception: ', '');
-        });
+        final errorMsg = e.toString().replaceAll('Exception: ', '');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -106,6 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 final newPass = newPasswordController.text;
                 if (email.isNotEmpty && newPass.length >= 6) {
                   final nav = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
                   try {
                     await AuthService.instance.resetPassword(
                       email: email,
@@ -115,15 +118,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       setState(() {
                         _emailController.text = email;
                         _passwordController.text = newPass;
-                        _errorMessage = null;
                       });
                     }
                     nav.pop();
                   } catch (e) {
                     if (mounted) {
-                      setState(() {
-                        _errorMessage = e.toString().replaceAll('Exception: ', '');
-                      });
+                      final errorMsg =
+                          e.toString().replaceAll('Exception: ', '');
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(errorMsg),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
                     }
                     nav.pop();
                   }
@@ -176,23 +183,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xxl),
-
-                if (_errorMessage != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.errorContainer,
-                      borderRadius: AppRadius.card,
-                    ),
-                    child: Text(
-                      _errorMessage!,
-                      style: TextStyle(
-                        color: theme.colorScheme.onErrorContainer,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                ],
 
                 TextFormField(
                   controller: _emailController,

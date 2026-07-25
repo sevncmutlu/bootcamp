@@ -15,6 +15,7 @@ import 'package:maki_app/services/premium_service.dart';
 import 'package:maki_app/screens/insights_screen.dart';
 import 'package:maki_app/services/auth_service.dart';
 import 'package:maki_app/services/onboarding_service.dart';
+import 'package:maki_app/widgets/app_navigation_drawer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -150,6 +151,13 @@ class MyAppState extends State<MyApp> {
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
 
+  static final GlobalKey<ScaffoldState> scaffoldKey =
+      GlobalKey<ScaffoldState>();
+
+  static void openDrawer() {
+    scaffoldKey.currentState?.openDrawer();
+  }
+
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
@@ -204,6 +212,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: MainNavigationScreen.scaffoldKey,
+      drawer: const AppNavigationDrawer(),
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,

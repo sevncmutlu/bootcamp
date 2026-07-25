@@ -16,7 +16,15 @@ final class SessionService {
     if (stored != null && stored.isNotEmpty) {
       return stored;
     }
-    return kDebugMode && _debugToken.isNotEmpty ? _debugToken : null;
+    if (_debugToken.isNotEmpty) {
+      return _debugToken;
+    }
+    if (kDebugMode) {
+      const defaultToken = 'maki_debug_anonymous_session_token';
+      await _storage.write(key: _accessTokenKey, value: defaultToken);
+      return defaultToken;
+    }
+    return null;
   }
 
   Future<void> saveAccessToken(String token) async {

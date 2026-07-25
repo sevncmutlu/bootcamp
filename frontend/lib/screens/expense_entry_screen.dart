@@ -8,6 +8,7 @@ import 'package:maki_app/screens/receipt_scanner_screen.dart';
 import 'package:maki_app/screens/settings_screen.dart';
 import 'package:maki_app/theme/app_tokens.dart';
 import 'package:maki_app/widgets/net_balance_card.dart';
+import 'package:maki_app/main.dart';
 import 'package:maki_app/widgets/empty_state.dart';
 import 'package:maki_app/widgets/money_text.dart';
 import 'package:maki_app/widgets/mascot.dart';
@@ -541,6 +542,10 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen>
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => MainNavigationScreen.openDrawer(),
+        ),
         title: Text(
           l10n.appTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -602,25 +607,54 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen>
                   ),
 
                   Container(
+                    height: 40,
                     margin: const EdgeInsets.symmetric(horizontal: 16.0),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surfaceContainerHighest
                           .withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(12.0),
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
                     child: TabBar(
                       controller: _tabController,
                       indicatorSize: TabBarIndicatorSize.tab,
                       dividerColor: Colors.transparent,
                       indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
+                        borderRadius: BorderRadius.circular(20.0),
                         color: theme.colorScheme.primary,
                       ),
                       labelColor: theme.colorScheme.onPrimary,
                       unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                      labelStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                      unselectedLabelStyle: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                      ),
                       tabs: [
-                        Tab(text: l10n.tabExpenses),
-                        Tab(text: l10n.tabIncome),
+                        Tab(
+                          height: 36,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.arrow_downward_outlined, size: 16),
+                              const SizedBox(width: 6),
+                              Text(l10n.tabExpenses),
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          height: 36,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.arrow_upward_outlined, size: 16),
+                              const SizedBox(width: 6),
+                              Text(l10n.tabIncome),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),

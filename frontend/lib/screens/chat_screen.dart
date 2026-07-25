@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/main.dart';
 import 'package:maki_app/services/maki_api_client.dart';
 import 'package:maki_app/utils/pii_scrubber.dart';
 import 'package:maki_app/widgets/mascot.dart';
@@ -132,6 +133,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => MainNavigationScreen.openDrawer(),
+        ),
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

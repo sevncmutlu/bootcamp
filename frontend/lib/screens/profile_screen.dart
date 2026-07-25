@@ -1,9 +1,10 @@
-import 'dart:io';
-
+import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/screens/login_screen.dart';
+import 'package:maki_app/screens/register_screen.dart';
 import 'package:maki_app/services/auth_service.dart';
 import 'package:maki_app/theme/app_tokens.dart';
 
@@ -327,20 +328,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   ImageProvider _getAvatarImage(String? avatarUrl) {
-    if (avatarUrl == null || avatarUrl.isEmpty) {
-      return const AssetImage('assets/mascot/maki_avatar.webp');
-    }
-    if (avatarUrl.startsWith('assets/')) {
-      return AssetImage(avatarUrl);
-    }
-    if (kIsWeb || avatarUrl.startsWith('blob:') || avatarUrl.startsWith('http')) {
-      return NetworkImage(avatarUrl);
-    }
-    final file = File(avatarUrl);
-    if (file.existsSync()) {
-      return FileImage(file);
-    }
-    return const AssetImage('assets/mascot/maki_avatar.webp');
+    return UserProfile.getAvatarImage(avatarUrl);
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -353,7 +341,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         imageQuality: 85,
       );
       if (pickedFile != null) {
-        await AuthService.instance.updateProfile(avatarUrl: pickedFile.path);
+        String avatarPath = pickedFile.path;
+        if (kIsWeb) {
+          final bytes = await pickedFile.readAsBytes();
+          avatarPath = 'data:image/png;base64,${base64Encode(bytes)}';
+        }
+        await AuthService.instance.updateProfile(avatarUrl: avatarPath);
         if (mounted) setState(() {});
       }
     } catch (e) {
@@ -491,165 +484,240 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final user = AuthService.instance.currentUser;
-    final avatarImage = _getAvatarImage(user?.avatarUrl);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.profileTitle),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: AppSpacing.lg),
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 104,
-                      height: 104,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.colorScheme.primaryContainer
-                            .withValues(alpha: 0.3),
-                        border: Border.all(
-                          color:
-                              theme.colorScheme.primary.withValues(alpha: 0.4),
-                          width: 3,
-                        ),
-                        image: DecorationImage(
-                          image: avatarImage,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: InkWell(
-                        onTap: _showAvatarOptions,
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt_rounded,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
+      body: ListenableBuilder(
+        listenable: AuthService.instance,
+        builder: (context, _) {
+          final user = AuthService.instance.currentUser;
+          final avatarImage = _getAvatarImage(user?.avatarUrl);
 
-              Text(
-                user?.displayName ?? l10n.guestUser,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                user?.email ?? '',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xxl),
-
-              Card(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: AppRadius.card,
-                ),
+          if (user == null) {
+            return SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.xl),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ListTile(
-                      leading: const Icon(Icons.person_outline),
-                      title: Text(l10n.displayNameLabel),
-                      subtitle: Text(user?.displayName ?? '-'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit_outlined, size: 20),
-                        onPressed: () => _editField(
-                          title: l10n.editDisplayNameTitle,
-                          initialValue: user?.displayName ?? '',
-                          onSave: (val) => AuthService.instance.updateProfile(
-                            displayName: val,
+                    const SizedBox(height: AppSpacing.xxl),
+                    Center(
+                      child: Container(
+                        width: 104,
+                        height: 104,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: theme.colorScheme.primaryContainer
+                              .withValues(alpha: 0.3),
+                          border: Border.all(
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.4),
+                            width: 3,
+                          ),
+                          image: DecorationImage(
+                            image: avatarImage,
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
                     ),
-                    const Divider(height: 1),
-                    ListTile(
-                      leading: const Icon(Icons.email_outlined),
-                      title: Text(l10n.emailLabel),
-                      subtitle: Text(user?.email ?? '-'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit_outlined, size: 20),
-                        onPressed: () => _editField(
-                          title: l10n.editEmailTitle,
-                          initialValue: user?.email ?? '',
-                          isEmail: true,
-                          onSave: (val) => AuthService.instance.updateProfile(
-                            email: val,
+                    const SizedBox(height: AppSpacing.lg),
+                    Text(
+                      l10n.guestUser,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      l10n.loginSubtitle,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xxl),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const LoginScreen(),
                           ),
-                        ),
-                      ),
+                        );
+                      },
+                      icon: const Icon(Icons.login_rounded),
+                      label: Text(l10n.loginButton),
                     ),
-                    const Divider(height: 1),
-                    ListTile(
-                      leading: const Icon(Icons.lock_outlined),
-                      title: Text(l10n.passwordLabel),
-                      subtitle: const Text('••••••••'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit_outlined, size: 20),
-                        onPressed: _showChangePasswordDialog,
-                      ),
-                    ),
-                    const Divider(height: 1),
-                    ListTile(
-                      leading: const Icon(Icons.badge_outlined),
-                      title: Text(l10n.userIdLabel),
-                      subtitle: Text(user?.userId ?? '-'),
+                    const SizedBox(height: AppSpacing.md),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const RegisterScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.person_add_outlined),
+                      label: Text(l10n.registerButton),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.xxl),
+            );
+          }
 
-              ElevatedButton.icon(
-                onPressed: _logout,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.errorContainer,
-                  foregroundColor: theme.colorScheme.onErrorContainer,
-                ),
-                icon: const Icon(Icons.logout_rounded),
-                label: Text(l10n.logoutButton),
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: AppSpacing.lg),
+                  Center(
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 104,
+                          height: 104,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: theme.colorScheme.primaryContainer
+                                .withValues(alpha: 0.3),
+                            border: Border.all(
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.4),
+                              width: 3,
+                            ),
+                            image: DecorationImage(
+                              image: avatarImage,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: InkWell(
+                            onTap: _showAvatarOptions,
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt_rounded,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    user.displayName,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    user.email,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xxl),
+                  Card(
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppRadius.card,
+                    ),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.person_outline),
+                          title: Text(l10n.displayNameLabel),
+                          subtitle: Text(user.displayName),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.edit_outlined, size: 20),
+                            onPressed: () => _editField(
+                              title: l10n.editDisplayNameTitle,
+                              initialValue: user.displayName,
+                              onSave: (val) => AuthService.instance
+                                  .updateProfile(displayName: val),
+                            ),
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.email_outlined),
+                          title: Text(l10n.emailLabel),
+                          subtitle: Text(user.email),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.edit_outlined, size: 20),
+                            onPressed: () => _editField(
+                              title: l10n.editEmailTitle,
+                              initialValue: user.email,
+                              isEmail: true,
+                              onSave: (val) =>
+                                  AuthService.instance.updateProfile(email: val),
+                            ),
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.lock_outlined),
+                          title: Text(l10n.passwordLabel),
+                          subtitle: const Text('••••••••'),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.edit_outlined, size: 20),
+                            onPressed: _showChangePasswordDialog,
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.badge_outlined),
+                          title: Text(l10n.userIdLabel),
+                          subtitle: Text(user.userId),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xxl),
+                  ElevatedButton.icon(
+                    onPressed: _logout,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.errorContainer,
+                      foregroundColor: theme.colorScheme.onErrorContainer,
+                    ),
+                    icon: const Icon(Icons.logout_rounded),
+                    label: Text(l10n.logoutButton),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  OutlinedButton.icon(
+                    onPressed: _deleteAccount,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: theme.colorScheme.error,
+                      side: BorderSide(color: theme.colorScheme.error),
+                    ),
+                    icon: const Icon(Icons.delete_forever_rounded),
+                    label: Text(l10n.deleteAccountButton),
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              OutlinedButton.icon(
-                onPressed: _deleteAccount,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: theme.colorScheme.error,
-                  side: BorderSide(color: theme.colorScheme.error),
-                ),
-                icon: const Icon(Icons.delete_forever_rounded),
-                label: Text(l10n.deleteAccountButton),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

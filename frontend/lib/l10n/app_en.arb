@@ -3,7 +3,7 @@
   "appTitle": "Maki Finance Coach",
   "welcomeMessage": "Hello! How can I help you manage your money today?",
   "chatPlaceholder": "Type a message...",
-  "manualExpense": "Add Manual Expense",
+  "manualExpense": "Add Expense",
   "scanReceipt": "Scan Receipt",
   "totalExpense": "Total Expenses",
   "onboardingTitle": "Welcome to Maki",
@@ -319,6 +319,7 @@
   "settingsLanguageSystem": "System Default",
   "settingsLanguageTr": "Turkish",
   "settingsLanguageEn": "English",
+  "upgradeButton": "Upgrade",
   "appTagline": "Your Personal Finance Coach",
   "accentForest": "Forest Green",
   "accentEmerald": "Emerald",
@@ -422,5 +423,8 @@
   "changePasswordTitle": "Change Password",
   "currentPasswordLabel": "Current Password",
   "changePasswordSuccess": "Password changed successfully",
-  "invalidEmail": "Please enter a valid email address"
+  "invalidEmail": "Please enter a valid email address",
+  "tierFree": "FREE",
+  "tierPro": "PRO",
+  "appVersionLabel": "Maki Finance v1.0.0"
 }

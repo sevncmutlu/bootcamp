@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:maki_app/config/api_config.dart';
@@ -27,6 +29,30 @@ class UserProfile {
       avatarUrl: json['avatar_url'] as String?,
       financialGoal: json['financial_goal'] as String?,
     );
+  }
+
+  static ImageProvider getAvatarImage(String? avatarUrl) {
+    if (avatarUrl == null || avatarUrl.isEmpty) {
+      return const AssetImage('assets/mascot/maki_avatar.webp');
+    }
+    if (avatarUrl.startsWith('assets/')) {
+      return AssetImage(avatarUrl);
+    }
+    if (avatarUrl.startsWith('http://') ||
+        avatarUrl.startsWith('https://') ||
+        avatarUrl.startsWith('blob:') ||
+        avatarUrl.startsWith('data:')) {
+      return NetworkImage(avatarUrl);
+    }
+    if (!kIsWeb) {
+      try {
+        final file = File(avatarUrl);
+        if (file.existsSync()) {
+          return FileImage(file);
+        }
+      } catch (_) {}
+    }
+    return const AssetImage('assets/mascot/maki_avatar.webp');
   }
 }
 
@@ -79,15 +105,14 @@ class AuthService extends ChangeNotifier {
         'password': password,
         'display_name': displayName,
       }),
-    );
+    ).timeout(const Duration(seconds: 10));
 
     if (response.statusCode != 200) {
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
-      final msg = body['detail'] ?? 'Registration failed';
-      throw Exception(msg.toString());
+      final msg = _extractErrorMessage(response.bodyBytes, 'Registration failed');
+      throw Exception(msg);
     }
 
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     _accessToken = data['access_token'] as String;
     _currentUser = UserProfile.fromJson(data);
 
@@ -108,15 +133,14 @@ class AuthService extends ChangeNotifier {
         'email': email,
         'password': password,
       }),
-    );
+    ).timeout(const Duration(seconds: 10));
 
     if (response.statusCode != 200) {
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
-      final msg = body['detail'] ?? 'Login failed';
-      throw Exception(msg.toString());
+      final msg = _extractErrorMessage(response.bodyBytes, 'Login failed');
+      throw Exception(msg);
     }
 
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     _accessToken = data['access_token'] as String;
     _currentUser = UserProfile.fromJson(data);
 
@@ -244,5 +268,17 @@ class AuthService extends ChangeNotifier {
       }
       throw Exception(errorMessage);
     }
+  }
+
+  static String _extractErrorMessage(List<int> bodyBytes, String fallback) {
+    try {
+      final decodedString = utf8.decode(bodyBytes);
+      final body = jsonDecode(decodedString) as Map<String, dynamic>;
+      final msg = body['mesaj'] ?? body['detail'] ?? body['message'];
+      if (msg != null && msg.toString().isNotEmpty) {
+        return msg.toString();
+      }
+    } catch (_) {}
+    return fallback;
   }
 }

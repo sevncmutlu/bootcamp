@@ -13,10 +13,14 @@ class InflationScreen extends StatefulWidget {
   State<InflationScreen> createState() => InflationScreenState();
 }
 
-class InflationScreenState extends State<InflationScreen> {
+class InflationScreenState extends State<InflationScreen>
+    with AutomaticKeepAliveClientMixin {
   void refresh() {
     _fetchAndCalculateInflation();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   String _formatPercent(double value, {int decimal = 2}) {
     if (!mounted) return value.toStringAsFixed(decimal);
@@ -118,6 +122,7 @@ class InflationScreenState extends State<InflationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 

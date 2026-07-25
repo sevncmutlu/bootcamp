@@ -3,8 +3,8 @@ import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/services/gamification_service.dart';
 import 'package:maki_app/theme/app_tokens.dart';
+import 'package:maki_app/main.dart';
 import 'package:maki_app/screens/leaderboard_screen.dart';
-import 'package:maki_app/screens/settings_screen.dart';
 import 'package:maki_app/widgets/forest_progress_card.dart';
 
 class ForestScreen extends StatefulWidget {
@@ -14,13 +14,15 @@ class ForestScreen extends StatefulWidget {
   State<ForestScreen> createState() => ForestScreenState();
 }
 
-class ForestScreenState extends State<ForestScreen> {
+class ForestScreenState extends State<ForestScreen>
+    with SingleTickerProviderStateMixin {
   void refresh() {
     _loadData();
   }
 
   final _db = AppDatabase.instance;
   late final GamificationService _gamificationService;
+  late final TabController _tabController;
 
   UserGamificationState? _gameState;
   List<DailyChallenge> _challenges = [];
@@ -32,11 +34,23 @@ class ForestScreenState extends State<ForestScreen> {
   void initState() {
     super.initState();
     _gamificationService = GamificationService(_db);
-    _loadData();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (mounted) setState(() {});
+    });
+    _loadData(showLoading: true);
   }
 
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadData({bool showLoading = false}) async {
+    if (showLoading) {
+      setState(() => _isLoading = true);
+    }
     final now = DateTime.now();
 
     await _gamificationService.evaluateDailyChallenges(now);
@@ -183,265 +197,247 @@ class ForestScreenState extends State<ForestScreen> {
     final maxXp = level * 100;
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => MainNavigationScreen.openDrawer(),
+        ),
         title: Text(
-          l10n.forestTitle,
+          _tabController.index == 0
+              ? l10n.forestTitle
+              : l10n.leaderboardTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              Navigator.of(context)
-                  .push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const SettingsScreen(),
-                    ),
-                  )
-                  .then((_) => _loadData());
-            },
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _loadData,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
-              vertical: 12.0,
+              vertical: 4.0,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ForestProgressCard(
-                  level: level,
-                  xp: xp,
-                  maxXp: maxXp,
-                  savingsScoreBasisPoints: _savingsScoreBasisPoints,
-                  hasWeeklyIncome: _hasWeeklyIncome,
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
                 ),
-                const SizedBox(height: 24),
-
-                Text(
-                  l10n.challengesHeader,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicator: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                const SizedBox(height: 12),
-                ..._challenges.map((challenge) {
-                  final isClaimed = challenge.xpReward == 0;
-                  final isCompleted = challenge.isCompleted;
-
-                  return Card(
-                    elevation: 0,
-                    margin: const EdgeInsets.only(bottom: 12.0),
-                    color: theme.colorScheme.surface,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                      side: BorderSide(
-                        color: theme.colorScheme.outline.withValues(
-                          alpha: 0.12,
-                        ),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: isClaimed
-                                ? theme.colorScheme.primary.withValues(
-                                    alpha: 0.1,
-                                  )
-                                : isCompleted
-                                ? ForestColors.emerald.withValues(alpha: 0.1)
-                                : theme.colorScheme.onSurface.withValues(
-                                    alpha: 0.05,
-                                  ),
-                            child: Icon(
-                              isClaimed
-                                  ? Icons.check_circle_outline
-                                  : isCompleted
-                                  ? Icons.stars_outlined
-                                  : Icons.lock_open_outlined,
-                              color: isClaimed
-                                  ? theme.colorScheme.primary
-                                  : isCompleted
-                                  ? ForestColors.emerald
-                                  : theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _getLocalizedTitle(
-                                    context,
-                                    challenge.titleKey,
-                                  ),
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isClaimed
-                                        ? theme.colorScheme.onSurface
-                                            .withValues(alpha: 0.4)
-                                        : null,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  _getLocalizedDesc(context, challenge.descKey),
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: isClaimed
-                                        ? theme.colorScheme.onSurfaceVariant
-                                            .withValues(alpha: 0.5)
-                                        : theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          if (isCompleted && !isClaimed)
-                            ElevatedButton(
-                              onPressed: () => _claimXP(challenge),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ForestColors.emerald,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                  vertical: 10.0,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                              ),
-                              child: Text(l10n.claimXp(challenge.xpReward)),
-                            )
-                          else
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isClaimed
-                                    ? theme.colorScheme.primary.withValues(
-                                        alpha: 0.1,
-                                      )
-                                    : theme.colorScheme.onSurface.withValues(
-                                        alpha: 0.05,
-                                      ),
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                              child: Text(
-                                isClaimed
-                                    ? l10n.claimedStatus
-                                    : l10n.pendingStatus,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: isClaimed
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-
-                const SizedBox(height: 16),
-
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (context) => LeaderboardScreen(
-                          scoreBasisPoints: _savingsScoreBasisPoints,
-                          userLevel: level,
-                        ),
-                      ),
-                    ).then((_) => _loadData());
-                  },
-                  child: Card(
-                    elevation: 0,
-                    color: theme.colorScheme.secondaryContainer.withValues(
-                      alpha: 0.2,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                      side: BorderSide(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12.0),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withValues(
-                                alpha: 0.1,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.leaderboard_outlined,
-                              color: theme.colorScheme.primary,
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.leaderboardHeader,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  l10n.leaderboardSubtitle,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  _hasWeeklyIncome
-                                      ? '${l10n.forestHealth}: ${l10n.forestHealthValue((_savingsScoreBasisPoints / 100).round())}'
-                                      : l10n.forestHealthNoIncome,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                labelColor: theme.colorScheme.onPrimary,
+                unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 13,
+                ),
+                tabs: [
+                  Tab(
+                    height: 36,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.forest_outlined, size: 16),
+                        const SizedBox(width: 6),
+                        Text(l10n.forestTitle),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-              ],
+                  Tab(
+                    height: 36,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.leaderboard_outlined, size: 16),
+                        const SizedBox(width: 6),
+                        Text(l10n.leaderboardTitle),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    );
+      body: TabBarView(
+        controller: _tabController,
+          children: [
+            RefreshIndicator(
+              onRefresh: _loadData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ForestProgressCard(
+                        level: level,
+                        xp: xp,
+                        maxXp: maxXp,
+                        savingsScoreBasisPoints: _savingsScoreBasisPoints,
+                        hasWeeklyIncome: _hasWeeklyIncome,
+                      ),
+                      const SizedBox(height: 24),
+
+                      Text(
+                        l10n.challengesHeader,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ..._challenges.map((challenge) {
+                        final isClaimed = challenge.xpReward == 0;
+                        final isCompleted = challenge.isCompleted;
+
+                        return Card(
+                          elevation: 0,
+                          margin: const EdgeInsets.only(bottom: 12.0),
+                          color: theme.colorScheme.surface,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                            side: BorderSide(
+                              color: theme.colorScheme.outline.withValues(
+                                alpha: 0.12,
+                              ),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: isClaimed
+                                      ? theme.colorScheme.primary.withValues(
+                                          alpha: 0.1,
+                                        )
+                                      : isCompleted
+                                      ? ForestColors.emerald.withValues(alpha: 0.1)
+                                      : theme.colorScheme.onSurface.withValues(
+                                          alpha: 0.05,
+                                        ),
+                                  child: Icon(
+                                    isClaimed
+                                        ? Icons.check_circle_outline
+                                        : isCompleted
+                                        ? Icons.stars_outlined
+                                        : Icons.lock_open_outlined,
+                                    color: isClaimed
+                                        ? theme.colorScheme.primary
+                                        : isCompleted
+                                        ? ForestColors.emerald
+                                        : theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _getLocalizedTitle(
+                                          context,
+                                          challenge.titleKey,
+                                        ),
+                                        style: theme.textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: isClaimed
+                                              ? theme.colorScheme.onSurface
+                                                  .withValues(alpha: 0.4)
+                                              : null,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _getLocalizedDesc(context, challenge.descKey),
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: isClaimed
+                                              ? theme.colorScheme.onSurfaceVariant
+                                                  .withValues(alpha: 0.5)
+                                              : theme.colorScheme.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                if (isCompleted && !isClaimed)
+                                  ElevatedButton(
+                                    onPressed: () => _claimXP(challenge),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: ForestColors.emerald,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0,
+                                        vertical: 10.0,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12.0),
+                                      ),
+                                    ),
+                                    child: Text(l10n.claimXp(challenge.xpReward)),
+                                  )
+                                else
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isClaimed
+                                          ? theme.colorScheme.primary.withValues(
+                                              alpha: 0.1,
+                                            )
+                                          : theme.colorScheme.onSurface.withValues(
+                                              alpha: 0.05,
+                                            ),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    child: Text(
+                                      isClaimed
+                                          ? l10n.claimedStatus
+                                          : l10n.pendingStatus,
+                                      style: theme.textTheme.labelSmall?.copyWith(
+                                        color: isClaimed
+                                            ? theme.colorScheme.primary
+                                            : theme.colorScheme.onSurfaceVariant,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            LeaderboardView(
+              scoreBasisPoints: _savingsScoreBasisPoints,
+              userLevel: level,
+            ),
+          ],
+        ),
+      );
   }
 }
