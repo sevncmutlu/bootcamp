@@ -44,12 +44,12 @@ class Money {
   static String formatRatioAsPercent(num ratio, {int decimals = 1}) =>
       formatPercent(ratio * 100, decimals: decimals);
 
-  static String formatPercent(num value, {int decimals = 1}) {
+  static String formatPercent(num value, {int decimals = 1, String locale = 'tr_TR'}) {
     final str = NumberFormat.decimalPatternDigits(
-      locale: _locale,
+      locale: locale,
       decimalDigits: decimals,
     ).format(value);
-    return '%$str';
+    return locale.startsWith('tr') ? '%$str' : '$str%';
   }
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/utils/category_l10n.dart';
 import 'package:maki_app/widgets/empty_state.dart';
 
 class InflationScreen extends StatefulWidget {
@@ -395,7 +396,10 @@ class InflationScreenState extends State<InflationScreen> {
                                                       ),
                                                       const SizedBox(width: 8),
                                                       Text(
-                                                        item.category,
+                                                        getLocalizedCategoryName(
+                                                          context,
+                                                          item.category,
+                                                        ),
                                                         style: theme
                                                             .textTheme
                                                             .titleMedium

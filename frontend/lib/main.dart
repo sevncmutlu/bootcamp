@@ -36,6 +36,7 @@ class MyAppState extends State<MyApp> {
   bool _showSplash = true;
   ThemeMode _themeMode = ThemeMode.system;
   Color _accent = BrandAccents.defaultAccent.color;
+  Locale? _locale;
 
   @override
   void initState() {
@@ -47,6 +48,7 @@ class MyAppState extends State<MyApp> {
     final completed = await OnboardingService.instance.hasCompletedOnboarding();
     final themeStr = await OnboardingService.instance.getThemeMode();
     final accentStr = await OnboardingService.instance.getAccent();
+    final langStr = await OnboardingService.instance.getLanguage();
 
     ThemeMode mode;
     switch (themeStr) {
@@ -60,11 +62,19 @@ class MyAppState extends State<MyApp> {
         mode = ThemeMode.system;
     }
 
+    Locale? loc;
+    if (langStr == 'tr') {
+      loc = const Locale('tr');
+    } else if (langStr == 'en') {
+      loc = const Locale('en');
+    }
+
     if (mounted) {
       setState(() {
         _hasCompletedOnboarding = completed;
         _themeMode = mode;
         _accent = BrandAccents.colorForKey(accentStr);
+        _locale = loc;
         _isLoading = false;
       });
     }
@@ -82,13 +92,19 @@ class MyAppState extends State<MyApp> {
     });
   }
 
+  void setLocale(Locale? locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('tr'),
+      locale: _locale,
       theme: AppTheme.light(_accent),
       darkTheme: AppTheme.dark(_accent),
       themeMode: _themeMode,

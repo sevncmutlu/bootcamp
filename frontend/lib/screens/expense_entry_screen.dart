@@ -4,6 +4,7 @@ import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/utils/currency.dart';
 import 'package:maki_app/utils/dates.dart';
+import 'package:maki_app/utils/category_l10n.dart';
 
 import 'package:maki_app/screens/receipt_scanner_screen.dart';
 import 'package:maki_app/screens/settings_screen.dart';
@@ -162,7 +163,7 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                                 size: 20,
                               ),
                               const SizedBox(width: 12),
-                              Text(cat.name),
+                              Text(getLocalizedCategoryName(context, cat.name)),
                             ],
                           ),
                         );
@@ -404,7 +405,7 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen> {
                                     ),
                                   ),
                                   subtitle: Text(
-                                    '${Dates.medium(item.date, Localizations.localeOf(context).toString())} · ${item.category}',
+                                    '${Dates.medium(item.date, Localizations.localeOf(context).toString())} · ${getLocalizedCategoryName(context, item.category)}',
                                   ),
                                   trailing: MoneyText(
                                     item.amount,

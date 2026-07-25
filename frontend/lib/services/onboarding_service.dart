@@ -9,6 +9,7 @@ class OnboardingService {
   static const String _primaryGoalKey = 'primary_financial_goal';
   static const String _themeModeKey = 'app_theme_mode';
   static const String _accentKey = 'app_theme_accent';
+  static const String _languageKey = 'app_language';
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -45,5 +46,14 @@ class OnboardingService {
 
   Future<void> setAccent(String key) async {
     await _storage.write(key: _accentKey, value: key);
+  }
+
+  Future<String> getLanguage() async {
+    final value = await _storage.read(key: _languageKey);
+    return value ?? 'system';
+  }
+
+  Future<void> setLanguage(String lang) async {
+    await _storage.write(key: _languageKey, value: lang);
   }
 }

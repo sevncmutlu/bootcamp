@@ -295,5 +295,47 @@
   "leaderboardPrivacyTitle": "Gizlilik",
   "leaderboardYourStanding": "Senin durumun",
   "leaderboardEstimateNote": "Bu değer yalnızca senin cihazındaki verilerden hesaplanan tahmini bir orandır.",
-  "leaderboardCohortPending": "Anonim karşılaştırma için henüz yeterli sayıda anonim kullanıcı yok. Yeterli katılım oluştuğunda buradan göreceksin."
+  "leaderboardCohortPending": "Anonim karşılaştırma için henüz yeterli sayıda anonim kullanıcı yok. Yeterli katılım oluştuğunda buradan göreceksin.",
+  "settingsLanguageTitle": "Uygulama Dili",
+  "settingsLanguageSystem": "Sistem Varsayılanı",
+  "settingsLanguageTr": "Türkçe",
+  "settingsLanguageEn": "İngilizce",
+  "appTagline": "Kişisel Finans Koçun",
+  "accentForest": "Orman Yeşili",
+  "accentEmerald": "Zümrüt",
+  "accentSage": "Adaçayı",
+  "accentNavy": "Lacivert",
+  "accentAmber": "Amber",
+  "accentPurple": "Mor",
+  "accentPink": "Pembe",
+  "settingsAccentTitle": "Tema Rengi",
+  "settingsAccentDesc": "Uygulamanın vurgu rengini seç.",
+  "promptWeeklyReview": "Haftalık bütçemi birlikte değerlendirelim.",
+  "promptDebtPlan": "Borçlarım için bir ödeme planı oluşturalım.",
+  "promptInflationImpact": "Enflasyonun bütçeme etkisini inceleyelim.",
+  "promptSavingsAdvice": "Bütçeme uygun bir tasarruf önerisi ver.",
+  "categoryMarket": "Market",
+  "categoryRestaurant": "Restoran",
+  "categoryRent": "Kira",
+  "categoryBills": "Faturalar",
+  "categoryTransport": "Ulaşım",
+  "categoryEntertainment": "Eğlence",
+  "leaderboardSelectDemographics": "Anonim karşılaştırma için yaş ve hane grubunu seçin.",
+  "leaderboardAgeBandLabel": "Yaş grubu",
+  "leaderboardHouseholdBandLabel": "Hane büyüklüğü",
+  "personSingle": "1 kişi",
+  "personDouble": "2 kişi",
+  "personMultiple": "3+ kişi",
+  "leaderboardCalculateCta": "Anonim durumumu hesapla",
+  "cohortNotEnough": "Kohort henüz yeterli değil",
+  "anonymousCohort": "Anonim kohort: {count}",
+  "@anonymousCohort": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "paywallStoreNotActive": "Mağaza satın alma bağlantısı henüz etkin değil.",
+  "paywallNoActiveSubscription": "Etkin abonelik bulunamadı."
 }

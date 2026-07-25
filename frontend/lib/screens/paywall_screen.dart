@@ -37,8 +37,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Mağaza satın alma bağlantısı henüz etkin değil.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.paywallStoreNotActive),
           ),
         );
       }
@@ -58,7 +58,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     }
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Etkin abonelik bulunamadı.')));
+    ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.paywallNoActiveSubscription)));
   }
 
   @override

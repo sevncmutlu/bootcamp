@@ -1,0 +1,340 @@
+{
+  "@@locale": "en",
+  "appTitle": "Maki Finance Coach",
+  "welcomeMessage": "Hello! How can I help you manage your money today?",
+  "chatPlaceholder": "Type a message...",
+  "manualExpense": "Add Manual Expense",
+  "scanReceipt": "Scan Receipt",
+  "totalExpense": "Total Expenses",
+  "onboardingTitle": "Welcome to Maki",
+  "onboardingSubtitle": "Let's personalize your coaching experience. What is your primary financial goal?",
+  "goalTrack": "Track daily spending",
+  "goalSave": "Save money (Goal-oriented)",
+  "goalDebt": "Reduce or pay off debt",
+  "goalInvest": "Learn how to invest",
+  "continueButton": "Continue",
+  "noExpenses": "No expenses recorded yet.",
+  "labelTitle": "Title",
+  "labelAmount": "Amount",
+  "labelCategory": "Category",
+  "labelDate": "Date",
+  "saveExpense": "Save Expense",
+  "failedSelectImage": "Failed to select image: {error}",
+  "@failedSelectImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorParsingReceipt": "Error parsing receipt: {error}",
+  "@errorParsingReceipt": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "clearButton": "Clear",
+  "parseReceipt": "Parse Receipt",
+  "parsingStatus": "Maki is parsing your receipt...",
+  "reviewTitle": "Review and Confirm Info",
+  "labelStoreName": "Store Name",
+  "labelTotalAmount": "Total Amount",
+  "addToExpenses": "Add to Expenses",
+  "chatError": "Sorry, I am having connectivity issues right now. Please try again.",
+  "navExpenses": "Expenses",
+  "navCoach": "Coach",
+  "navForecast": "Forecast",
+  "forecastTitle": "Expenditure Forecast",
+  "forecastSubtitle": "Maki's AI-based daily spending forecast for the next 7 days.",
+  "forecastLoading": "Calculating spending forecasts...",
+  "forecastEmpty": "Not enough transaction history to generate forecasts. Maki needs expense data across multiple days.",
+  "projectedSpend": "Projected Spend",
+  "navSimulator": "Debt",
+  "simulatorTitle": "Debt Payoff Simulator",
+  "simulatorSubtitle": "Simulate payoff strategies to see how fast you can become debt-free.",
+  "strategyAvalanche": "Avalanche (Highest Interest)",
+  "strategySnowball": "Snowball (Lowest Balance)",
+  "strategyAvalancheDescription": "Pays off the highest-interest debt first to minimize total cost.",
+  "strategySnowballDescription": "Pays off the smallest debt first to gain quick momentum.",
+  "extraBudget": "Extra Monthly Budget",
+  "monthsToFree": "Months to Debt-Free",
+  "totalInterest": "Total Interest Paid",
+  "debtListTitle": "My Debts",
+  "noDebts": "No debts added yet. Add a credit card or loan to simulate.",
+  "addDebt": "Add Debt",
+  "deleteDebt": "Delete debt",
+  "debtName": "Debt Name",
+  "debtBalance": "Remaining Balance",
+  "interestRate": "Annual Interest Rate (%)",
+  "minPayment": "Minimum Monthly Payment",
+  "simulateButton": "Simulate Payoff",
+  "navInflation": "Inflation",
+  "inflationTitle": "Personal Inflation Dashboard",
+  "inflationSubtitle": "Compare your personal inflation based on your spending basket with official TÜİK inflation data.",
+  "personalInflation": "Personal Inflation",
+  "officialInflation": "Official Inflation (TÜİK)",
+  "loadingInflation": "Analyzing personal spending inflation...",
+  "weightComparison": "Basket Weight Comparison (Personal vs. Official)",
+  "personalWeight": "Your Weight",
+  "officialWeight": "Official Weight",
+  "categoryInflation": "Annual Inflation",
+  "categoryLabel": "Category",
+  "forecastError": "Could not calculate forecast. Please try again later.",
+  "inflationError": "Could not calculate personal inflation. Please try again later.",
+  "inflationDataTitle": "Matched price basket required",
+  "inflationDataRequired": "Personal inflation requires historical and current unit prices for identical items. Maki does not produce misleading estimates from total spending alone.",
+  "simulatorError": "Debt simulation failed. Please check your inputs.",
+  "ocrError": "Failed to scan receipt image. Please try again later.",
+  "privacyTitle": "Privacy-First AI Coach",
+  "privacyMessage": "Maki stores all your transaction records locally on your device. Phone numbers, card numbers, or IBANs in chat messages are sanitized locally before reaching the server.",
+  "navForest": "Forest",
+  "forestTitle": "Maki Forest",
+  "forestSubtitle": "Grow your forest by completing daily savings challenges.",
+  "forestStage": "Stage {stage} / 5",
+  "@forestStage": {
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "forestHealth": "Forest Health",
+  "forestHealthValue": "{percent}%",
+  "@forestHealthValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "forestHealthNoIncome": "Forest health is calculated when you record income this week.",
+  "forestGrowthProgress": "Growth Progress",
+  "forestSceneSemantics": "Maki forest and mascot at stage {stage}",
+  "@forestSceneSemantics": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "currentLevel": "Level {level}",
+  "@currentLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "levelTitleSeed": "Savings Seed",
+  "levelTitleSprout": "Active Sprout",
+  "levelTitleSapling": "Growing Sapling",
+  "levelTitleTree": "Mature Oak",
+  "levelTitleForest": "Oak Guardian",
+  "challengesHeader": "Daily Savings Challenges",
+  "xpNeeded": "{xp} / {maxXp} XP · To Level {nextLevel}",
+  "@xpNeeded": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      },
+      "maxXp": {
+        "type": "int"
+      },
+      "nextLevel": {
+        "type": "int"
+      }
+    }
+  },
+  "claimXp": "Claim {xp} XP",
+  "@claimXp": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "claimedStatus": "Claimed",
+  "completedStatus": "Completed",
+  "pendingStatus": "Pending",
+  "leaderboardHeader": "Weekly Savings Ranking",
+  "leaderboardSubtitle": "Compare your weekly savings against anonymous peers.",
+  "leaderboardRankText": "You saved more than {percent}% of users this week!",
+  "@leaderboardRankText": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "leaderboardTitle": "Savings Leaderboard",
+  "leaderboardYou": "You (Anonymous)",
+  "leaderboardAnonymous": "Anonymous Saver",
+  "leaderboardPercentile": "Top {percent}%",
+  "@leaderboardPercentile": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "leaderboardTrees": "{count} trees",
+  "@leaderboardTrees": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeCookHome": "Cook at Home",
+  "challengeCookHomeDesc": "Keep restaurant expenses at $0 today.",
+  "challengeLogThree": "Log 3 Transactions",
+  "challengeLogThreeDesc": "Record 3 or more income or expense items today.",
+  "challengeNoShopping": "No Impulse Shopping",
+  "challengeNoShoppingDesc": "Spend nothing in shopping or market categories today.",
+  "challengeSaveTen": "Budget Master",
+  "challengeSaveTenDesc": "Save at least 10% of your total budget today.",
+  "badgesUnlocked": "Unlocked Badges",
+  "badgeSavingsSeed": "Savings Seed",
+  "badgeBudgetMaster": "Budget Master",
+  "badgeOakGuardian": "Oak Guardian",
+  "navNotifications": "Smart Notifications",
+  "notificationsTitle": "Smart Notification Center",
+  "notificationsSubtitle": "Configure on-device AI notification timing predictions.",
+  "settingsTitle": "Settings",
+  "smartOptimizationEnable": "Enable Smart AI Optimization",
+  "smartOptimizationDesc": "Learns on your device when you are most likely to open notifications, saving battery and reducing notification fatigue.",
+  "preferredTriggerHour": "Predicted Optimal Time",
+  "preferredTriggerHourValue": "{hour}:00",
+  "@preferredTriggerHourValue": {
+    "placeholders": {
+      "hour": {
+        "type": "int"
+      }
+    }
+  },
+  "simulationSection": "Smart Timing Experiment",
+  "simulationDesc": "Simulate an app open to train the on-device timing model.",
+  "simulateOpenButton": "Simulate User Tap",
+  "morningArm": "Morning (09:00)",
+  "afternoonArm": "Afternoon (14:00)",
+  "eveningArm": "Evening (20:00)",
+  "precisionMatrixLabel": "Precision matrix A",
+  "projectionVectorLabel": "Projection vector b",
+  "rewardSuccess": "Model trained! Reward parameters updated for the selected period.",
+  "closeButton": "Close",
+  "xpClaimed": "+{xp} XP earned!",
+  "@xpClaimed": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "paywallTitle": "Upgrade to Maki Pro",
+  "paywallSubtitle": "Unlock your AI-powered personal finance coach and master your money.",
+  "paywallBenefit1": "Unlimited AI coaching conversations",
+  "paywallBenefit2": "Real-time economic insights and forecasts",
+  "paywallBenefit3": "Personalized smart budget recommendations",
+  "paywallPriceLabel": "$4.99 / month",
+  "paywallCtaButton": "Start Free Trial",
+  "paywallRestoreButton": "Restore Purchase",
+  "cameraButton": "Camera",
+  "galleryButton": "Gallery",
+  "interestRateAbbr": "Rate",
+  "categoryInflationLabel": "Inflation",
+  "payoffMonthLabel": "Month {month}",
+  "@payoffMonthLabel": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionWeeklyCheckin": "Weekly Review",
+  "sessionDebtStrategy": "Debt Plan",
+  "sessionInflationGuide": "Inflation Impact",
+  "sessionSavingsHack": "Savings Advice",
+  "sessionHeader": "Coaching Topics",
+  "feasibilityLabel": "Plan Feasibility Index",
+  "predictedByLgbm": "Calculated based on your historical payment patterns.",
+  "labelStrategy": "Payoff Strategy",
+  "validationTitle": "Please enter a title",
+  "validationAmount": "Please enter a valid amount greater than 0",
+  "validationCategory": "Please select a category",
+  "validationDebtName": "Please enter debt name",
+  "validationDebtBalance": "Please enter a valid balance greater than 0",
+  "validationDebtRate": "Please enter a valid interest rate (0 or greater)",
+  "validationDebtMinPayment": "Please enter a valid minimum payment greater than 0 and <= balance",
+  "settingsGoalTitle": "Primary Goal",
+  "settingsNotificationsTitle": "Notification Timing",
+  "settingsNotificationsSubtitle": "Smart reminder schedule configuration",
+  "settingsProActive": "Pro subscription active",
+  "settingsProInactive": "Unlock free trial features",
+  "settingsResetTitle": "Reset App Data",
+  "settingsResetSubtitle": "Delete all expenses and start fresh",
+  "resetDataTitle": "Confirm Reset",
+  "resetDataConfirmation": "Are you sure you want to delete all transaction records and reset your goal? This action cannot be undone.",
+  "resetButtonLabel": "Reset Everything",
+  "navInsights": "Insights",
+  "settingsThemeTitle": "App Theme",
+  "settingsThemeSystem": "System Default",
+  "settingsThemeLight": "Light Theme",
+  "settingsThemeDark": "Dark Theme",
+  "expenseCountLabel": "{count} expense records",
+  "@expenseCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "emptyExpensesHint": "Tap the button below to add your first expense.",
+  "leaderboardPrivacyTitle": "Privacy",
+  "leaderboardYourStanding": "Your Standing",
+  "leaderboardEstimateNote": "This value is an estimate calculated solely from data on your device.",
+  "leaderboardCohortPending": "Not enough anonymous users yet for peer comparison. It will appear here once sufficient participation is reached.",
+  "settingsLanguageTitle": "App Language",
+  "settingsLanguageSystem": "System Default",
+  "settingsLanguageTr": "Turkish",
+  "settingsLanguageEn": "English",
+  "appTagline": "Your Personal Finance Coach",
+  "accentForest": "Forest Green",
+  "accentEmerald": "Emerald",
+  "accentSage": "Sage",
+  "accentNavy": "Navy Blue",
+  "accentAmber": "Amber",
+  "accentPurple": "Purple",
+  "accentPink": "Pink",
+  "settingsAccentTitle": "Theme Accent Color",
+  "settingsAccentDesc": "Choose the accent color palette for the app.",
+  "promptWeeklyReview": "Let's review my weekly budget together.",
+  "promptDebtPlan": "Let's create a debt payoff plan.",
+  "promptInflationImpact": "Let's examine how inflation impacts my budget.",
+  "promptSavingsAdvice": "Give me a custom savings recommendation for my budget.",
+  "categoryMarket": "Groceries",
+  "categoryRestaurant": "Restaurant",
+  "categoryRent": "Rent",
+  "categoryBills": "Bills",
+  "categoryTransport": "Transport",
+  "categoryEntertainment": "Entertainment",
+  "leaderboardSelectDemographics": "Select age group and household size for peer comparison.",
+  "leaderboardAgeBandLabel": "Age Group",
+  "leaderboardHouseholdBandLabel": "Household Size",
+  "personSingle": "1 person",
+  "personDouble": "2 people",
+  "personMultiple": "3+ people",
+  "leaderboardCalculateCta": "Calculate my standing",
+  "cohortNotEnough": "Cohort sample size not reached",
+  "anonymousCohort": "Anonymous cohort: {count}",
+  "@anonymousCohort": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "paywallStoreNotActive": "Store checkout link is not active yet.",
+  "paywallNoActiveSubscription": "No active subscription found."
+}

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/services/maki_api_client.dart';
+import 'package:maki_app/utils/category_l10n.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ReceiptScannerScreen extends StatefulWidget {
@@ -320,7 +321,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                           size: 20,
                         ),
                         const SizedBox(width: 12),
-                        Text(cat.name),
+                        Text(getLocalizedCategoryName(context, cat.name)),
                       ],
                     ),
                   );

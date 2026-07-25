@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/theme/app_tokens.dart';
 
 class BrandWordmark extends StatelessWidget {
@@ -67,7 +68,7 @@ class BrandWordmark extends StatelessWidget {
         if (showTagline) ...[
           SizedBox(height: fontSize * 0.12),
           Text(
-            'Kişisel Finans Koçun',
+            AppLocalizations.of(context)?.appTagline ?? 'Kişisel Finans Koçun',
             style: TextStyle(
               fontSize: fontSize * 0.42,
               fontWeight: FontWeight.w500,

@@ -31,7 +31,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   Future<void> _loadStanding() async {
     if (_ageBand == null || _householdBand == null) {
       setState(() {
-        _error = 'Anonim karşılaştırma için yaş ve hane grubunu seçin.';
+        _error = AppLocalizations.of(context)!.leaderboardSelectDemographics;
       });
       return;
     }
@@ -102,9 +102,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   children: [
                     DropdownButtonFormField<String>(
                       initialValue: _ageBand,
-                      decoration: const InputDecoration(
-                        labelText: 'Yaş grubu',
-                        prefixIcon: Icon(Icons.person_outline),
+                      decoration: InputDecoration(
+                        labelText: l10n.leaderboardAgeBandLabel,
+                        prefixIcon: const Icon(Icons.person_outline),
                       ),
                       items: const [
                         DropdownMenuItem(value: '18-24', child: Text('18–24')),
@@ -118,14 +118,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     const SizedBox(height: AppSpacing.md),
                     DropdownButtonFormField<String>(
                       initialValue: _householdBand,
-                      decoration: const InputDecoration(
-                        labelText: 'Hane büyüklüğü',
-                        prefixIcon: Icon(Icons.groups_outlined),
+                      decoration: InputDecoration(
+                        labelText: l10n.leaderboardHouseholdBandLabel,
+                        prefixIcon: const Icon(Icons.groups_outlined),
                       ),
-                      items: const [
-                        DropdownMenuItem(value: '1', child: Text('1 kişi')),
-                        DropdownMenuItem(value: '2', child: Text('2 kişi')),
-                        DropdownMenuItem(value: '3+', child: Text('3+ kişi')),
+                      items: [
+                        DropdownMenuItem(value: '1', child: Text(l10n.personSingle)),
+                        DropdownMenuItem(value: '2', child: Text(l10n.personDouble)),
+                        DropdownMenuItem(value: '3+', child: Text(l10n.personMultiple)),
                       ],
                       onChanged: (value) =>
                           setState(() => _householdBand = value),
@@ -139,7 +139,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.query_stats_outlined),
-                      label: const Text('Anonim durumumu hesapla'),
+                      label: Text(l10n.leaderboardCalculateCta),
                     ),
                   ],
                 ),
@@ -223,7 +223,7 @@ class _StandingCard extends StatelessWidget {
             Text(
               standing.available && percentile != null
                   ? l10n.leaderboardPercentile(percentile)
-                  : 'Kohort henüz yeterli değil',
+                  : l10n.cohortNotEnough,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w800,
@@ -232,7 +232,7 @@ class _StandingCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Anonim kohort: ${standing.cohortSize}',
+              l10n.anonymousCohort(standing.cohortSize),
               style: theme.textTheme.bodySmall,
             ),
             const SizedBox(height: AppSpacing.sm),

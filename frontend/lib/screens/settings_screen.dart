@@ -20,6 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isPremium = false;
   String _selectedTheme = 'system';
   String _selectedAccent = 'forest';
+  String _selectedLanguage = 'system';
 
   @override
   void initState() {
@@ -32,11 +33,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final premium = await PremiumService.instance.isPremium();
     final themeMode = await OnboardingService.instance.getThemeMode();
     final accent = await OnboardingService.instance.getAccent();
+    final lang = await OnboardingService.instance.getLanguage();
     setState(() {
       _selectedGoal = goal ?? 'track_spending';
       _isPremium = premium;
       _selectedTheme = themeMode;
       _selectedAccent = accent;
+      _selectedLanguage = lang;
     });
   }
 
@@ -88,6 +91,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: goals.entries.map((entry) {
+                return RadioListTile<String>(
+                  title: Text(entry.value),
+                  value: entry.key,
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _getLanguageLabel(String langKey, AppLocalizations l10n) {
+    switch (langKey) {
+      case 'tr':
+        return l10n.settingsLanguageTr;
+      case 'en':
+        return l10n.settingsLanguageEn;
+      default:
+        return l10n.settingsLanguageSystem;
+    }
+  }
+
+  Future<void> _changeLanguageDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final languages = {
+      'system': l10n.settingsLanguageSystem,
+      'tr': l10n.settingsLanguageTr,
+      'en': l10n.settingsLanguageEn,
+    };
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            l10n.settingsLanguageTitle,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          content: RadioGroup<String>(
+            groupValue: _selectedLanguage,
+            onChanged: (val) async {
+              if (val != null) {
+                final navigator = Navigator.of(context);
+                final myAppState = MyApp.of(context);
+                await OnboardingService.instance.setLanguage(val);
+                Locale? loc;
+                if (val == 'tr') loc = const Locale('tr');
+                if (val == 'en') loc = const Locale('en');
+                myAppState?.setLocale(loc);
+                setState(() => _selectedLanguage = val);
+                navigator.pop();
+              }
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: languages.entries.map((entry) {
                 return RadioListTile<String>(
                   title: Text(entry.value),
                   value: entry.key,
@@ -168,37 +228,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadSettings();
   }
 
-  static String _accentLabel(String key) {
+  String _getAccentLabel(String key, AppLocalizations l10n) {
     switch (key) {
+      case 'emerald':
+        return l10n.accentEmerald;
+      case 'sage':
+        return l10n.accentSage;
       case 'navy':
-        return 'Lacivert';
+        return l10n.accentNavy;
       case 'amber':
-        return 'Amber';
+        return l10n.accentAmber;
       case 'purple':
-        return 'Mor';
+        return l10n.accentPurple;
       case 'pink':
-        return 'Pembe';
+        return l10n.accentPink;
       case 'forest':
       default:
-        return 'Yeşil';
+        return l10n.accentForest;
     }
   }
 
   Future<void> _changeAccentDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!mounted) return;
     await showDialog<void>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-            'Tema Rengi',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          title: Text(
+            l10n.settingsAccentTitle,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Uygulamanın vurgu rengini seç.'),
+              Text(l10n.settingsAccentDesc),
               const SizedBox(height: AppSpacing.lg),
               Wrap(
                 spacing: AppSpacing.lg,
@@ -240,7 +305,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         Text(
-                          _accentLabel(accent.key),
+                          _getAccentLabel(accent.key, l10n),
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
@@ -324,6 +389,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const Divider(height: 1),
 
           ListTile(
+            leading: const Icon(Icons.language_outlined),
+            title: Text(l10n.settingsLanguageTitle),
+            subtitle: Text(_getLanguageLabel(_selectedLanguage, l10n)),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _changeLanguageDialog,
+          ),
+          const Divider(height: 1),
+
+          ListTile(
             leading: const Icon(Icons.palette_outlined),
             title: Text(l10n.settingsThemeTitle),
             subtitle: Text(_getThemeLabel(_selectedTheme, l10n)),
@@ -337,8 +411,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Icons.color_lens_outlined,
               color: BrandAccents.colorForKey(_selectedAccent),
             ),
-            title: const Text('Tema Rengi'),
-            subtitle: Text(_accentLabel(_selectedAccent)),
+            title: Text(l10n.settingsAccentTitle),
+            subtitle: Text(_getAccentLabel(_selectedAccent, l10n)),
             trailing: const Icon(Icons.chevron_right),
             onTap: _changeAccentDialog,
           ),
