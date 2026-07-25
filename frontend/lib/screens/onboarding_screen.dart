@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
+import 'package:maki_app/screens/login_screen.dart';
 import 'package:maki_app/widgets/brand_wordmark.dart';
 import 'package:maki_app/widgets/mascot.dart';
 
@@ -41,7 +42,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    onPressed: () async {
+                      final loggedIn = await Navigator.of(context).push<bool?>(
+                        MaterialPageRoute<bool?>(
+                          builder: (_) => const LoginScreen(),
+                        ),
+                      );
+                      if (loggedIn == true && mounted) {
+                        widget.onCompleted('track_spending');
+                      }
+                    },
+                    icon: const Icon(Icons.login_rounded, size: 20),
+                    label: Text(l10n.loginButton),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
               const Center(child: Mascot(pose: MascotPose.wave, size: 120)),
               const SizedBox(height: 16),
               const Center(child: BrandWordmark(fontSize: 30)),

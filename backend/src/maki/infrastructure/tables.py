@@ -243,3 +243,16 @@ class EntitlementTable(Base):
     last_event: Mapped[str] = mapped_column(String(32), nullable=False)
     last_event_version: Mapped[int] = mapped_column(Integer, nullable=False)
     last_event_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class UserAccountTable(Base):
+    __tablename__ = "user_accounts"
+
+    user_id: Mapped[str] = mapped_column(String(26), primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    display_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    avatar_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    financial_goal: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

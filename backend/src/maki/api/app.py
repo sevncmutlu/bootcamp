@@ -2,6 +2,7 @@ from collections.abc import Callable
 from contextlib import AbstractAsyncContextManager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from maki.api.dependencies import Container
 from maki.api.handlers import register_handlers
@@ -9,6 +10,7 @@ from maki.api.middleware.body_limit import BodyLimitMiddleware
 from maki.api.middleware.observability import ObservabilityMiddleware
 from maki.api.middleware.privacy import PrivacyMiddleware
 from maki.api.middleware.request_context import RequestContextMiddleware
+from maki.api.routes.auth import router as auth_router
 from maki.api.routes.billing import router as billing_router
 from maki.api.routes.coach import router as coach_router
 from maki.api.routes.forecasts import router as forecast_router
@@ -42,6 +44,7 @@ def create_app(
     app.state.settings = settings
     register_handlers(app)
     app.include_router(health_router)
+    app.include_router(auth_router)
     app.include_router(billing_router)
     app.include_router(coach_router)
     app.include_router(forecast_router)
@@ -49,6 +52,13 @@ def create_app(
     app.include_router(jobs_router)
     app.include_router(leaderboard_router)
     app.include_router(privacy_router)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.add_middleware(PrivacyMiddleware, telemetry=container.telemetry)
     app.add_middleware(BodyLimitMiddleware)
     if container.telemetry is not None:

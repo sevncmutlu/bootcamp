@@ -1,4 +1,6 @@
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'dart:io';
+
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:maki_app/database/database.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
@@ -7,6 +9,9 @@ import 'package:maki_app/services/premium_service.dart';
 import 'package:maki_app/theme/app_tokens.dart';
 import 'package:maki_app/screens/notification_settings_dialog.dart';
 import 'package:maki_app/screens/paywall_screen.dart';
+import 'package:maki_app/screens/login_screen.dart';
+import 'package:maki_app/screens/profile_screen.dart';
+import 'package:maki_app/services/auth_service.dart';
 import 'package:maki_app/main.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -367,6 +372,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  ImageProvider _getAvatarImage(String? avatarUrl) {
+    if (avatarUrl == null || avatarUrl.isEmpty) {
+      return const AssetImage('assets/mascot/maki_avatar.webp');
+    }
+    if (avatarUrl.startsWith('assets/')) {
+      return AssetImage(avatarUrl);
+    }
+    if (kIsWeb || avatarUrl.startsWith('blob:') || avatarUrl.startsWith('http')) {
+      return NetworkImage(avatarUrl);
+    }
+    final file = File(avatarUrl);
+    if (file.existsSync()) {
+      return FileImage(file);
+    }
+    return const AssetImage('assets/mascot/maki_avatar.webp');
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -382,6 +404,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: ListView(
         children: [
+          ListTile(
+            leading: CircleAvatar(
+              radius: 20,
+              backgroundColor: theme.colorScheme.primaryContainer,
+              backgroundImage: _getAvatarImage(
+                AuthService.instance.currentUser?.avatarUrl,
+              ),
+            ),
+            title: Text(
+              AuthService.instance.currentUser?.displayName ?? l10n.guestUser,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(
+              AuthService.instance.currentUser?.email ?? l10n.loginSubtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () async {
+              if (AuthService.instance.isLoggedIn) {
+                await Navigator.of(context).push<void>(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ProfileScreen(),
+                  ),
+                );
+              } else {
+                await Navigator.of(context).push<bool?>(
+                  MaterialPageRoute<bool?>(
+                    builder: (_) => const LoginScreen(),
+                  ),
+                );
+              }
+              setState(() {});
+            },
+          ),
+          const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.track_changes_outlined),
             title: Text(l10n.settingsGoalTitle),

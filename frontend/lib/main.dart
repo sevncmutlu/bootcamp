@@ -13,6 +13,7 @@ import 'package:maki_app/screens/forest_screen.dart';
 import 'package:maki_app/screens/paywall_screen.dart';
 import 'package:maki_app/services/premium_service.dart';
 import 'package:maki_app/screens/insights_screen.dart';
+import 'package:maki_app/services/auth_service.dart';
 import 'package:maki_app/services/onboarding_service.dart';
 
 Future<void> main() async {
@@ -46,6 +47,7 @@ class MyAppState extends State<MyApp> {
   }
 
   Future<void> _checkOnboardingStatus() async {
+    await AuthService.instance.initialize();
     final completed = await OnboardingService.instance.hasCompletedOnboarding();
     final themeStr = await OnboardingService.instance.getThemeMode();
     final accentStr = await OnboardingService.instance.getAccent();
