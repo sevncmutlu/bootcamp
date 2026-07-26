@@ -15,6 +15,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<UpdateAccentColorEvent>(_onUpdateAccentColor);
     on<UpdateLanguageEvent>(_onUpdateLanguage);
     on<UpgradeToPremiumEvent>(_onUpgradeToPremium);
+    on<UpdatePremiumStatusEvent>(_onUpdatePremiumStatus);
     on<ClearAllDataEvent>(_onClearAllData);
   }
 
@@ -34,7 +35,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         stackTrace: stackTrace,
         name: 'SettingsBloc',
       );
-      emit(state.copyWith(isLoading: false, error: 'Ayarlar yüklenirken bir hata oluştu.'));
+      emit(state.copyWith(isLoading: false, error: 'errLoadSettings'));
     }
   }
 
@@ -56,7 +57,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         ));
       }
     } catch (e) {
-      emit(state.copyWith(error: 'Hedef güncellenemedi.'));
+      emit(state.copyWith(error: 'errUpdateGoal'));
     }
   }
 
@@ -78,7 +79,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         ));
       }
     } catch (e) {
-      emit(state.copyWith(error: 'Tema güncellenemedi.'));
+      emit(state.copyWith(error: 'errUpdateTheme'));
     }
   }
 
@@ -100,7 +101,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         ));
       }
     } catch (e) {
-      emit(state.copyWith(error: 'Renk güncellenemedi.'));
+      emit(state.copyWith(error: 'errUpdateAccent'));
     }
   }
 
@@ -122,7 +123,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         ));
       }
     } catch (e) {
-      emit(state.copyWith(error: 'Dil güncellenemedi.'));
+      emit(state.copyWith(error: 'errUpdateLang'));
     }
   }
 
@@ -144,7 +145,29 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         ));
       }
     } catch (e) {
-      emit(state.copyWith(error: 'Premium yükseltmesi başarısız oldu.'));
+      emit(state.copyWith(error: 'errUpdatePremium'));
+    }
+  }
+
+  Future<void> _onUpdatePremiumStatus(
+    UpdatePremiumStatusEvent event,
+    Emitter<SettingsState> emit,
+  ) async {
+    try {
+      await repository.updatePremiumStatus(event.isPremium);
+      if (state.settings != null) {
+        emit(state.copyWith(
+          settings: SettingsEntity(
+            primaryGoal: state.settings!.primaryGoal,
+            isPremium: event.isPremium,
+            themeMode: state.settings!.themeMode,
+            accentColor: state.settings!.accentColor,
+            language: state.settings!.language,
+          ),
+        ));
+      }
+    } catch (e) {
+      emit(state.copyWith(error: 'errUpdatePremium'));
     }
   }
 
@@ -156,7 +179,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       await repository.clearAllData();
       emit(state.copyWith(dataCleared: true));
     } catch (e) {
-      emit(state.copyWith(error: 'Veriler silinirken bir hata oluştu.'));
+      emit(state.copyWith(error: 'errClearData'));
     }
   }
 }

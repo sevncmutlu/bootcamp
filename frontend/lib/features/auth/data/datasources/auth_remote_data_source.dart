@@ -14,9 +14,11 @@ abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login(String email, String password);
   Future<AuthResponseModel> register(String email, String password, String displayName);
   Future<void> requestPasswordReset(String email);
+  Future<void> resetPassword(String email, String newPassword);
   Future<UserEntity> getUserProfile(String token);
-  Future<UserEntity> updateProfile(String token, {String? displayName, String? financialGoal, String? avatarUrl});
+  Future<UserEntity> updateProfile(String token, {String? displayName, String? email, String? financialGoal, String? avatarUrl});
   Future<void> deleteAccount(String token);
+  Future<void> changePassword(String token, String oldPassword, String newPassword);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -35,7 +37,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
       return AuthResponseModel(
-        user: _mapJsonToEntity(json['user'] as Map<String, dynamic>),
+        user: _mapJsonToEntity(json),
         accessToken: json['access_token'] as String,
       );
     } else {
@@ -100,16 +102,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserEntity> updateProfile(
     String token, {
     String? displayName,
+    String? email,
     String? financialGoal,
     String? avatarUrl,
   }) async {
     final updates = <String, dynamic>{};
     if (displayName != null) updates['display_name'] = displayName;
+    if (email != null) updates['email'] = email;
     if (financialGoal != null) updates['financial_goal'] = financialGoal;
     if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
 
-    final response = await _client.patch(
-      Uri.parse('${ApiConfig.baseUrl}/v1/auth/me'),
+    final response = await _client.put(
+      Uri.parse('${ApiConfig.baseUrl}/v1/auth/profile'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -135,6 +139,43 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete account: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<void> resetPassword(String email, String newPassword) async {
+    final response = await _client.post(
+      Uri.parse('${ApiConfig.baseUrl}/v1/auth/reset-password'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'email': email,
+        'new_password': newPassword,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to reset password: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<void> changePassword(String token, String oldPassword, String newPassword) async {
+    final response = await _client.put(
+      Uri.parse('${ApiConfig.baseUrl}/v1/auth/change-password'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'old_password': oldPassword,
+        'new_password': newPassword,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to change password: ${response.statusCode}');
     }
   }
 

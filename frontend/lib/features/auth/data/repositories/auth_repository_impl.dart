@@ -93,14 +93,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-
   Future<void> resetPassword({required String email, required String newPassword}) async {
-    // Implemented in future / stub
+    await remoteDataSource.resetPassword(email, newPassword);
   }
 
   @override
   Future<void> changePassword({required String oldPassword, required String newPassword}) async {
-    // Implemented in future / stub
+    if (_accessToken == null) throw Exception('Not authenticated');
+    await remoteDataSource.changePassword(_accessToken!, oldPassword, newPassword);
   }
 
   Future<void> refreshProfile() async {
@@ -127,6 +127,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final updatedUser = await remoteDataSource.updateProfile(
       _accessToken!,
       displayName: displayName,
+      email: email,
       financialGoal: financialGoal,
       avatarUrl: avatarUrl,
     );

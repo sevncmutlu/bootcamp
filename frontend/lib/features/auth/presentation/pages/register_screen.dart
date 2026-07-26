@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maki_app/core/theme/app_tokens.dart';
+import 'package:maki_app/core/widgets/password_strength_indicator.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_state.dart';
-import 'package:maki_app/core/theme/app_tokens.dart';
 import 'package:maki_app/core/widgets/mascot.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -32,105 +33,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _onPasswordChanged() {
     setState(() {});
-  }
-
-  bool get _hasMinLength => _passwordController.text.length >= 6;
-  bool get _hasNumber => RegExp(r'[0-9]').hasMatch(_passwordController.text);
-  bool get _hasUpper => RegExp(r'[A-Z]').hasMatch(_passwordController.text);
-  bool get _hasSpecial =>
-      RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(_passwordController.text);
-
-  int get _strengthScore {
-    int score = 0;
-    if (_hasMinLength) score++;
-    if (_hasNumber) score++;
-    if (_hasUpper) score++;
-    if (_hasSpecial) score++;
-    return score;
-  }
-
-  Widget _buildStrengthIndicator(AppLocalizations l10n, ThemeData theme) {
-    final pass = _passwordController.text;
-    if (pass.isEmpty) return const SizedBox.shrink();
-
-    final score = _strengthScore;
-    Color color;
-    String label;
-    double progress;
-
-    if (score <= 1) {
-      color = Colors.red;
-      label = l10n.passwordWeak;
-      progress = 0.33;
-    } else if (score <= 3) {
-      color = Colors.orange;
-      label = l10n.passwordMedium;
-      progress = 0.66;
-    } else {
-      color = Colors.green;
-      label = l10n.passwordStrong;
-      progress = 1.0;
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: AppSpacing.xs),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '${l10n.passwordLabel}: $label',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-            Text(
-              '$score/4',
-              style: TextStyle(fontSize: 12, color: color),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: progress,
-            color: color,
-            backgroundColor: theme.colorScheme.surfaceContainerHighest,
-            minHeight: 6,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRequirementRow(String label, bool isMet, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Row(
-        children: [
-          Icon(
-            isMet ? Icons.check_circle_rounded : Icons.circle_outlined,
-            size: 16,
-            color: isMet ? Colors.green : theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: isMet
-                  ? theme.colorScheme.onSurface
-                  : theme.colorScheme.onSurfaceVariant,
-              fontWeight: isMet ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -266,17 +168,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: AppSpacing.xs),
-                            _buildStrengthIndicator(l10n, theme),
-                            const SizedBox(height: AppSpacing.sm),
-                            _buildRequirementRow(
-                                l10n.reqMinLength, _hasMinLength, theme),
-                            _buildRequirementRow(
-                                l10n.reqNumber, _hasNumber, theme),
-                            _buildRequirementRow(
-                                l10n.reqUpper, _hasUpper, theme),
-                            _buildRequirementRow(
-                                l10n.reqSpecial, _hasSpecial, theme),
+                            PasswordStrengthIndicator(
+                              password: _passwordController.text,
+                            ),
                           ],
                         ),
                 ),

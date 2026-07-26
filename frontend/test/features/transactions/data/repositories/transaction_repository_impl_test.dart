@@ -87,7 +87,7 @@ void main() {
       await repository.addExpense(expense);
       
       // Allow database to process
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       
       await repository.deleteExpense(1);
 
@@ -111,7 +111,7 @@ void main() {
       await repository.addIncome(income);
       
       // Allow database to process
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       
       await repository.deleteIncome(1);
 

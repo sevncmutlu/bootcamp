@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maki_app/features/transactions/domain/entities/category_entity.dart';
 import 'package:maki_app/features/transactions/presentation/bloc/transaction_bloc.dart';
-import 'package:maki_app/features/transactions/presentation/bloc/transaction_event.dart';
 import 'package:maki_app/features/transactions/presentation/bloc/transaction_state.dart';
 import 'package:maki_app/features/transactions/presentation/pages/receipt_scanner_screen.dart';
 import 'package:maki_app/l10n/app_localizations.dart';

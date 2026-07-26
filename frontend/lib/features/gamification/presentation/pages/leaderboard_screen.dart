@@ -289,7 +289,7 @@ class _StandingCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              standing.available && percentile != null
+              percentile != null
                   ? l10n.leaderboardPercentile(percentile)
                   : l10n.cohortNotEnough,
               textAlign: TextAlign.center,

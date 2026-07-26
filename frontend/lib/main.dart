@@ -198,10 +198,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void initState() {
     super.initState();
     _screens = [
-      BlocProvider(
-        create: (_) => di.sl<TransactionBloc>(),
-        child: const ExpenseEntryScreen(),
-      ),
+      const ExpenseEntryScreen(),
       InsightsScreen(key: _insightsKey),
       BlocProvider(
         create: (_) => di.sl<SimulatorBloc>(),

@@ -109,7 +109,7 @@ void main() {
       bloc.add(const DeleteExpenseEvent(1));
       
       // small delay to let bloc process
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       
       verify(() => mockRepository.deleteExpense(1)).called(1);
     });
@@ -121,7 +121,7 @@ void main() {
       bloc.add(const DeleteIncomeEvent(1));
       
       // small delay to let bloc process
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       
       verify(() => mockRepository.deleteIncome(1)).called(1);
     });
@@ -135,7 +135,7 @@ void main() {
       bloc = TransactionBloc(repository: mockRepository);
       
       // Wait for stream subscription to emit and bloc to process
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       
       expect(bloc.state.expenses, equals([tExpense]));
       expect(bloc.state.incomes, equals([tIncome]));

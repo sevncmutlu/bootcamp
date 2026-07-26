@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maki_app/features/simulator/domain/entities/debt_entity.dart';
-import 'package:maki_app/features/simulator/domain/entities/payoff_month_entity.dart';
 import 'package:maki_app/features/simulator/domain/entities/simulation_result_entity.dart';
 import 'package:maki_app/features/simulator/domain/repositories/simulator_repository.dart';
 import 'package:maki_app/features/simulator/presentation/bloc/simulator_bloc.dart';

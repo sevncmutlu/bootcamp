@@ -33,7 +33,7 @@ class TransactionState extends Equatable {
       expenses: expenses ?? this.expenses,
       incomes: incomes ?? this.incomes,
       isLoading: isLoading ?? this.isLoading,
-      error: error,
+      error: error ?? this.error,
       isSuccess: isSuccess ?? this.isSuccess,
     );
   }

@@ -33,13 +33,13 @@ import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:maki_app/core/network/maki_api_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  // Features - Auth
-  
-  // Features - Transactions
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
   // Transactions
   sl.registerLazySingleton<TransactionRepository>(
     () => TransactionRepositoryImpl(sl()),
@@ -145,13 +145,4 @@ Future<void> init() async {
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(() => http.Client());
 
-  // Features - Insights
-  // Features - Coach
-  // Features - Simulator
-  // Features - Gamification
-  // Features - Profile
-
-  // Core
-
-  // External
 }

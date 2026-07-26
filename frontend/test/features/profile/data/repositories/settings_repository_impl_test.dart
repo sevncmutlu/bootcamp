@@ -5,6 +5,7 @@ import 'package:maki_app/features/profile/data/datasources/onboarding_local_data
 import 'package:maki_app/features/premium/data/datasources/premium_local_data_source.dart';
 import 'package:maki_app/features/profile/data/repositories/settings_repository_impl.dart';
 
+
 class MockOnboardingLocalDataSource extends Mock implements OnboardingLocalDataSource {}
 class MockPremiumLocalDataSource extends Mock implements PremiumLocalDataSource {}
 class MockAppDatabase extends Mock implements AppDatabase {}
@@ -99,11 +100,14 @@ void main() {
   });
 
   group('clearAllData', () {
-    test('clearAllData calls database clearAllData', () async {
+    test('SettingsRepositoryImpl clearAllData clears database and preferences', () async {
       when(() => mockDatabase.clearAllData()).thenAnswer((_) async => {});
-
+      when(() => mockOnboardingDataSource.clearAllData()).thenAnswer((_) async => {});
+      
       await repository.clearAllData();
+      
       verify(() => mockDatabase.clearAllData()).called(1);
+      verify(() => mockOnboardingDataSource.clearAllData()).called(1);
     });
   });
 }

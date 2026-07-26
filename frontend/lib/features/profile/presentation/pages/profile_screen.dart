@@ -6,11 +6,12 @@ import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:maki_app/features/auth/presentation/pages/register_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maki_app/core/theme/app_tokens.dart';
+import 'package:maki_app/core/widgets/password_strength_indicator.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:maki_app/features/auth/presentation/utils/avatar_utils.dart';
-import 'package:maki_app/core/theme/app_tokens.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -96,7 +97,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _showChangePasswordDialog() async {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final oldController = TextEditingController();
     final newController = TextEditingController();
     String? dialogError;
@@ -130,94 +130,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                  if (dialogError != null) ...[
-                    Text(
-                      dialogError!,
-                      style: const TextStyle(color: Colors.red, fontSize: 13),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  TextField(
-                    controller: oldController,
-                    obscureText: obscureOld,
-                    decoration: InputDecoration(
-                      labelText: l10n.currentPasswordLabel,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          obscureOld
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
+                      if (dialogError != null) ...[
+                        Text(
+                          dialogError!,
+                          style: const TextStyle(color: Colors.red, fontSize: 13),
                         ),
-                        onPressed: () {
-                          setDialogState(() {
-                            obscureOld = !obscureOld;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: newController,
-                    obscureText: obscureNew,
-                    onChanged: (_) => setDialogState(() {}),
-                    decoration: InputDecoration(
-                      labelText: l10n.newPasswordLabel,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          obscureNew
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () {
-                          setDialogState(() {
-                            obscureNew = !obscureNew;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  AnimatedSize(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeInOut,
-                    child: newController.text.isEmpty
-                        ? const SizedBox.shrink()
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 8),
-                              _buildDialogStrengthIndicator(
-                                  newController.text, l10n, theme),
-                              const SizedBox(height: 6),
-                              _buildDialogRequirementRow(
-                                  l10n.reqMinLength,
-                                  newController.text.length >= 6,
-                                  theme),
-                              _buildDialogRequirementRow(
-                                  l10n.reqNumber,
-                                  RegExp(r'[0-9]').hasMatch(newController.text),
-                                  theme),
-                              _buildDialogRequirementRow(
-                                  l10n.reqUpper,
-                                  RegExp(r'[A-Z]').hasMatch(newController.text),
-                                  theme),
-                              _buildDialogRequirementRow(
-                                  l10n.reqSpecial,
-                                  RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                                      .hasMatch(newController.text),
-                                  theme),
-                            ],
+                        const SizedBox(height: 8),
+                      ],
+                      TextField(
+                        controller: oldController,
+                        obscureText: obscureOld,
+                        decoration: InputDecoration(
+                          labelText: l10n.currentPasswordLabel,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              obscureOld
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                            ),
+                            onPressed: () {
+                              setDialogState(() {
+                                obscureOld = !obscureOld;
+                              });
+                            },
                           ),
-                  ),
-                ],
-              );
-              },
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: newController,
+                        obscureText: obscureNew,
+                        onChanged: (_) => setDialogState(() {}),
+                        decoration: InputDecoration(
+                          labelText: l10n.newPasswordLabel,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              obscureNew
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                            ),
+                            onPressed: () {
+                              setDialogState(() {
+                                obscureNew = !obscureNew;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOut,
+                        child: newController.text.isEmpty
+                            ? const SizedBox.shrink()
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  PasswordStrengthIndicator(
+                                    password: newController.text,
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ],
+                  );
+                },
               ),
               actions: [
                 TextButton(
@@ -229,11 +211,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (oldController.text.isNotEmpty &&
                         newController.text.length >= 6) {
                       context.read<AuthBloc>().add(
-                        ChangePasswordEvent(
-                          oldPassword: oldController.text,
-                          newPassword: newController.text,
-                        ),
-                      );
+                            ChangePasswordEvent(
+                              oldPassword: oldController.text,
+                              newPassword: newController.text,
+                            ),
+                          );
                     }
                   },
                   child: Text(l10n.saveButton),
@@ -243,94 +225,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           },
         );
       },
-    );
-  }
-
-  Widget _buildDialogStrengthIndicator(
-      String pass, AppLocalizations l10n, ThemeData theme) {
-    if (pass.isEmpty) return const SizedBox.shrink();
-    int score = 0;
-    if (pass.length >= 6) score++;
-    if (RegExp(r'[0-9]').hasMatch(pass)) score++;
-    if (RegExp(r'[A-Z]').hasMatch(pass)) score++;
-    if (RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(pass)) score++;
-
-    Color color;
-    String label;
-    double progress;
-
-    if (score <= 1) {
-      color = Colors.red;
-      label = l10n.passwordWeak;
-      progress = 0.33;
-    } else if (score <= 3) {
-      color = Colors.orange;
-      label = l10n.passwordMedium;
-      progress = 0.66;
-    } else {
-      color = Colors.green;
-      label = l10n.passwordStrong;
-      progress = 1.0;
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '${l10n.passwordLabel}: $label',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-            Text(
-              '$score/4',
-              style: TextStyle(fontSize: 12, color: color),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: progress,
-            color: color,
-            backgroundColor: theme.colorScheme.surfaceContainerHighest,
-            minHeight: 6,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDialogRequirementRow(
-      String label, bool isMet, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1.5),
-      child: Row(
-        children: [
-          Icon(
-            isMet ? Icons.check_circle_rounded : Icons.circle_outlined,
-            size: 14,
-            color: isMet ? Colors.green : theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: isMet
-                  ? theme.colorScheme.onSurface
-                  : theme.colorScheme.onSurfaceVariant,
-              fontWeight: isMet ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

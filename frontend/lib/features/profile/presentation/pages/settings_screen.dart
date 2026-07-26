@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maki_app/features/auth/presentation/pages/login_screen.dart' as maki_app_login;
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/core/theme/app_tokens.dart';
 import 'package:maki_app/features/profile/presentation/widgets/notification_settings_dialog.dart';
@@ -57,7 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     await showDialog<void>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(
             l10n.onboardingSubtitle,
@@ -75,7 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: (val) {
                   if (val != null) {
                     context.read<SettingsBloc>().add(UpdatePrimaryGoalEvent(val));
-                    Navigator.of(context).pop();
+                    Navigator.of(dialogContext).pop();
                   }
                 },
               );
@@ -90,13 +92,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context)!;
     final languages = {
       'system': l10n.settingsLanguageSystem,
-      'tr': 'Türkçe',
-      'en': 'English',
+      'tr': l10n.settingsLanguageTr,
+      'en': l10n.settingsLanguageEn,
     };
 
     await showDialog<void>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(
             l10n.settingsLanguageTitle,
@@ -119,7 +121,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     if (val == 'tr') loc = const Locale('tr');
                     if (val == 'en') loc = const Locale('en');
                     myAppState?.setLocale(loc);
-                    Navigator.of(context).pop();
+                    Navigator.of(dialogContext).pop();
                   }
                 },
               );
@@ -133,9 +135,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _getLanguageLabel(String langKey, AppLocalizations l10n) {
     switch (langKey) {
       case 'tr':
-        return 'Türkçe';
+        return l10n.settingsLanguageTr;
       case 'en':
-        return 'English';
+        return l10n.settingsLanguageEn;
       case 'system':
       default:
         return l10n.settingsLanguageSystem;
@@ -153,7 +155,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     await showDialog<void>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(
             l10n.settingsThemeTitle,
@@ -184,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         mode = ThemeMode.system;
                     }
                     myAppState?.setThemeMode(mode);
-                    Navigator.of(context).pop();
+                    Navigator.of(dialogContext).pop();
                   }
                 },
               );
@@ -197,16 +199,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   String _getAccentLabel(String key, AppLocalizations l10n) {
     switch (key) {
+      case 'emerald':
+        return l10n.accentEmerald;
+      case 'sage':
+        return l10n.accentSage;
+      case 'navy':
+        return l10n.accentNavy;
+      case 'amber':
+        return l10n.accentAmber;
+      case 'purple':
+        return l10n.accentPurple;
+      case 'pink':
+        return l10n.accentPink;
       case 'forest':
-        return 'Forest (Maki Yeşil)';
-      case 'ocean':
-        return 'Ocean (Mavi)';
-      case 'sunset':
-        return 'Sunset (Turuncu)';
-      case 'berry':
-        return 'Berry (Mor)';
       default:
-        return 'Forest (Maki Yeşil)';
+        return l10n.accentForest;
     }
   }
 
@@ -226,7 +233,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context)!;
     await showDialog<void>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(
             l10n.settingsAccentTitle,
@@ -244,7 +251,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       context.read<SettingsBloc>().add(UpdateAccentColorEvent(accent.key));
                       final myAppState = MyApp.of(context);
                       myAppState?.setAccent(accent.color);
-                      Navigator.of(context).pop();
+                      Navigator.of(dialogContext).pop();
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -276,7 +283,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          accent.key,
+                          _getAccentLabel(accent.key, l10n),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: selected ? FontWeight.bold : FontWeight.normal,
@@ -300,7 +307,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(
             l10n.resetDataTitle,
@@ -309,11 +316,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           content: Text(l10n.resetDataConfirmation),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context, false),
+              onPressed: () => Navigator.pop(dialogContext, false),
               child: Text(l10n.cancelButton),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () => Navigator.pop(dialogContext, true),
               style: TextButton.styleFrom(
                 foregroundColor: theme.colorScheme.error,
               ),
@@ -345,14 +352,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: BlocConsumer<SettingsBloc, SettingsState>(
         listener: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
           if (state.error != null) {
+            String errorMsg = state.error!;
+            switch (state.error) {
+              case 'errLoadSettings': errorMsg = l10n.errLoadSettings; break;
+              case 'errUpdateGoal': errorMsg = l10n.errUpdateGoal; break;
+              case 'errUpdateTheme': errorMsg = l10n.errUpdateTheme; break;
+              case 'errUpdateAccent': errorMsg = l10n.errUpdateAccent; break;
+              case 'errUpdateLang': errorMsg = l10n.errUpdateLang; break;
+              case 'errUpdatePremium': errorMsg = l10n.errUpdatePremium; break;
+              case 'errClearData': errorMsg = l10n.errClearData; break;
+            }
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error!)),
+              SnackBar(content: Text(errorMsg)),
             );
           }
           if (state.dataCleared) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Tüm veriler başarıyla silindi.')),
+              SnackBar(content: Text(l10n.settingsDataClearedMsg)),
             );
             context.read<AuthBloc>().add(LogoutEvent());
             final myAppState = MyApp.of(context);
@@ -367,7 +385,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           final settings = state.settings;
           if (settings == null) {
-            return const Center(child: Text('Veriler yüklenemedi'));
+            return Center(child: Text(l10n.errLoadSettings));
           }
 
           return ListView(
@@ -380,40 +398,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       radius: 20,
                       backgroundColor: theme.colorScheme.primaryContainer,
                       backgroundImage: AvatarUtils.getAvatarImage(user?.avatarUrl),
-                      child: user?.avatarUrl == null
-                          ? Icon(
-                              Icons.person_outline,
-                              color: theme.colorScheme.onPrimaryContainer,
-                            )
-                          : null,
                     ),
-                    title: Text(user?.displayName ?? 'Misafir'),
-                    subtitle: Text(user?.email ?? 'misafir@maki.app'),
+                    title: Text(user?.displayName ?? l10n.settingsGuest),
+                    subtitle: Text(user?.email ?? l10n.settingsGuestEmail),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: () {
-                      Navigator.push<void>(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (context) => const ProfileScreen(),
-                        ),
-                      );
+                      if (user == null) {
+                        Navigator.push<void>(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (context) => const maki_app_login.LoginScreen(),
+                          ),
+                        );
+                      } else {
+                        Navigator.push<void>(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (context) => const ProfileScreen(),
+                          ),
+                        );
+                      }
                     },
                   );
                 },
               ),
               const Divider(),
               _SettingsSection(
-                title: 'Tercihler',
+                title: l10n.settingsSectionPreferences,
                 children: [
                   _SettingsItem(
                     icon: Icons.flag_outlined,
-                    title: l10n.onboardingSubtitle,
+                    title: l10n.settingsGoalTitle,
                     subtitle: _getGoalLabel(settings.primaryGoal, l10n),
                     onTap: () => _changeGoalDialog(settings.primaryGoal),
                   ),
                   _SettingsItem(
                     icon: Icons.star_outline_rounded,
-                    title: 'Premium',
+                    title: l10n.settingsProTitle,
                     subtitle:
                         settings.isPremium ? l10n.settingsProActive : l10n.settingsProInactive,
                     trailing: settings.isPremium
@@ -432,6 +453,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       }
                     },
                   ),
+                  if (kDebugMode)
+                    SwitchListTile(
+                      secondary: const Icon(Icons.bug_report_outlined),
+                      title: Text(l10n.settingsDevProAccess),
+                      value: settings.isPremium,
+                      onChanged: (val) {
+                        context.read<SettingsBloc>().add(UpdatePremiumStatusEvent(val));
+                      },
+                    ),
                   _SettingsItem(
                     icon: Icons.notifications_outlined,
                     title: l10n.settingsNotificationsTitle,
@@ -446,7 +476,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const Divider(),
               _SettingsSection(
-                title: 'Görünüm',
+                title: l10n.settingsSectionAppearance,
                 children: [
                   _SettingsItem(
                     icon: Icons.dark_mode_outlined,
@@ -470,7 +500,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const Divider(),
               _SettingsSection(
-                title: 'Gelişmiş',
+                title: l10n.settingsSectionAdvanced,
                 children: [
                   _SettingsItem(
                     icon: Icons.delete_outline,

@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:maki_app/core/database/database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/features/profile/data/datasources/lints_bandit_local_data_source.dart';
 import 'package:maki_app/core/theme/app_tokens.dart';
@@ -24,6 +25,8 @@ class _NotificationSettingsDialogState
   int _optimalHour = 9;
   String _selectedSimArm = 'morning';
 
+  static const _smartEnabledKey = 'smart_notifications_enabled';
+
   Map<String, BanditArmParams> _armParams = {};
   bool _isLoading = true;
 
@@ -32,11 +35,26 @@ class _NotificationSettingsDialogState
     super.initState();
     _banditService = LintsBanditLocalDataSource(_db);
     _loadParams();
+    _loadPreference();
+  }
+
+  Future<void> _loadPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getBool(_smartEnabledKey) ?? true;
+    if (mounted) {
+      setState(() {
+        _isSmartEnabled = value;
+      });
+    }
+  }
+
+  Future<void> _savePreference(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_smartEnabledKey, value);
   }
 
   Future<void> _loadParams() async {
     setState(() => _isLoading = true);
-
     int hour = 9;
     final Map<String, BanditArmParams> params = {};
 
@@ -157,10 +175,11 @@ class _NotificationSettingsDialogState
                 style: theme.textTheme.bodySmall,
               ),
               value: _isSmartEnabled,
-              onChanged: (val) {
+              onChanged: (val) async {
                 setState(() {
                   _isSmartEnabled = val;
                 });
+                await _savePreference(val);
               },
               contentPadding: EdgeInsets.zero,
             ),

@@ -427,5 +427,19 @@
   "invalidEmail": "Lütfen geçerli bir e-posta adresi girin",
   "tierFree": "ÜCRETSİZ",
   "tierPro": "PRO",
-  "appVersionLabel": "Maki Finans v1.0.0"
+  "appVersionLabel": "Maki Finans v1.0.0",
+  "settingsSectionPreferences": "Tercihler",
+  "settingsSectionAppearance": "Görünüm",
+  "settingsSectionAdvanced": "Gelişmiş",
+  "settingsProTitle": "Premium",
+  "settingsDataClearedMsg": "Tüm veriler başarıyla silindi.",
+  "settingsGuest": "Misafir",
+  "settingsGuestEmail": "misafir@maki.app",
+  "errLoadSettings": "Ayarlar yüklenirken bir hata oluştu.",
+  "errUpdateGoal": "Hedef güncellenemedi.",
+  "errUpdateTheme": "Tema güncellenemedi.",
+  "errUpdateAccent": "Renk güncellenemedi.",
+  "errUpdateLang": "Dil güncellenemedi.",
+  "errUpdatePremium": "Premium durumu güncellenemedi.",
+  "errClearData": "Veriler silinirken bir hata oluştu."
 }

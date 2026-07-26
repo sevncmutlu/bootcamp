@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
-import 'package:maki_app/core/network/api_config.dart';
 import 'package:maki_app/features/auth/data/datasources/auth_remote_data_source.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
@@ -39,7 +38,9 @@ void main() {
             body: any(named: 'body'),
           )).thenAnswer((_) async => http.Response(
             jsonEncode({
-              'user': tUserJson,
+              'user_id': '123',
+              'email': tEmail,
+              'display_name': 'Test User',
               'access_token': 'dummy_token'
             }), 200));
 

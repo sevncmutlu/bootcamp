@@ -47,4 +47,13 @@ class UpdateLanguageEvent extends SettingsEvent {
 
 class UpgradeToPremiumEvent extends SettingsEvent {}
 
+class UpdatePremiumStatusEvent extends SettingsEvent {
+  final bool isPremium;
+
+  const UpdatePremiumStatusEvent(this.isPremium);
+
+  @override
+  List<Object?> get props => [isPremium];
+}
+
 class ClearAllDataEvent extends SettingsEvent {}

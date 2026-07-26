@@ -27,7 +27,7 @@ class MockAuthBloc extends Mock implements AuthBloc {
   @override
   AuthState get state => _state;
   AuthState _state = const AuthState();
-
+  @override
   void emit(AuthState state) {
     _state = state;
     _controller.add(state);
@@ -49,7 +49,7 @@ class MockSettingsBloc extends Mock implements SettingsBloc {
   SettingsState get state => _state;
 
   SettingsState _state = SettingsState.initial();
-
+  @override
   void emit(SettingsState state) {
     _state = state;
     _controller.add(state);

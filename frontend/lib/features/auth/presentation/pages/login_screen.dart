@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/features/auth/presentation/pages/register_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maki_app/core/theme/app_tokens.dart';
+import 'package:maki_app/core/widgets/password_strength_indicator.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_state.dart';
-import 'package:maki_app/core/theme/app_tokens.dart';
 import 'package:maki_app/core/widgets/mascot.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -44,63 +45,95 @@ class _LoginScreenState extends State<LoginScreen> {
     final l10n = AppLocalizations.of(context)!;
     final emailController = TextEditingController(text: _emailController.text);
     final newPasswordController = TextEditingController();
+    bool obscureNew = true;
 
     await showDialog<void>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(
-            l10n.resetPasswordTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: l10n.emailLabel,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text(
+                l10n.resetPasswordTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: newPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: l10n.newPasswordLabel,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: l10n.emailLabel,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancelButton),
-            ),
-            TextButton(
-              onPressed: () async {
-                final email = emailController.text.trim();
-                final newPass = newPasswordController.text;
-                if (email.isNotEmpty && newPass.length >= 6) {
-                    context.read<AuthBloc>().add(
-                          ResetPasswordEvent(
-                            email: email,
-                            newPassword: newPass,
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: newPasswordController,
+                    obscureText: obscureNew,
+                    onChanged: (_) => setDialogState(() {}),
+                    decoration: InputDecoration(
+                      labelText: l10n.newPasswordLabel,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          obscureNew
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                        ),
+                        onPressed: () {
+                          setDialogState(() {
+                            obscureNew = !obscureNew;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    child: newPasswordController.text.isEmpty
+                        ? const SizedBox.shrink()
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              PasswordStrengthIndicator(
+                                password: newPasswordController.text,
+                              ),
+                            ],
                           ),
-                        );
-                    Navigator.pop(context);
-                }
-              },
-              child: Text(l10n.saveButton),
-            ),
-          ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(l10n.cancelButton),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final email = emailController.text.trim();
+                    final newPass = newPasswordController.text;
+                    if (email.isNotEmpty && newPass.length >= 6) {
+                        context.read<AuthBloc>().add(
+                              ResetPasswordEvent(
+                                email: email,
+                                newPassword: newPass,
+                              ),
+                            );
+                        Navigator.pop(context);
+                    }
+                  },
+                  child: Text(l10n.saveButton),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -224,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     } else if (state.isSuccess) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(l10n.saveButton), // Just a generic success message since we reset password
+                          content: Text(l10n.changePasswordSuccess),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );

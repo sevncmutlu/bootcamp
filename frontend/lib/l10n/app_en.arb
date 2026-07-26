@@ -426,5 +426,20 @@
   "invalidEmail": "Please enter a valid email address",
   "tierFree": "FREE",
   "tierPro": "PRO",
-  "appVersionLabel": "Maki Finance v1.0.0"
+  "appVersionLabel": "Maki Finance v1.0.0",
+  "settingsSectionPreferences": "Preferences",
+  "settingsSectionAppearance": "Appearance",
+  "settingsSectionAdvanced": "Advanced",
+  "settingsProTitle": "Premium",
+  "settingsDataClearedMsg": "All data cleared successfully.",
+  "settingsGuest": "Guest",
+  "settingsGuestEmail": "guest@maki.app",
+  "errLoadSettings": "Failed to load settings.",
+  "errUpdateGoal": "Failed to update goal.",
+  "errUpdateTheme": "Failed to update theme.",
+  "errUpdateAccent": "Failed to update accent color.",
+  "errUpdateLang": "Failed to update language.",
+  "errUpdatePremium": "Failed to update premium status.",
+  "errClearData": "Failed to clear data."
 }
+

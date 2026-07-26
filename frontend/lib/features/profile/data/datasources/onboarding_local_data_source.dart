@@ -1,4 +1,4 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class OnboardingLocalDataSource {
   Future<bool> hasCompletedOnboarding();
@@ -11,12 +11,13 @@ abstract class OnboardingLocalDataSource {
   Future<void> setAccent(String key);
   Future<String> getLanguage();
   Future<void> setLanguage(String code);
+  Future<void> clearAllData();
 }
 
 class OnboardingLocalDataSourceImpl implements OnboardingLocalDataSource {
-  final FlutterSecureStorage _storage;
+  final SharedPreferences _prefs;
 
-  OnboardingLocalDataSourceImpl(this._storage);
+  OnboardingLocalDataSourceImpl(this._prefs);
 
   static const String _onboardingKey = 'has_completed_onboarding';
   static const String _primaryGoalKey = 'primary_financial_goal';
@@ -26,55 +27,60 @@ class OnboardingLocalDataSourceImpl implements OnboardingLocalDataSource {
 
   @override
   Future<bool> hasCompletedOnboarding() async {
-    final value = await _storage.read(key: _onboardingKey);
-    return value == 'true';
+    return _prefs.getBool(_onboardingKey) ?? false;
   }
 
   @override
   Future<void> setCompletedOnboarding(bool value) async {
-    await _storage.write(key: _onboardingKey, value: value.toString());
+    await _prefs.setBool(_onboardingKey, value);
   }
 
   @override
   Future<String?> getPrimaryGoal() async {
-    return await _storage.read(key: _primaryGoalKey);
+    return _prefs.getString(_primaryGoalKey);
   }
 
   @override
   Future<void> setPrimaryGoal(String goal) async {
-    await _storage.write(key: _primaryGoalKey, value: goal);
+    await _prefs.setString(_primaryGoalKey, goal);
   }
 
   @override
   Future<String> getThemeMode() async {
-    final value = await _storage.read(key: _themeModeKey);
-    return value ?? 'system';
+    return _prefs.getString(_themeModeKey) ?? 'system';
   }
 
   @override
   Future<void> setThemeMode(String mode) async {
-    await _storage.write(key: _themeModeKey, value: mode);
+    await _prefs.setString(_themeModeKey, mode);
   }
 
   @override
   Future<String> getAccent() async {
-    final value = await _storage.read(key: _accentKey);
-    return value ?? 'forest';
+    return _prefs.getString(_accentKey) ?? 'forest';
   }
 
   @override
   Future<void> setAccent(String key) async {
-    await _storage.write(key: _accentKey, value: key);
+    await _prefs.setString(_accentKey, key);
   }
 
   @override
   Future<String> getLanguage() async {
-    final value = await _storage.read(key: _languageKey);
-    return value ?? 'en';
+    return _prefs.getString(_languageKey) ?? 'system';
   }
 
   @override
   Future<void> setLanguage(String code) async {
-    await _storage.write(key: _languageKey, value: code);
+    await _prefs.setString(_languageKey, code);
+  }
+
+  @override
+  Future<void> clearAllData() async {
+    await _prefs.remove(_onboardingKey);
+    await _prefs.remove(_primaryGoalKey);
+    await _prefs.remove(_themeModeKey);
+    await _prefs.remove(_accentKey);
+    await _prefs.remove(_languageKey);
   }
 }

@@ -54,7 +54,7 @@ void main() {
 
       final expectedStates = [
         SettingsState(isLoading: true, settings: null, error: null),
-        SettingsState(isLoading: false, settings: null, error: 'Ayarlar yüklenirken bir hata oluştu.'),
+        const SettingsState(isLoading: false, settings: null, error: 'errLoadSettings'),
       ];
 
       expectLater(settingsBloc.stream, emitsInOrder(expectedStates));
@@ -86,7 +86,7 @@ void main() {
 
       settingsBloc.add(UpdatePrimaryGoalEvent('pay_debt'));
       
-      await Future.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
       verify(() => mockRepository.updatePrimaryGoal('pay_debt')).called(1);
     });
 
@@ -97,7 +97,7 @@ void main() {
       settingsBloc.emit(SettingsState(isLoading: false, settings: tSettings, error: null));
 
       final expectedStates = [
-        SettingsState(isLoading: false, settings: tSettings, error: 'Hedef güncellenemedi.'),
+        SettingsState(isLoading: false, settings: tSettings, error: 'errUpdateGoal'),
       ];
 
       expectLater(settingsBloc.stream, emitsInOrder(expectedStates));
