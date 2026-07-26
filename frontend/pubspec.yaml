@@ -36,6 +36,7 @@ dev_dependencies:
     sdk: flutter
   drift_dev: ^2.31.0
   build_runner: ^2.4.11
+  mocktail: any
   flutter_lints: ^5.0.0
 
 flutter:

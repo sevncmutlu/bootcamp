@@ -78,7 +78,7 @@ final class LeaderboardStanding {
   final String cohortSize;
 }
 
-final class MakiApiClient {
+class MakiApiClient {
   MakiApiClient({
     required this.baseUri,
     required this.tokenProvider,

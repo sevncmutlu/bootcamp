@@ -100,7 +100,12 @@ class InsightsScreenState extends State<InsightsScreen>
                       children: [
                         const Icon(Icons.show_chart_outlined, size: 16),
                         const SizedBox(width: 6),
-                        Text(l10n.forecastTitle),
+                        Flexible(
+                          child: Text(
+                            l10n.forecastTitle,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -111,7 +116,12 @@ class InsightsScreenState extends State<InsightsScreen>
                       children: [
                         const Icon(Icons.trending_up_outlined, size: 16),
                         const SizedBox(width: 6),
-                        Text(l10n.inflationTitle),
+                        Flexible(
+                          child: Text(
+                            l10n.inflationTitle,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                   ),

@@ -194,6 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: AppSpacing.xxl),
 
                 TextFormField(
+                  key: const Key('register_name_field'),
                   controller: _nameController,
                   decoration: InputDecoration(
                     labelText: l10n.displayNameLabel,
@@ -209,6 +210,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: AppSpacing.lg),
 
                 TextFormField(
+                  key: const Key('register_email_field'),
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
@@ -230,6 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: AppSpacing.lg),
 
                 TextFormField(
+                  key: const Key('register_password_field'),
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
