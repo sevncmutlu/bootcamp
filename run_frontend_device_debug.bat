@@ -7,7 +7,7 @@ adb reverse tcp:8000 tcp:8000 >nul 2>&1
 set SCRIPT_DIR=%~dp0
 cd /d "%SCRIPT_DIR%frontend"
 
-if not exist "lib\database\database.g.dart" (
+if not exist "lib\core\database\database.g.dart" (
     echo Generating database code via build_runner...
     call dart run build_runner build
 )

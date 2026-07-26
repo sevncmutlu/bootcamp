@@ -62,5 +62,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<void> clearAllData() async {
     await database.clearAllData();
     await onboardingDataSource.clearAllData();
+    await premiumDataSource.setPremium(false);
   }
 }

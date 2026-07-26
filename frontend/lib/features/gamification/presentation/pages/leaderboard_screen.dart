@@ -70,8 +70,7 @@ class _LeaderboardViewState extends State<LeaderboardView>
               DropdownMenuItem(value: '25-34', child: Text('25-34')),
               DropdownMenuItem(value: '35-44', child: Text('35-44')),
               DropdownMenuItem(value: '45-54', child: Text('45-54')),
-              DropdownMenuItem(value: '55-64', child: Text('55-64')),
-              DropdownMenuItem(value: '65+', child: Text('65+')),
+              DropdownMenuItem(value: '55+', child: Text('55+')),
             ],
             onChanged: (v) {
               context.read<GamificationBloc>().add(
@@ -88,9 +87,7 @@ class _LeaderboardViewState extends State<LeaderboardView>
             items: const [
               DropdownMenuItem(value: '1', child: Text('1')),
               DropdownMenuItem(value: '2', child: Text('2')),
-              DropdownMenuItem(value: '3', child: Text('3')),
-              DropdownMenuItem(value: '4', child: Text('4')),
-              DropdownMenuItem(value: '5+', child: Text('5+')),
+              DropdownMenuItem(value: '3+', child: Text('3+')),
             ],
             onChanged: (v) {
               context.read<GamificationBloc>().add(
@@ -135,6 +132,13 @@ class _LeaderboardViewState extends State<LeaderboardView>
                       l10n.leaderboardSelectDemographics,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.leaderboardSubtitle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -308,17 +312,7 @@ class _StandingCard extends StatelessWidget {
               '${l10n.leaderboardTrees(trees)} · ${l10n.currentLevel(level)}',
               style: theme.textTheme.bodySmall,
             ),
-            if (isEstimated) ...[
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                l10n.leaderboardEstimateNote,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
+
           ],
         ),
       ),

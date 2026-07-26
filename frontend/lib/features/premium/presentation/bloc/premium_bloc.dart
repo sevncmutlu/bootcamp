@@ -18,7 +18,10 @@ class PremiumBloc extends Bloc<PremiumEvent, PremiumState> {
     Emitter<PremiumState> emit,
   ) async {
     final isPremium = await repository.isPremium();
-    emit(state.copyWith(isPremium: isPremium));
+    emit(state.copyWith(
+      isPremium: isPremium,
+      clearPurchaseSuccess: !isPremium,
+    ));
   }
 
   Future<void> _onPurchasePremium(
@@ -60,11 +63,13 @@ class PremiumBloc extends Bloc<PremiumEvent, PremiumState> {
         isLoading: false,
         isPremium: false, // In reality, this would be true if they had a past purchase
         error: 'Önceki abonelik bulunamadı.',
+        clearPurchaseSuccess: true,
       ));
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
         error: 'Abonelik geri yüklenemedi.',
+        clearPurchaseSuccess: true,
       ));
     }
   }

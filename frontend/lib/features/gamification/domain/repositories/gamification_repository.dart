@@ -5,6 +5,7 @@ import 'package:maki_app/features/gamification/domain/entities/leaderboard_entit
 abstract class GamificationRepository {
   Future<GamificationStatusEntity> getGamificationStatus();
   Future<List<DailyChallengeEntity>> getDailyChallenges(DateTime date);
+  Future<void> evaluateDailyChallenges(DateTime date);
   Future<GamificationStatusEntity> claimXP(DailyChallengeEntity challenge);
   Future<int> getSavingsScoreBasisPoints();
   Future<bool> hasWeeklyIncome();

@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,7 +64,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.ocrError)),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedSelectImage(e.toString()))),
         );
       }
     }
@@ -118,7 +119,18 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(error.userMessage)));
+        ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.errorParsingReceipt(error.userMessage))));
+      }
+    } catch (e) {
+      developer.log(
+        'Bilinmeyen hata',
+        error: e,
+        name: 'ReceiptScannerScreen',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.errorParsingReceipt(e.toString()))));
       }
     } finally {
       if (mounted) {
@@ -205,10 +217,15 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
               child: _selectedImage != null
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(16.0),
-                      child: Image.file(
-                        File(_selectedImage!.path),
-                        fit: BoxFit.cover,
-                      ),
+                      child: kIsWeb
+                          ? Image.network(
+                              _selectedImage!.path,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.file(
+                              File(_selectedImage!.path),
+                              fit: BoxFit.cover,
+                            ),
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,

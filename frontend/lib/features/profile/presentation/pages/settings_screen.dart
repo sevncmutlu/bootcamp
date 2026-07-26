@@ -11,6 +11,8 @@ import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:maki_app/features/auth/presentation/utils/avatar_utils.dart';
 import 'package:maki_app/features/profile/presentation/bloc/settings_bloc.dart';
+import 'package:maki_app/features/premium/presentation/bloc/premium_bloc.dart';
+import 'package:maki_app/features/premium/presentation/bloc/premium_event.dart';
 import 'package:maki_app/features/profile/presentation/bloc/settings_event.dart';
 import 'package:maki_app/features/profile/presentation/bloc/settings_state.dart';
 import 'package:maki_app/main.dart';
@@ -239,9 +241,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             l10n.settingsAccentTitle,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          content: SingleChildScrollView(
-            child: Center(
-              child: Wrap(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.settingsAccentDesc,
+                style: const TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              SingleChildScrollView(
+                child: Center(
+                  child: Wrap(
                 spacing: AppSpacing.lg,
                 runSpacing: AppSpacing.lg,
                 children: BrandAccents.all.map((accent) {
@@ -296,7 +307,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ),
-        );
+        ],
+      ),
+    );
       },
     );
   }
@@ -324,7 +337,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: TextButton.styleFrom(
                 foregroundColor: theme.colorScheme.error,
               ),
-              child: Text(l10n.settingsResetTitle),
+              child: Text(l10n.resetButtonLabel),
             ),
           ],
         );
@@ -373,9 +386,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               SnackBar(content: Text(l10n.settingsDataClearedMsg)),
             );
             context.read<AuthBloc>().add(LogoutEvent());
+            context.read<PremiumBloc>().add(CheckPremiumStatusEvent());
             final myAppState = MyApp.of(context);
             myAppState?.setLocale(null);
             myAppState?.setThemeMode(ThemeMode.system);
+            
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute<void>(builder: (_) => const maki_app_login.LoginScreen()),
+              (route) => false,
+            );
           }
         },
         builder: (context, state) {
@@ -399,7 +418,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       backgroundColor: theme.colorScheme.primaryContainer,
                       backgroundImage: AvatarUtils.getAvatarImage(user?.avatarUrl),
                     ),
-                    title: Text(user?.displayName ?? l10n.settingsGuest),
+                    title: Text(user?.displayName ?? l10n.guestUser),
                     subtitle: Text(user?.email ?? l10n.settingsGuestEmail),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: () {
@@ -435,9 +454,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _SettingsItem(
                     icon: Icons.star_outline_rounded,
                     title: l10n.settingsProTitle,
-                    subtitle:
-                        settings.isPremium ? l10n.settingsProActive : l10n.settingsProInactive,
-                    trailing: settings.isPremium
+                    subtitle: context.watch<PremiumBloc>().state.isPremium 
+                        ? l10n.settingsProActive 
+                        : l10n.settingsProInactive,
+                    trailing: context.watch<PremiumBloc>().state.isPremium
                         ? const Icon(Icons.check_circle, color: Colors.green)
                         : null,
                     onTap: () async {
@@ -457,14 +477,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SwitchListTile(
                       secondary: const Icon(Icons.bug_report_outlined),
                       title: Text(l10n.settingsDevProAccess),
-                      value: settings.isPremium,
+                      value: context.watch<PremiumBloc>().state.isPremium,
                       onChanged: (val) {
                         context.read<SettingsBloc>().add(UpdatePremiumStatusEvent(val));
+                        Future.delayed(const Duration(milliseconds: 100), () {
+                          if (context.mounted) {
+                            context.read<PremiumBloc>().add(CheckPremiumStatusEvent());
+                          }
+                        });
                       },
                     ),
                   _SettingsItem(
                     icon: Icons.notifications_outlined,
                     title: l10n.settingsNotificationsTitle,
+                    subtitle: l10n.settingsNotificationsSubtitle,
                     onTap: () {
                       showDialog<void>(
                         context: context,

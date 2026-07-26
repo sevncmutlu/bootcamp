@@ -17,7 +17,6 @@
   "labelTitle": "Başlık",
   "labelAmount": "Miktar",
   "labelCategory": "Kategori",
-  "labelDate": "Tarih",
   "saveExpense": "Harcamayı Kaydet",
   "failedSelectImage": "Resim seçilemedi: {error}",
   "@failedSelectImage": {
@@ -42,10 +41,8 @@
   "labelStoreName": "Mağaza Adı",
   "labelTotalAmount": "Toplam Tutar",
   "addToExpenses": "Harcamalara Ekle",
-  "chatError": "Üzgünüm, şu anda bağlantı sorunu yaşıyorum. Lütfen tekrar deneyin.",
   "navExpenses": "Harcama",
   "navCoach": "Koç",
-  "navForecast": "Tahminler",
   "forecastTitle": "Harcama Tahmini",
   "forecastSubtitle": "Maki'nin önümüzdeki 7 gün için yapay zeka tabanlı günlük harcama tahminleri.",
   "forecastLoading": "Harcama tahminleri hesaplanıyor...",
@@ -70,7 +67,6 @@
   "interestRate": "Yıllık Faiz Oranı (%)",
   "minPayment": "Minimum Ödeme Tutarı",
   "simulateButton": "Ödemeyi Simüle Et",
-  "navInflation": "Enflasyon",
   "inflationTitle": "Kişisel Enflasyon Paneli",
   "inflationSubtitle": "Harcama dağılımınıza dayalı kişisel enflasyonunuzu resmi TÜİK enflasyon verileriyle karşılaştırın.",
   "personalInflation": "Kişisel Enflasyon",
@@ -80,18 +76,13 @@
   "personalWeight": "Sizin Ağırlığınız",
   "officialWeight": "Resmi Ağırlık",
   "categoryInflation": "Yıllık Enflasyon",
-  "categoryLabel": "Kategori",
-  "forecastError": "Harcama tahmini hesaplanamadı. Lütfen daha sonra tekrar deneyin.",
-  "inflationError": "Kişisel enflasyon hesaplanamadı. Lütfen daha sonra tekrar deneyin.",
   "inflationDataTitle": "Eşleşmiş fiyat sepeti gerekiyor",
   "inflationDataRequired": "Kişisel enflasyon için aynı ürünlerin geçmiş ve güncel birim fiyatları gerekir. Maki yalnızca harcama toplamlarından yanıltıcı bir oran üretmez.",
   "simulatorError": "Borç kapatma simülasyonu başarısız oldu. Lütfen bilgilerinizi kontrol edin.",
-  "ocrError": "Fiş görseli taranamadı. Lütfen daha sonra tekrar deneyin.",
   "privacyTitle": "Gizlilik Öncelikli Yapay Zekâ Koçu",
   "privacyMessage": "Maki tüm işlem kayıtlarınızı cihazınızda saklar. Sohbet mesajlarındaki telefon, kart numaraları veya IBAN bilgileri sunucuya gönderilmeden önce temizlenir.",
   "navForest": "Orman",
   "forestTitle": "Maki Ormanı",
-  "forestSubtitle": "Günlük görevleri tamamlayarak ormanınızı büyütün.",
   "forestStage": "Aşama {stage} / 5",
   "@forestStage": {
     "placeholders": {
@@ -133,20 +124,6 @@
   "levelTitleTree": "Olgun Meşe",
   "levelTitleForest": "Meşe Muhafızı",
   "challengesHeader": "Günlük Tasarruf Görevleri",
-  "xpNeeded": "{xp} / {maxXp} DP · Seviye {nextLevel} için",
-  "@xpNeeded": {
-    "placeholders": {
-      "xp": {
-        "type": "int"
-      },
-      "maxXp": {
-        "type": "int"
-      },
-      "nextLevel": {
-        "type": "int"
-      }
-    }
-  },
   "claimXp": "{xp} DP Kazan",
   "@claimXp": {
     "placeholders": {
@@ -156,21 +133,10 @@
     }
   },
   "claimedStatus": "Kazanıldı",
-  "completedStatus": "Tamamlandı",
   "pendingStatus": "Bekliyor",
-  "leaderboardHeader": "Haftalık Tasarruf Sıralaması",
   "leaderboardSubtitle": "Haftalık tasarruflarınızı anonim tasarruf sahipleriyle karşılaştırın.",
-  "leaderboardRankText": "Bu hafta kullanıcıların %{percent} kadarından daha fazla tasarruf ettiniz!",
-  "@leaderboardRankText": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
   "leaderboardTitle": "Tasarruf Liderlik Tablosu",
   "leaderboardYou": "Siz (Anonim)",
-  "leaderboardAnonymous": "Anonim Tasarruf Sahibi",
   "leaderboardPercentile": "En İyi %{percent}",
   "@leaderboardPercentile": {
     "placeholders": {
@@ -215,14 +181,8 @@
   "challengeMicroSaverDesc": "Bugün 50 TL altında bir işlem kaydedin.",
   "challengeWeeklyReviewer": "Kategori kâşifi",
   "challengeWeeklyReviewerDesc": "Bugün 3 farklı kategoride işlem kaydedin.",
-  "badgesUnlocked": "Kazanılan Rozetler",
-  "badgeSavingsSeed": "Tasarruf Tohumu",
-  "badgeBudgetMaster": "Bütçe Ustası",
-  "badgeOakGuardian": "Meşe Muhafızı",
-  "navNotifications": "Akıllı Bildirimler",
   "notificationsTitle": "Akıllı Bildirim Merkezi",
-  "notificationsSubtitle": "Cihaz içi yapay zekâ zamanlama tahminlerini yapılandırın.",
-  "settingsTitle": "Bildirim Ayarları",
+  "settingsTitle": "Ayarlar",
   "smartOptimizationEnable": "Akıllı Yapay Zekâ Optimizasyonunu Etkinleştir",
   "smartOptimizationDesc": "Bildirimleri açma olasılığınızın en yüksek olduğu zaman aralığını cihazınızda öğrenir; pil tasarrufu sağlar ve bildirim yorgunluğunu azaltır.",
   "preferredTriggerHour": "Öngörülen En Uygun Saat",
@@ -241,7 +201,6 @@
   "afternoonArm": "Öğleden Sonra (14:00)",
   "eveningArm": "Akşam (20:00)",
   "precisionMatrixLabel": "Hassasiyet matrisi A",
-  "projectionVectorLabel": "Projeksiyon vektörü b",
   "rewardSuccess": "Model eğitildi! Seçilen periyodun ödül parametreleri güncellendi.",
   "closeButton": "Kapat",
   "xpClaimed": "+{xp} DP kazanıldı!",
@@ -287,14 +246,13 @@
   "validationDebtBalance": "Lütfen 0'dan büyük geçerli bir bakiye girin",
   "validationDebtRate": "Lütfen 0 veya daha büyük geçerli bir faiz oranı girin",
   "validationDebtMinPayment": "Lütfen bakiyeden küçük veya eşit ve 0'dan büyük geçerli bir asgari ödeme girin",
-  "settingsTitle": "Ayarlar",
   "settingsGoalTitle": "Ana Hedef",
   "settingsNotificationsTitle": "Bildirim Zamanlaması",
   "settingsNotificationsSubtitle": "Akıllı hatırlatıcı saati yapılandırması",
   "settingsProActive": "Pro abonelik aktif",
   "settingsProInactive": "Ücretsiz deneme özelliklerini aç",
   "settingsResetTitle": "Uygulama Verilerini Sıfırla",
-  "settingsResetSubtitle": "Tüm harcamaları sil ve baştan başla",
+  "settingsResetSubtitle": "Tüm uygulama verilerini sil ve baştan başla",
   "resetDataTitle": "Sıfırlamayı Onayla",
   "resetDataConfirmation": "Tüm işlem kayıtlarını silmek ve hedefinizi sıfırlamak istediğinizden emin misiniz? Bu işlem geri alınamaz.",
   "resetButtonLabel": "Her Şeyi Sıfırla",
@@ -303,19 +261,9 @@
   "settingsThemeSystem": "Sistem Varsayılanı",
   "settingsThemeLight": "Açık Tema",
   "settingsThemeDark": "Koyu Tema",
-  "expenseCountLabel": "{count} gider kaydı",
-  "@expenseCountLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "emptyExpensesHint": "İlk giderinizi eklemek için aşağıdaki butona dokunun.",
-  "leaderboardPrivacyTitle": "Gizlilik",
   "leaderboardYourStanding": "Konumunuz",
   "leaderboardEstimateNote": "Bu değer yalnızca cihazınızdaki verilerden hesaplanan bir tahmindir.",
-  "leaderboardCohortPending": "Akran karşılaştırması için henüz yeterli anonim kullanıcı yok. Yeterli katılım sağlandığında burada görünecektir.",
   "settingsLanguageTitle": "Dil",
   "settingsLanguageSystem": "Sistem Varsayılanı",
   "settingsLanguageTr": "Türkçe",
@@ -345,9 +293,6 @@
   "leaderboardSelectDemographics": "Anonim karşılaştırma için yaş ve hane grubunu seçin.",
   "leaderboardAgeBandLabel": "Yaş grubu",
   "leaderboardHouseholdBandLabel": "Hane büyüklüğü",
-  "personSingle": "1 kişi",
-  "personDouble": "2 kişi",
-  "personMultiple": "3+ kişi",
   "leaderboardCalculateCta": "Anonim durumumu hesapla",
   "cohortNotEnough": "Kohort henüz yeterli değil",
   "anonymousCohort": "Anonim kohort: {count}",
@@ -358,8 +303,6 @@
       }
     }
   },
-  "paywallStoreNotActive": "Mağaza satın alma bağlantısı henüz etkin değil.",
-  "paywallNoActiveSubscription": "Etkin abonelik bulunamadı.",
   "totalIncome": "Toplam Gelir",
   "netBalance": "Net Bakiye",
   "tabExpenses": "Giderler",
@@ -367,18 +310,8 @@
   "addIncome": "Gelir Ekle",
   "noIncomes": "Henüz gelir kaydedilmedi.",
   "emptyIncomesHint": "İlk gelirini eklemek için aşağıdaki butona dokun.",
-  "incomeCountLabel": "{count} gelir kaydı",
-  "@incomeCountLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "labelSource": "Kaynak",
-  "validationSource": "Lütfen bir gelir kaynağı girin.",
   "labelIncomeTitle": "Gelir Başlığı",
-  "defaultIncomeSource": "Maaş",
   "sourceSalary": "Maaş",
   "sourceFreelance": "Freelance / Ek Gelir",
   "sourceInvestment": "Yatırım",
@@ -402,7 +335,6 @@
   "dontHaveAccount": "Hesabınız yok mu? Kayıt Olun",
   "cancelButton": "İptal",
   "logoutConfirmation": "Hesabınızdan çıkış yapmak istediğinizden emin misiniz?",
-  "chooseAvatar": "Avatar Seç",
   "userIdLabel": "Kullanıcı Kimliği",
   "makiMascotOption": "Maki Maskotu",
   "editDisplayNameTitle": "Ad Soyad Düzenle",

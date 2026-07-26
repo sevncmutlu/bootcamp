@@ -18,11 +18,12 @@ class GamificationBloc extends Bloc<GamificationEvent, GamificationState> {
     LoadGamificationDataEvent event,
     Emitter<GamificationState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, clearNewlyClaimedXP: true));
+    emit(state.copyWith(isLoading: true));
 
     try {
       final now = DateTime.now();
       
+      await repository.evaluateDailyChallenges(now);
       final challenges = await repository.getDailyChallenges(now);
       final status = await repository.getGamificationStatus();
       final score = await repository.getSavingsScoreBasisPoints();
@@ -71,7 +72,7 @@ class GamificationBloc extends Bloc<GamificationEvent, GamificationState> {
         stackTrace: stackTrace,
         name: 'GamificationBloc',
       );
-      emit(state.copyWith(error: 'XP alınırken bir hata oluştu.', clearNewlyClaimedXP: true));
+      emit(state.copyWith(error: 'XP alınırken bir hata oluştu.'));
     }
   }
 

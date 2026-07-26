@@ -8,6 +8,7 @@ import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:maki_app/core/widgets/mascot.dart';
+import 'package:maki_app/main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -228,6 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
+                const SizedBox(height: AppSpacing.sm),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -287,6 +289,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   },
                   child: Text(l10n.dontHaveAccount),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const MainNavigationScreen(),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                  child: Text(l10n.continueAsGuest),
                 ),
               ],
             ),

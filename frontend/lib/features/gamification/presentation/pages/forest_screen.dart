@@ -32,7 +32,7 @@ class ForestScreenState extends State<ForestScreen>
     _tabController.addListener(() {
       if (mounted) setState(() {});
     });
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GamificationBloc>().add(LoadGamificationDataEvent());
     });
@@ -79,7 +79,14 @@ class ForestScreenState extends State<ForestScreen>
       case 'challengeMicroSaver':
         return l10n.challengeMicroSaver;
       case 'challengeWeeklyReviewer':
+      case 'challengeLearnBudget':
         return l10n.challengeWeeklyReviewer;
+      case 'challengeReviewSubs':
+        return l10n.challengeSubscriptionAudit;
+      case 'challengeMealPrep':
+        return l10n.challengeCoffeeSaver;
+      case 'challengeWalk':
+        return l10n.challengeCommuteSmart;
       default:
         return key;
     }
@@ -115,7 +122,14 @@ class ForestScreenState extends State<ForestScreen>
       case 'challengeMicroSaverDesc':
         return l10n.challengeMicroSaverDesc;
       case 'challengeWeeklyReviewerDesc':
+      case 'challengeLearnBudgetDesc':
         return l10n.challengeWeeklyReviewerDesc;
+      case 'challengeReviewSubsDesc':
+        return l10n.challengeSubscriptionAuditDesc;
+      case 'challengeMealPrepDesc':
+        return l10n.challengeCoffeeSaverDesc;
+      case 'challengeWalkDesc':
+        return l10n.challengeCommuteSmartDesc;
       default:
         return key;
     }
@@ -133,9 +147,7 @@ class ForestScreenState extends State<ForestScreen>
           onPressed: () => MainNavigationScreen.openDrawer(),
         ),
         title: Text(
-          _tabController.index == 0
-              ? l10n.forestTitle
-              : l10n.leaderboardTitle,
+          _tabController.index == 0 ? l10n.forestTitle : l10n.leaderboardTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -204,16 +216,14 @@ class ForestScreenState extends State<ForestScreen>
       body: BlocConsumer<GamificationBloc, GamificationState>(
         listener: (context, state) {
           if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error!)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.error!)));
           }
           if (state.newlyClaimedXP != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  l10n.xpClaimed(state.newlyClaimedXP!),
-                ),
+                content: Text(l10n.xpClaimed(state.newlyClaimedXP!)),
                 backgroundColor: theme.colorScheme.primary,
               ),
             );
@@ -233,7 +243,9 @@ class ForestScreenState extends State<ForestScreen>
             children: [
               RefreshIndicator(
                 onRefresh: () async {
-                  context.read<GamificationBloc>().add(LoadGamificationDataEvent());
+                  context.read<GamificationBloc>().add(
+                    LoadGamificationDataEvent(),
+                  );
                 },
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -249,7 +261,8 @@ class ForestScreenState extends State<ForestScreen>
                           level: level,
                           xp: xp,
                           maxXp: maxXp,
-                          savingsScoreBasisPoints: state.savingsScoreBasisPoints,
+                          savingsScoreBasisPoints:
+                              state.savingsScoreBasisPoints,
                           hasWeeklyIncome: state.hasWeeklyIncome,
                         ),
                         const SizedBox(height: 24),
@@ -287,10 +300,11 @@ class ForestScreenState extends State<ForestScreen>
                                             alpha: 0.1,
                                           )
                                         : isCompleted
-                                        ? ForestColors.emerald.withValues(alpha: 0.1)
-                                        : theme.colorScheme.onSurface.withValues(
-                                            alpha: 0.05,
-                                          ),
+                                        ? ForestColors.emerald.withValues(
+                                            alpha: 0.1,
+                                          )
+                                        : theme.colorScheme.onSurface
+                                              .withValues(alpha: 0.05),
                                     child: Icon(
                                       isClaimed
                                           ? Icons.check_circle_outline
@@ -307,30 +321,46 @@ class ForestScreenState extends State<ForestScreen>
                                   const SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           _getLocalizedTitle(
                                             context,
                                             challenge.titleKey,
                                           ),
-                                          style: theme.textTheme.titleMedium?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: isClaimed
-                                                ? theme.colorScheme.onSurface
-                                                    .withValues(alpha: 0.4)
-                                                : null,
-                                          ),
+                                          style: theme.textTheme.titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: isClaimed
+                                                    ? theme
+                                                          .colorScheme
+                                                          .onSurface
+                                                          .withValues(
+                                                            alpha: 0.4,
+                                                          )
+                                                    : null,
+                                              ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          _getLocalizedDesc(context, challenge.descKey),
-                                          style: theme.textTheme.bodySmall?.copyWith(
-                                            color: isClaimed
-                                                ? theme.colorScheme.onSurfaceVariant
-                                                    .withValues(alpha: 0.5)
-                                                : theme.colorScheme.onSurfaceVariant,
+                                          _getLocalizedDesc(
+                                            context,
+                                            challenge.descKey,
                                           ),
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: isClaimed
+                                                    ? theme
+                                                          .colorScheme
+                                                          .onSurfaceVariant
+                                                          .withValues(
+                                                            alpha: 0.5,
+                                                          )
+                                                    : theme
+                                                          .colorScheme
+                                                          .onSurfaceVariant,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -348,10 +378,14 @@ class ForestScreenState extends State<ForestScreen>
                                           vertical: 10.0,
                                         ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12.0),
+                                          borderRadius: BorderRadius.circular(
+                                            12.0,
+                                          ),
                                         ),
                                       ),
-                                      child: Text(l10n.claimXp(challenge.xpReward)),
+                                      child: Text(
+                                        l10n.claimXp(challenge.xpReward),
+                                      ),
                                     )
                                   else
                                     Container(
@@ -361,24 +395,27 @@ class ForestScreenState extends State<ForestScreen>
                                       ),
                                       decoration: BoxDecoration(
                                         color: isClaimed
-                                            ? theme.colorScheme.primary.withValues(
-                                                alpha: 0.1,
-                                              )
-                                            : theme.colorScheme.onSurface.withValues(
-                                                alpha: 0.05,
-                                              ),
-                                        borderRadius: BorderRadius.circular(12.0),
+                                            ? theme.colorScheme.primary
+                                                  .withValues(alpha: 0.1)
+                                            : theme.colorScheme.onSurface
+                                                  .withValues(alpha: 0.05),
+                                        borderRadius: BorderRadius.circular(
+                                          12.0,
+                                        ),
                                       ),
                                       child: Text(
                                         isClaimed
                                             ? l10n.claimedStatus
                                             : l10n.pendingStatus,
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          color: isClaimed
-                                              ? theme.colorScheme.primary
-                                              : theme.colorScheme.onSurfaceVariant,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                              color: isClaimed
+                                                  ? theme.colorScheme.primary
+                                                  : theme
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                     ),
                                 ],
@@ -392,9 +429,7 @@ class ForestScreenState extends State<ForestScreen>
                   ),
                 ),
               ),
-              LeaderboardView(
-                userLevel: level,
-              ),
+              LeaderboardView(userLevel: level),
             ],
           );
         },

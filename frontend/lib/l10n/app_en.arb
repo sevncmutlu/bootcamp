@@ -17,7 +17,6 @@
   "labelTitle": "Title",
   "labelAmount": "Amount",
   "labelCategory": "Category",
-  "labelDate": "Date",
   "saveExpense": "Save Expense",
   "failedSelectImage": "Failed to select image: {error}",
   "@failedSelectImage": {
@@ -42,10 +41,8 @@
   "labelStoreName": "Store Name",
   "labelTotalAmount": "Total Amount",
   "addToExpenses": "Add to Expenses",
-  "chatError": "Sorry, I am having connectivity issues right now. Please try again.",
   "navExpenses": "Expenses",
   "navCoach": "Coach",
-  "navForecast": "Forecast",
   "forecastTitle": "Expenditure Forecast",
   "forecastSubtitle": "Maki's AI-based daily spending forecast for the next 7 days.",
   "forecastLoading": "Calculating spending forecasts...",
@@ -70,7 +67,6 @@
   "interestRate": "Annual Interest Rate (%)",
   "minPayment": "Minimum Monthly Payment",
   "simulateButton": "Simulate Payoff",
-  "navInflation": "Inflation",
   "inflationTitle": "Personal Inflation Dashboard",
   "inflationSubtitle": "Compare your personal inflation based on your spending basket with official TÜİK inflation data.",
   "personalInflation": "Personal Inflation",
@@ -80,18 +76,13 @@
   "personalWeight": "Your Weight",
   "officialWeight": "Official Weight",
   "categoryInflation": "Annual Inflation",
-  "categoryLabel": "Category",
-  "forecastError": "Could not calculate forecast. Please try again later.",
-  "inflationError": "Could not calculate personal inflation. Please try again later.",
   "inflationDataTitle": "Matched price basket required",
   "inflationDataRequired": "Personal inflation requires historical and current unit prices for identical items. Maki does not produce misleading estimates from total spending alone.",
   "simulatorError": "Debt simulation failed. Please check your inputs.",
-  "ocrError": "Failed to scan receipt image. Please try again later.",
   "privacyTitle": "Privacy-First AI Coach",
   "privacyMessage": "Maki stores all your transaction records locally on your device. Phone numbers, card numbers, or IBANs in chat messages are sanitized locally before reaching the server.",
   "navForest": "Forest",
   "forestTitle": "Maki Forest",
-  "forestSubtitle": "Grow your forest by completing daily savings challenges.",
   "forestStage": "Stage {stage} / 5",
   "@forestStage": {
     "placeholders": {
@@ -133,20 +124,6 @@
   "levelTitleTree": "Mature Oak",
   "levelTitleForest": "Oak Guardian",
   "challengesHeader": "Daily Savings Challenges",
-  "xpNeeded": "{xp} / {maxXp} XP · To Level {nextLevel}",
-  "@xpNeeded": {
-    "placeholders": {
-      "xp": {
-        "type": "int"
-      },
-      "maxXp": {
-        "type": "int"
-      },
-      "nextLevel": {
-        "type": "int"
-      }
-    }
-  },
   "claimXp": "Claim {xp} XP",
   "@claimXp": {
     "placeholders": {
@@ -156,21 +133,10 @@
     }
   },
   "claimedStatus": "Claimed",
-  "completedStatus": "Completed",
   "pendingStatus": "Pending",
-  "leaderboardHeader": "Weekly Savings Ranking",
   "leaderboardSubtitle": "Compare your weekly savings against anonymous peers.",
-  "leaderboardRankText": "You saved more than {percent}% of users this week!",
-  "@leaderboardRankText": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
   "leaderboardTitle": "Savings Leaderboard",
   "leaderboardYou": "You (Anonymous)",
-  "leaderboardAnonymous": "Anonymous Saver",
   "leaderboardPercentile": "Top {percent}%",
   "@leaderboardPercentile": {
     "placeholders": {
@@ -215,13 +181,7 @@
   "challengeMicroSaverDesc": "Log a transaction under ₺50 today.",
   "challengeWeeklyReviewer": "Category Explorer",
   "challengeWeeklyReviewerDesc": "Record items in 3 different categories today.",
-  "badgesUnlocked": "Unlocked Badges",
-  "badgeSavingsSeed": "Savings Seed",
-  "badgeBudgetMaster": "Budget Master",
-  "badgeOakGuardian": "Oak Guardian",
-  "navNotifications": "Smart Notifications",
   "notificationsTitle": "Smart Notification Center",
-  "notificationsSubtitle": "Configure on-device AI notification timing predictions.",
   "settingsTitle": "Settings",
   "smartOptimizationEnable": "Enable Smart AI Optimization",
   "smartOptimizationDesc": "Learns on your device when you are most likely to open notifications, saving battery and reducing notification fatigue.",
@@ -241,7 +201,6 @@
   "afternoonArm": "Afternoon (14:00)",
   "eveningArm": "Evening (20:00)",
   "precisionMatrixLabel": "Precision matrix A",
-  "projectionVectorLabel": "Projection vector b",
   "rewardSuccess": "Model trained! Reward parameters updated for the selected period.",
   "closeButton": "Close",
   "xpClaimed": "+{xp} XP earned!",
@@ -293,7 +252,7 @@
   "settingsProActive": "Pro subscription active",
   "settingsProInactive": "Unlock free trial features",
   "settingsResetTitle": "Reset App Data",
-  "settingsResetSubtitle": "Delete all expenses and start fresh",
+  "settingsResetSubtitle": "Delete all app data and start fresh",
   "resetDataTitle": "Confirm Reset",
   "resetDataConfirmation": "Are you sure you want to delete all transaction records and reset your goal? This action cannot be undone.",
   "resetButtonLabel": "Reset Everything",
@@ -302,19 +261,9 @@
   "settingsThemeSystem": "System Default",
   "settingsThemeLight": "Light Theme",
   "settingsThemeDark": "Dark Theme",
-  "expenseCountLabel": "{count} expense records",
-  "@expenseCountLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "emptyExpensesHint": "Tap the button below to add your first expense.",
-  "leaderboardPrivacyTitle": "Privacy",
   "leaderboardYourStanding": "Your Standing",
   "leaderboardEstimateNote": "This value is an estimate calculated solely from data on your device.",
-  "leaderboardCohortPending": "Not enough anonymous users yet for peer comparison. It will appear here once sufficient participation is reached.",
   "settingsLanguageTitle": "Language",
   "settingsLanguageSystem": "System Default",
   "settingsLanguageTr": "Turkish",
@@ -344,9 +293,6 @@
   "leaderboardSelectDemographics": "Select age group and household size for peer comparison.",
   "leaderboardAgeBandLabel": "Age Group",
   "leaderboardHouseholdBandLabel": "Household Size",
-  "personSingle": "1 person",
-  "personDouble": "2 people",
-  "personMultiple": "3+ people",
   "leaderboardCalculateCta": "Calculate my standing",
   "cohortNotEnough": "Cohort sample size not reached",
   "anonymousCohort": "Anonymous cohort: {count}",
@@ -357,8 +303,6 @@
       }
     }
   },
-  "paywallStoreNotActive": "Store checkout link is not active yet.",
-  "paywallNoActiveSubscription": "No active subscription found.",
   "totalIncome": "Total Income",
   "netBalance": "Net Balance",
   "tabExpenses": "Expenses",
@@ -366,18 +310,8 @@
   "addIncome": "Add Income",
   "noIncomes": "No income recorded yet.",
   "emptyIncomesHint": "Tap the button below to add your first income.",
-  "incomeCountLabel": "{count} income records",
-  "@incomeCountLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "labelSource": "Source",
-  "validationSource": "Please enter an income source.",
   "labelIncomeTitle": "Income Title",
-  "defaultIncomeSource": "Salary",
   "sourceSalary": "Salary",
   "sourceFreelance": "Freelance / Side Project",
   "sourceInvestment": "Investment",
@@ -401,7 +335,6 @@
   "dontHaveAccount": "Don't have an account? Register",
   "cancelButton": "Cancel",
   "logoutConfirmation": "Are you sure you want to log out of your account?",
-  "chooseAvatar": "Choose Avatar",
   "userIdLabel": "User ID",
   "makiMascotOption": "Maki Mascot",
   "editDisplayNameTitle": "Edit Display Name",
@@ -442,4 +375,3 @@
   "errUpdatePremium": "Failed to update premium status.",
   "errClearData": "Failed to clear data."
 }
-

@@ -11,7 +11,7 @@ import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:maki_app/features/auth/presentation/utils/avatar_utils.dart';
 import 'package:maki_app/features/profile/data/datasources/onboarding_local_data_source.dart';
-import 'package:maki_app/features/premium/data/datasources/premium_local_data_source.dart';
+import 'package:maki_app/features/premium/presentation/bloc/premium_bloc.dart';
 import 'package:maki_app/core/theme/app_tokens.dart';
 import 'package:maki_app/core/di/injection_container.dart' as di;
 
@@ -23,7 +23,7 @@ class AppNavigationDrawer extends StatefulWidget {
 }
 
 class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
-  bool _isPremium = false;
+
   String _selectedTheme = 'system';
   String _selectedLanguage = 'system';
 
@@ -34,12 +34,10 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
   }
 
   Future<void> _loadState() async {
-    final isPrem = await di.sl<PremiumLocalDataSource>().isPremium();
     final theme = await di.sl<OnboardingLocalDataSource>().getThemeMode();
     final lang = await di.sl<OnboardingLocalDataSource>().getLanguage();
     if (mounted) {
       setState(() {
-        _isPremium = isPrem;
         _selectedTheme = theme;
         _selectedLanguage = lang;
       });
@@ -316,15 +314,15 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: _isPremium
+                          color: context.watch<PremiumBloc>().state.isPremium
                               ? theme.colorScheme.primary
                               : theme.colorScheme.secondaryContainer,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          _isPremium ? l10n.tierPro : l10n.tierFree,
+                          context.watch<PremiumBloc>().state.isPremium ? l10n.tierPro : l10n.tierFree,
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: _isPremium
+                            color: context.watch<PremiumBloc>().state.isPremium
                                 ? theme.colorScheme.onPrimary
                                 : theme.colorScheme.onSecondaryContainer,
                             fontWeight: FontWeight.bold,
@@ -332,19 +330,16 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                         ),
                       ),
                       const Spacer(),
-                      if (!_isPremium)
+                      if (!context.watch<PremiumBloc>().state.isPremium)
                         TextButton(
                           onPressed: () async {
                             Navigator.pop(context);
-                            final purchased = await Navigator.of(context)
+                            await Navigator.of(context)
                                 .push<bool>(
                                   MaterialPageRoute<bool>(
                                     builder: (_) => const PaywallScreen(),
                                   ),
                                 );
-                            if (purchased == true) {
-                              _loadState();
-                            }
                           },
                           style: TextButton.styleFrom(
                             foregroundColor: theme.colorScheme.primary,

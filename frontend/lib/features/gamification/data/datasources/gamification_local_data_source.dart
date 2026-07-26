@@ -111,12 +111,7 @@ class GamificationLocalDataSourceImpl implements GamificationLocalDataSource {
   Future<UserGamificationState> getGamificationStatus() async {
     var status = await _db.getGamificationState();
     if (status == null) {
-      status = const UserGamificationState(
-        id: 1,
-        xp: 0,
-        level: 1,
-        badges: '',
-      );
+      status = const UserGamificationState(id: 1, xp: 0, level: 1, badges: '');
       await _db.updateGamificationState(status);
     }
     return status;
