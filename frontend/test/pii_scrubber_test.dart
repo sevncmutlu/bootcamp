@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maki_app/utils/pii_scrubber.dart';
+import 'package:maki_app/core/utils/pii_scrubber.dart';
 
 void main() {
   group('Kişisel veri temizleme', () {

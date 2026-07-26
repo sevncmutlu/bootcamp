@@ -1,24 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maki_app/core/di/injection_container.dart' as di;
+import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:maki_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:maki_app/features/transactions/presentation/bloc/transaction_bloc.dart';
+import 'package:maki_app/features/transactions/presentation/bloc/transaction_event.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/theme/app_theme.dart';
-import 'package:maki_app/theme/app_tokens.dart';
-import 'package:maki_app/screens/brand_splash_screen.dart';
-import 'package:maki_app/screens/onboarding_screen.dart';
-import 'package:maki_app/screens/expense_entry_screen.dart';
-import 'package:maki_app/screens/chat_screen.dart';
-import 'package:maki_app/screens/debt_simulator_screen.dart';
-import 'package:maki_app/screens/forest_screen.dart';
-import 'package:maki_app/screens/paywall_screen.dart';
-import 'package:maki_app/services/premium_service.dart';
-import 'package:maki_app/screens/insights_screen.dart';
-import 'package:maki_app/services/auth_service.dart';
-import 'package:maki_app/services/onboarding_service.dart';
-import 'package:maki_app/widgets/app_navigation_drawer.dart';
+import 'package:maki_app/core/theme/app_theme.dart';
+import 'package:maki_app/core/theme/app_tokens.dart';
+import 'package:maki_app/features/auth/presentation/pages/brand_splash_screen.dart';
+import 'package:maki_app/features/auth/presentation/pages/onboarding_screen.dart';
+import 'package:maki_app/features/transactions/presentation/pages/expense_entry_screen.dart';
+import 'package:maki_app/features/coach/presentation/pages/chat_screen.dart';
+import 'package:maki_app/features/coach/presentation/bloc/coach_bloc.dart';
+import 'package:maki_app/features/simulator/presentation/pages/debt_simulator_screen.dart';
+import 'package:maki_app/features/simulator/presentation/bloc/simulator_bloc.dart';
+import 'package:maki_app/features/gamification/presentation/pages/forest_screen.dart';
+import 'package:maki_app/features/gamification/presentation/bloc/gamification_bloc.dart';
+import 'package:maki_app/features/premium/presentation/pages/paywall_screen.dart';
+import 'package:maki_app/features/premium/presentation/bloc/premium_bloc.dart';
+import 'package:maki_app/features/premium/presentation/bloc/premium_event.dart';
+import 'package:maki_app/features/insights/presentation/pages/insights_screen.dart';
+import 'package:maki_app/features/profile/data/datasources/onboarding_local_data_source.dart';
+import 'package:maki_app/core/widgets/app_navigation_drawer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await di.init();
   await initializeDateFormatting();
   runApp(const MyApp());
 }
@@ -48,11 +58,11 @@ class MyAppState extends State<MyApp> {
   }
 
   Future<void> _checkOnboardingStatus() async {
-    await AuthService.instance.initialize();
-    final completed = await OnboardingService.instance.hasCompletedOnboarding();
-    final themeStr = await OnboardingService.instance.getThemeMode();
-    final accentStr = await OnboardingService.instance.getAccent();
-    final langStr = await OnboardingService.instance.getLanguage();
+    final ds = di.sl<OnboardingLocalDataSource>();
+    final completed = await ds.hasCompletedOnboarding();
+    final themeStr = await ds.getThemeMode();
+    final accentStr = await ds.getAccent();
+    final langStr = await ds.getLanguage();
 
     ThemeMode mode;
     switch (themeStr) {
@@ -111,39 +121,53 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: _locale,
-      theme: AppTheme.light(_accent),
-      darkTheme: AppTheme.dark(_accent),
-      themeMode: _themeMode,
-      home: _isLoading
-          ? const Scaffold(body: Center(child: CircularProgressIndicator()))
-          : _showSplash
-          ? BrandSplashScreen(
-              onCompleted: () {
-                if (mounted) {
-                  setState(() {
-                    _showSplash = false;
-                  });
-                }
-              },
-            )
-          : _hasCompletedOnboarding
-          ? const MainNavigationScreen()
-          : OnboardingScreen(
-              onCompleted: (selectedGoal) async {
-                await OnboardingService.instance.setPrimaryGoal(selectedGoal);
-                await OnboardingService.instance.setCompletedOnboarding(true);
-                if (mounted) {
-                  setState(() {
-                    _hasCompletedOnboarding = true;
-                  });
-                }
-              },
-            ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (context) => di.sl<AuthBloc>()..add(InitializeAuthEvent()),
+        ),
+        BlocProvider<TransactionBloc>(
+          create: (context) => di.sl<TransactionBloc>()..add(LoadCategoriesEvent()),
+        ),
+        BlocProvider<PremiumBloc>(
+          create: (context) => di.sl<PremiumBloc>()..add(CheckPremiumStatusEvent()),
+        ),
+      ],
+      child: MaterialApp(
+        onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: _locale,
+        theme: AppTheme.light(_accent),
+        darkTheme: AppTheme.dark(_accent),
+        themeMode: _themeMode,
+        home: _isLoading
+            ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+            : _showSplash
+            ? BrandSplashScreen(
+                onCompleted: () {
+                  if (mounted) {
+                    setState(() {
+                      _showSplash = false;
+                    });
+                  }
+                },
+              )
+            : _hasCompletedOnboarding
+            ? const MainNavigationScreen()
+            : OnboardingScreen(
+                onCompleted: (selectedGoal) async {
+                  final ds = di.sl<OnboardingLocalDataSource>();
+                  await ds.setPrimaryGoal(selectedGoal);
+                  await ds.setCompletedOnboarding(true);
+                  if (mounted) {
+                    setState(() {
+                      _hasCompletedOnboarding = true;
+                    });
+                  }
+                },
+              ),
+      ),
     );
   }
 }
@@ -174,11 +198,23 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void initState() {
     super.initState();
     _screens = [
-      const ExpenseEntryScreen(),
+      BlocProvider(
+        create: (_) => di.sl<TransactionBloc>(),
+        child: const ExpenseEntryScreen(),
+      ),
       InsightsScreen(key: _insightsKey),
-      const DebtSimulatorScreen(),
-      ForestScreen(key: _forestKey),
-      const ChatScreen(),
+      BlocProvider(
+        create: (_) => di.sl<SimulatorBloc>(),
+        child: const DebtSimulatorScreen(),
+      ),
+      BlocProvider(
+        create: (_) => di.sl<GamificationBloc>(),
+        child: ForestScreen(key: _forestKey),
+      ),
+      BlocProvider(
+        create: (_) => di.sl<CoachBloc>(),
+        child: const ChatScreen(),
+      ),
     ];
   }
 
@@ -187,7 +223,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   Future<void> _onTabSelected(int index) async {
     if (index == _debtTabIndex || index == _coachTabIndex) {
-      final isPremium = await PremiumService.instance.isPremium();
+      final isPremium = context.read<PremiumBloc>().state.isPremium;
       if (!isPremium) {
         if (!mounted) return;
         final purchased = await Navigator.of(context).push<bool>(
@@ -215,36 +251,49 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       key: MainNavigationScreen.scaffoldKey,
       drawer: const AppNavigationDrawer(),
       body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: _onTabSelected,
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: const Icon(Icons.account_balance_wallet),
-            label: AppLocalizations.of(context)!.navExpenses,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: Theme.of(context)
+                  .colorScheme
+                  .outlineVariant
+                  .withValues(alpha: 0.35),
+              width: 1.0,
+            ),
           ),
-          NavigationDestination(
-            icon: const Icon(Icons.pie_chart_outline),
-            selectedIcon: const Icon(Icons.pie_chart),
-            label: AppLocalizations.of(context)!.navInsights,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.credit_card_outlined),
-            selectedIcon: const Icon(Icons.credit_card),
-            label: AppLocalizations.of(context)!.navSimulator,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.forest_outlined),
-            selectedIcon: const Icon(Icons.forest),
-            label: AppLocalizations.of(context)!.navForest,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.spa_outlined),
-            selectedIcon: const Icon(Icons.spa),
-            label: AppLocalizations.of(context)!.navCoach,
-          ),
-        ],
+        ),
+        child: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: _onTabSelected,
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: const Icon(Icons.home_outlined),
+              label: AppLocalizations.of(context)!.navExpenses,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.donut_large_outlined),
+              selectedIcon: const Icon(Icons.donut_large_outlined),
+              label: AppLocalizations.of(context)!.navInsights,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.account_balance_wallet_outlined),
+              selectedIcon: const Icon(Icons.account_balance_wallet_outlined),
+              label: AppLocalizations.of(context)!.navSimulator,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.flag_outlined),
+              selectedIcon: const Icon(Icons.flag_outlined),
+              label: AppLocalizations.of(context)!.navForest,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.auto_awesome_outlined),
+              selectedIcon: const Icon(Icons.auto_awesome_outlined),
+              label: AppLocalizations.of(context)!.navCoach,
+            ),
+          ],
+        ),
       ),
     );
   }

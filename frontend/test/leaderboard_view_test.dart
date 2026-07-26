@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/screens/leaderboard_screen.dart';
+import 'package:maki_app/features/gamification/presentation/pages/leaderboard_screen.dart';
 
 void main() {
   testWidgets('LeaderboardView renders filter chips and privacy notice', (
@@ -19,7 +19,6 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: LeaderboardView(
-            scoreBasisPoints: 3500,
             userLevel: 2,
           ),
         ),

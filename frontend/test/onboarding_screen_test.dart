@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/screens/onboarding_screen.dart';
+import 'package:maki_app/features/auth/presentation/pages/onboarding_screen.dart';
 
 void main() {
   testWidgets('küçük ekranda taşmadan kaydırılabilir', (tester) async {

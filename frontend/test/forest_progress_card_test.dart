@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/widgets/forest_progress_card.dart';
-import 'package:maki_app/widgets/mascot.dart';
+import 'package:maki_app/core/widgets/forest_progress_card.dart';
+import 'package:maki_app/core/widgets/mascot.dart';
 
 void main() {
   testWidgets('orman aşaması gerçek ilerlemeyi dar ekranda gösterir', (

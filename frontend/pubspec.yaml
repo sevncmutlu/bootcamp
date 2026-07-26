@@ -27,6 +27,9 @@ dependencies:
   flutter_markdown_plus: ^1.0.12
   maki_finance_core:
     path: ../packages/maki_finance_core
+  flutter_bloc: ^9.1.1
+  equatable: ^2.1.0
+  get_it: ^9.2.1
 
 dev_dependencies:
   flutter_test:
