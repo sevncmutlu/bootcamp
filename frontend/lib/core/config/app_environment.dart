@@ -108,9 +108,9 @@ final class AppEnvironment {
       throw StateError('Preview derlemesi WEB_DEMO_MODE=true gerektirir.');
     }
 
-    if (webDemoMode && stage != MakiStage.preview) {
+    if (webDemoMode && stage != MakiStage.preview && stage != MakiStage.development) {
       throw StateError(
-        'WEB_DEMO_MODE yalnızca preview aşamasında kullanılabilir.',
+        'WEB_DEMO_MODE yalnızca preview veya development aşamasında kullanılabilir.',
       );
     }
 

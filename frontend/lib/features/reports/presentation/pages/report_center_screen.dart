@@ -158,14 +158,11 @@ class _ReportCenterScreenState extends State<ReportCenterScreen> {
       final origin = box is RenderBox
           ? box.localToGlobal(Offset.zero) & box.size
           : null;
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile.fromData(bytes, mimeType: 'application/pdf')],
-          fileNameOverrides: [_fileName],
-          title: 'MakiKoç finans raporu',
-          text: 'MakiKoç ile hazırladığım cihaz içi finans raporu.',
-          sharePositionOrigin: origin,
-        ),
+      await Share.shareXFiles(
+        [XFile.fromData(bytes, mimeType: 'application/pdf', name: _fileName)],
+        subject: 'MakiKoç finans raporu',
+        text: 'MakiKoç ile hazırladığım cihaz içi finans raporu.',
+        sharePositionOrigin: origin,
       );
     } on Object {
       if (!mounted) return;

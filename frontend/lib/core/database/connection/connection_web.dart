@@ -4,7 +4,7 @@ import 'package:sqlite3/wasm.dart';
 
 QueryExecutor connect() {
   return LazyDatabase(() async {
-    const isPreview = bool.fromEnvironment('WEB_DEMO_MODE');
+    const isPreview = bool.fromEnvironment('WEB_DEMO_MODE', defaultValue: true);
     if (!isPreview) {
       throw StateError(
         'Web finans veritabanı yalnızca WEB_DEMO_MODE=true ile açılabilir.',

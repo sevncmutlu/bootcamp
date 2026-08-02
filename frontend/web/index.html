@@ -54,12 +54,14 @@
     </div>
   </div>
   <script>
-    window.addEventListener('flutter-first-frame', function () {
+    function hideBootScreen() {
       const bootScreen = document.querySelector('.maki-boot');
       if (!bootScreen) return;
       bootScreen.classList.add('maki-boot--complete');
       window.setTimeout(function () { bootScreen.remove(); }, 240);
-    }, { once: true });
+    }
+    window.addEventListener('flutter-first-frame', hideBootScreen, { once: true });
+    window.setTimeout(hideBootScreen, 3000);
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>

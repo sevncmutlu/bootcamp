@@ -37,6 +37,10 @@ class _BrandSplashScreenState extends State<BrandSplashScreen>
           _scheduleCompletion();
         }
       });
+
+    Future.delayed(widget.duration + const Duration(milliseconds: 300), () {
+      if (mounted) _scheduleCompletion();
+    });
     _mascotEntrance = CurvedAnimation(
       parent: _controller,
       curve: const Interval(0, 0.55, curve: Curves.easeOutBack),
@@ -63,6 +67,7 @@ class _BrandSplashScreenState extends State<BrandSplashScreen>
 
     if (MediaQuery.maybeOf(context)?.disableAnimations ?? false) {
       _controller.value = 1;
+      _scheduleCompletion();
       return;
     }
     _controller.forward();

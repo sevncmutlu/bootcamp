@@ -24,14 +24,18 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> initialize() async {
     if (_initialized) return;
-    final userJson = await storage.read(key: _userKey);
-    if (userJson != null && userJson.isNotEmpty) {
-      final decoded = jsonDecode(userJson);
-      if (decoded is! Map<String, dynamic>) {
-        throw const FormatException('Cihaz profili biçimi geçersiz.');
+    try {
+      final userJson = await storage.read(key: _userKey).timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => null,
+      );
+      if (userJson != null && userJson.isNotEmpty) {
+        final decoded = jsonDecode(userJson);
+        if (decoded is Map<String, dynamic>) {
+          _currentUser = _mapToEntity(decoded);
+        }
       }
-      _currentUser = _mapToEntity(decoded);
-    }
+    } on Object catch (_) {}
     _initialized = true;
   }
 

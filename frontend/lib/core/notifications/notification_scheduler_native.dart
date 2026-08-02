@@ -23,7 +23,7 @@ class NativeMakiNotificationScheduler implements MakiNotificationScheduler {
     tz_data.initializeTimeZones();
     try {
       final timezone = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(timezone.identifier));
+      tz.setLocalLocation(tz.getLocation(timezone));
     } on Object {
       tz.setLocalLocation(tz.getLocation('Europe/Istanbul'));
     }
@@ -37,7 +37,7 @@ class NativeMakiNotificationScheduler implements MakiNotificationScheduler {
       ),
     );
     await _plugin.initialize(
-      settings: settings,
+      settings,
       onDidReceiveNotificationResponse: (response) {
         final payload = response.payload;
         if (payload != null && payload.isNotEmpty) {
@@ -86,11 +86,11 @@ class NativeMakiNotificationScheduler implements MakiNotificationScheduler {
     required String payload,
   }) async {
     await _plugin.zonedSchedule(
-      id: id,
-      title: title,
-      body: body,
-      scheduledDate: tz.TZDateTime.from(at, tz.local),
-      notificationDetails: const NotificationDetails(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(at, tz.local),
+      const NotificationDetails(
         android: AndroidNotificationDetails(
           'maki_smart_finance',
           'Maki akıllı finans hatırlatmaları',
@@ -103,6 +103,8 @@ class NativeMakiNotificationScheduler implements MakiNotificationScheduler {
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       payload: payload,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 
