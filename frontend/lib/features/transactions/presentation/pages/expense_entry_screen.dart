@@ -27,8 +27,7 @@ import 'package:maki_app/core/widgets/maki_background.dart';
 import 'package:maki_app/features/transactions/presentation/widgets/personalized_finance_overview.dart';
 import 'package:maki_app/features/gamification/data/services/living_forest_service.dart';
 import 'package:maki_app/features/gamification/domain/entities/living_forest_snapshot.dart';
-import 'package:maki_app/features/gamification/presentation/bloc/gamification_bloc.dart';
-import 'package:maki_app/features/gamification/presentation/pages/forest_screen.dart';
+import 'package:maki_app/features/gamification/presentation/pages/goal_world_map_screen.dart';
 part 'expense_entry_helpers.dart';
 part '../forms/expense_entry_form.dart';
 part '../forms/income_entry_form.dart';
@@ -55,7 +54,9 @@ class _ExpenseEntryScreenState extends State<ExpenseEntryScreen>
   late TabController _tabController;
   late DateTime _selectedDate;
   int _currentStreak = 0;
+  int _seedBalance = 0;
   SavingsGoalView? _activeGoal;
+  List<SavingsGoalView> _availableGoals = const [];
   StreamSubscription<void>? _forestChanges;
 
   void _updateExpenseView(VoidCallback callback) => setState(callback);

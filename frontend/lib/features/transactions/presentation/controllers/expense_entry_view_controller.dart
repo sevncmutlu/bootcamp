@@ -92,6 +92,10 @@ extension _ExpenseEntryViewController on _ExpenseEntryScreenState {
                       today: widget.today,
                       streakDays: _currentStreak,
                       savingsGoal: _activeGoal,
+                      savingsGoals: _availableGoals,
+                      onChooseSavingsGoal: _availableGoals.length > 1
+                          ? _chooseSavingsGoal
+                          : null,
                       onOpenSavingsGoal: _activeGoal == null
                           ? null
                           : _openSavingsGoal,

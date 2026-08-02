@@ -7,15 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/rendering.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/core/utils/category_l10n.dart';
-import 'package:maki_app/core/widgets/empty_state.dart';
+import 'package:maki_app/core/utils/currency.dart';
 import 'package:maki_app/features/insights/presentation/bloc/inflation_bloc.dart';
 import 'package:maki_app/features/insights/presentation/bloc/inflation_event.dart';
 import 'package:maki_app/features/insights/presentation/bloc/inflation_state.dart';
 import 'package:maki_app/features/insights/domain/entities/category_breakdown_entity.dart';
 import 'package:public_file_saver/public_file_saver.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:maki_app/features/insights/data/services/price_basket_service.dart';
-import 'package:maki_app/features/insights/presentation/widgets/price_observation_sheet.dart';
 part 'inflation_breakdown_section.dart';
 part '../widgets/inflation_maki_waiting_card.dart';
 part '../widgets/inflation_maki_share_card.dart';
@@ -23,12 +21,7 @@ part '../widgets/inflation_metric.dart';
 
 class InflationScreen extends StatefulWidget {
   final bool showAppBar;
-  final PriceBasketService? priceBasketService;
-  const InflationScreen({
-    super.key,
-    this.showAppBar = true,
-    this.priceBasketService,
-  });
+  const InflationScreen({super.key, this.showAppBar = true});
 
   @override
   State<InflationScreen> createState() => InflationScreenState();
@@ -83,9 +76,6 @@ class InflationScreenState extends State<InflationScreen>
         builder: (context, state) {
           final isLoading =
               state is InflationLoading || state is InflationInitial;
-          final hasPriceBasket = state is InflationLoaded
-              ? state.data.hasPriceBasket
-              : false;
           final personalInflation = state is InflationLoaded
               ? state.data.personalInflation
               : null;
@@ -95,9 +85,6 @@ class InflationScreenState extends State<InflationScreen>
           final breakdowns = state is InflationLoaded
               ? state.data.breakdowns
               : <CategoryBreakdownEntity>[];
-          final coveragePercent = state is InflationLoaded
-              ? state.data.coveragePercent
-              : null;
           final inflationStatus = state is InflationLoaded
               ? state.data.status
               : 'insufficient_data';
@@ -140,53 +127,25 @@ class InflationScreenState extends State<InflationScreen>
                             height: 1.4,
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: OutlinedButton.icon(
-                            onPressed: widget.priceBasketService == null
-                                ? null
-                                : () async {
-                                    final saved =
-                                        await showModalBottomSheet<bool>(
-                                          context: context,
-                                          isScrollControlled: true,
-                                          useSafeArea: true,
-                                          builder: (_) => PriceObservationSheet(
-                                            service: widget.priceBasketService!,
-                                          ),
-                                        );
-                                    if (saved == true && context.mounted) {
-                                      _fetchAndCalculateInflation();
-                                    }
-                                  },
-                            icon: const Icon(Icons.add_shopping_cart_rounded),
-                            label: const Text('Sepetime fiyat ekle'),
-                          ),
-                        ),
                         const SizedBox(height: 20),
-                        if (personalInflation == null) ...[
-                          InflationMakiWaitingCard(
-                            status: inflationStatus,
-                            coveragePercent: coveragePercent,
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                        if (!hasPriceBasket)
-                          EmptyState(
-                            title: l10n.inflationDataTitle,
-                            message: l10n.inflationDataRequired,
-                          ),
-
-                        if (personalInflation != null) ...[
+                        if (state is InflationLoaded) ...[
                           InflationMakiShareCard(
-                            personalInflation: personalInflation,
+                            personalSpendingChange: personalInflation,
                             officialInflation: officialInflation,
+                            currentIncome: state.data.currentIncome ?? 0,
+                            currentExpenses: state.data.currentExpenses ?? 0,
+                            debtPayments: state.data.debtPayments ?? 0,
+                            netCashFlow: state.data.netCashFlow ?? 0,
+                            financialPressure: state.data.financialPressure,
+                            status: inflationStatus,
+                            currentTransactionCount:
+                                state.data.currentTransactionCount,
+                            previousTransactionCount:
+                                state.data.previousTransactionCount,
                             basePeriod: basePeriod,
                             currentPeriod: currentPeriod,
                           ),
                           const SizedBox(height: 24),
-
                           InflationBreakdownSection(breakdowns: breakdowns),
                         ],
                       ],

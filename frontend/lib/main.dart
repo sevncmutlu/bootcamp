@@ -396,6 +396,7 @@ class MyAppState extends State<MyApp> {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,

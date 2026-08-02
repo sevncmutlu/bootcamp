@@ -214,6 +214,31 @@ final class LivingForestService {
     return id;
   }
 
+  Future<void> selectPrimaryGoal(String goalId) async {
+    await _database.transaction(() async {
+      final activeGoals =
+          await (_database.select(_database.savingsGoals)
+                ..where((row) => row.status.equals('active'))
+                ..orderBy([
+                  (row) => OrderingTerm.asc(row.priority),
+                  (row) => OrderingTerm.asc(row.createdAt),
+                ]))
+              .get();
+      final selectedIndex = activeGoals.indexWhere((goal) => goal.id == goalId);
+      if (selectedIndex < 0) {
+        throw StateError('Seçilecek aktif hedef bulunamadı.');
+      }
+      final selected = activeGoals.removeAt(selectedIndex);
+      final reordered = [selected, ...activeGoals];
+      for (var index = 0; index < reordered.length; index++) {
+        await (_database.update(_database.savingsGoals)
+              ..where((row) => row.id.equals(reordered[index].id)))
+            .write(SavingsGoalsCompanion(priority: Value(index)));
+      }
+    });
+    _notifyChanged();
+  }
+
   Future<void> completeDailyReview(DateTime day) =>
       _activityEngine.recordDailyReview(day);
 

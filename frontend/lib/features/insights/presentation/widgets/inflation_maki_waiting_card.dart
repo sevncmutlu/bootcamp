@@ -1,11 +1,9 @@
 part of '../pages/inflation_screen.dart';
 
-/// Honest empty-data preview of the exportable result card. It keeps the 3D
-/// Maki experience visible without inventing an inflation value.
 class InflationMakiWaitingCard extends StatelessWidget {
   const InflationMakiWaitingCard({
     super.key,
-    this.status = 'insufficient_data',
+    this.status = 'insufficient_history',
     this.coveragePercent,
   });
 
@@ -18,36 +16,29 @@ class InflationMakiWaitingCard extends StatelessWidget {
     final isTurkish = Localizations.localeOf(context).languageCode == 'tr';
     const accent = Color(0xFF8E5360);
     const surface = Color(0xFFF8EAEC);
+    final statusText = status == 'missing_income'
+        ? (isTurkish
+              ? 'Bir gelir kaydı eklediğinde gider ve borç yükünün bütçene etkisini hesaplayacağım.'
+              : 'Add an income record to calculate how expenses and debt payments affect your budget.')
+        : (isTurkish
+              ? 'Karşılaştırma için son iki 30 günlük dönemde en az üçer tüketim gideri gerekiyor.'
+              : 'A comparison needs at least three consumption expenses in each 30-day period.');
 
     final mascot = ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: Image.asset(
-        'assets/mascot/maki_concerned_v1.png',
+        'assets/mascot/maki_concerned_transparent.png',
         key: const ValueKey('inflation-maki-waiting'),
         width: 148,
         height: 148,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
       ),
     );
-    final statusText = switch (status) {
-      'needs_second_price' =>
-        isTurkish
-            ? 'Aynı ürünün ikinci tarihli fiyatını eklediğinde gerçek değişimi hesaplayacağım.'
-            : 'Add a second dated price for the same product to calculate its real change.',
-      'insufficient_coverage' =>
-        isTurkish
-            ? 'Sepet kapsamın ${coveragePercent?.toStringAsFixed(0) ?? '0'}%. Sonuç için en az %70 kapsam gerekiyor.'
-            : 'Basket coverage is ${coveragePercent?.toStringAsFixed(0) ?? '0'}%. At least 70% is required.',
-      _ =>
-        isTurkish
-            ? 'İlk ürün fiyatını ekle; aynı ürünü daha sonra yeniden kaydettiğinde değişimi ölçelim.'
-            : 'Add your first product price, then record it again later to measure the change.',
-    };
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isTurkish ? 'ÖRNEK · VERİ BEKLENİYOR' : 'PREVIEW · WAITING FOR DATA',
+          isTurkish ? 'VERİ BİRİKİYOR' : 'COLLECTING DATA',
           style: theme.textTheme.labelMedium?.copyWith(
             color: accent,
             fontWeight: FontWeight.w900,
@@ -57,8 +48,8 @@ class InflationMakiWaitingCard extends StatelessWidget {
         const SizedBox(height: 7),
         Text(
           isTurkish
-              ? 'Maki karşılaştırmaya hazırlanıyor'
-              : 'Maki is getting ready',
+              ? 'Maki finans ritmini öğreniyor'
+              : 'Maki is learning your financial rhythm',
           style: theme.textTheme.headlineSmall?.copyWith(
             color: const Color(0xFF3C2730),
             fontWeight: FontWeight.w900,
@@ -69,9 +60,13 @@ class InflationMakiWaitingCard extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _InflationMetric(label: 'Senin sepetin', value: '—', color: accent),
             _InflationMetric(
-              label: 'Karşılaştırma',
+              label: 'Harcama değişimi',
+              value: '—',
+              color: accent,
+            ),
+            _InflationMetric(
+              label: 'TÜİK karşılaştırması',
               value: '—',
               color: Color(0xFF685C61),
             ),

@@ -91,6 +91,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     var opened = false;
+    var chooserOpened = false;
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('tr'),
@@ -116,6 +117,8 @@ void main() {
                 iconKey: 'home',
                 targetDate: DateTime(2027, 8, 1),
               ),
+              savingsGoals: const [],
+              onChooseSavingsGoal: () => chooserOpened = true,
               onOpenSavingsGoal: () => opened = true,
             ),
           ),
@@ -133,6 +136,9 @@ void main() {
     expect(find.text('Hayalimdeki ev'), findsOneWidget);
     expect(find.text('%25'), findsOneWidget);
     expect(find.textContaining('yalnızca kayıt sırasında'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('choose-savings-goal')));
+    expect(chooserOpened, isTrue);
 
     await tester.tap(find.byKey(const ValueKey('open-savings-goal-route')));
     expect(opened, isTrue);

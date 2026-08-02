@@ -25,7 +25,9 @@ extension _ExpenseEntryLifecycle on _ExpenseEntryScreenState {
       if (mounted) {
         _updateExpenseView(() {
           _currentStreak = snapshot.currentStreak;
+          _seedBalance = snapshot.seedBalance;
           _activeGoal = snapshot.primaryGoal;
+          _availableGoals = snapshot.goals;
         });
       }
     } catch (_) {

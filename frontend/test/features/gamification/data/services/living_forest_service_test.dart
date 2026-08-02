@@ -85,6 +85,35 @@ void main() {
     expect(snapshot.seedBalance, 0);
   });
 
+  test('active goal selection is atomic and preserves contributions', () async {
+    final firstId = await service.createGoal(
+      title: 'Bilgisayar',
+      targetAmount: 50000,
+    );
+    final secondId = await service.createGoal(
+      title: 'Tatil',
+      targetAmount: 20000,
+    );
+    await service.addContribution(
+      goalId: firstId,
+      amount: 2500,
+      source: GoalContributionSource.manualUnverified,
+    );
+
+    await service.selectPrimaryGoal(secondId);
+    final snapshot = await service.load(now: DateTime(2026, 8, 1));
+
+    expect(snapshot.primaryGoal?.id, secondId);
+    expect(snapshot.goals.first.id, secondId);
+    expect(snapshot.goals.first.isPrimary, isTrue);
+    expect(
+      snapshot.goals
+          .singleWhere((goal) => goal.id == firstId)
+          .contributedAmount,
+      2500,
+    );
+  });
+
   test(
     'linked transaction contribution awards and cannot be linked twice',
     () async {

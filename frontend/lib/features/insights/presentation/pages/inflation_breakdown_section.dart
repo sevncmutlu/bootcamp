@@ -15,8 +15,8 @@ class InflationBreakdownSection extends StatelessWidget {
       children: [
         Text(
           isTurkish
-              ? 'Sepet dağılımı ve fiyat değişimi'
-              : 'Basket mix and price change',
+              ? 'Harcama dağılımı ve dönemsel değişim'
+              : 'Spending mix and period change',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -24,8 +24,8 @@ class InflationBreakdownSection extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           isTurkish
-              ? 'Ağırlıklar yalnızca senin doğruladığın ürünlerden hesaplanır.'
-              : 'Weights use only the products you confirmed.',
+              ? 'Borç ödemeleri hariç son 30 günlük tüketim giderlerin gösterilir.'
+              : 'Shows your latest 30-day consumption expenses, excluding debt payments.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -132,15 +132,17 @@ class InflationBreakdownSection extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
-                  '${isTurkish ? 'Sepet payı' : 'Basket share'}: '
+                  '${isTurkish ? 'Harcama payı' : 'Spending share'}: '
                   '${_formatInflationPercent(context, item.personalWeight, decimal: 1)}',
                 ),
                 trailing: Text(
-                  _formatInflationPercent(
-                    context,
-                    item.inflationRate,
-                    decimal: 1,
-                  ),
+                  item.hasComparison
+                      ? _formatInflationPercent(
+                          context,
+                          item.inflationRate,
+                          decimal: 1,
+                        )
+                      : (isTurkish ? 'Yeni' : 'New'),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: _inflationCategoryColor(item.category, theme),
                     fontWeight: FontWeight.w900,
