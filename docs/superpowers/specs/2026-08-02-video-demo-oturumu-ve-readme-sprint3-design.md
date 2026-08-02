@@ -34,7 +34,7 @@ eklenecek.
 - Flutter debug APK şu derleme tanımlarını alır:
   - `MAKI_ENV=development`
   - `BACKEND_URL=http://10.0.2.2:8000`
-  - `MAKI_ACCESS_TOKEN=<geçici-development-tokenı>`
+  - Çalıştırma anında bellekte üretilen `MAKI_ACCESS_TOKEN`
 - Token kaynak koda, README'ye, commit'e veya teslim paketine yazılmaz.
 - OIDC tanımları debug video akışında kullanılmaz; production release kapıları
   olduğu gibi kalır.
@@ -70,4 +70,3 @@ eklenecek.
   ve Sena Gemiçioğlu'nun geliştirici olarak eklendiği doğrulanır.
 - `git status` ve diff ile hiçbir erişim belirtecinin izlenen dosyalara yazılmadığı
   kontrol edilir.
-
