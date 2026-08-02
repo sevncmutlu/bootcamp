@@ -39,6 +39,8 @@ class PersonalizedFinanceOverview extends StatelessWidget {
     this.today,
     this.streakDays = 0,
     this.savingsGoal,
+    this.savingsGoals = const [],
+    this.onChooseSavingsGoal,
     this.onOpenSavingsGoal,
   });
 
@@ -51,6 +53,8 @@ class PersonalizedFinanceOverview extends StatelessWidget {
   final DateTime? today;
   final int streakDays;
   final SavingsGoalView? savingsGoal;
+  final List<SavingsGoalView> savingsGoals;
+  final VoidCallback? onChooseSavingsGoal;
   final VoidCallback? onOpenSavingsGoal;
 
   static DateTime dateOnly(DateTime date) =>
@@ -129,6 +133,7 @@ class PersonalizedFinanceOverview extends StatelessWidget {
             progress: progress.clamp(0.0, 1.0),
           ),
           savingsGoal: savingsGoal,
+          onChooseSavingsGoal: onChooseSavingsGoal,
           onOpenSavingsGoal: onOpenSavingsGoal,
         );
 

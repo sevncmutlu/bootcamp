@@ -11,7 +11,6 @@ import 'package:maki_app/features/insights/presentation/pages/forecast_screen.da
 import 'package:maki_app/features/insights/presentation/pages/inflation_screen.dart';
 import 'package:maki_app/features/insights/presentation/bloc/forecast_bloc.dart';
 import 'package:maki_app/features/insights/presentation/bloc/inflation_bloc.dart';
-import 'package:maki_app/features/insights/data/services/price_basket_service.dart';
 
 class InsightsScreen extends StatefulWidget {
   const InsightsScreen({super.key, this.primaryGoal = 'track_spending'});
@@ -182,9 +181,6 @@ class InsightsScreenState extends State<InsightsScreen>
                     child: InflationScreen(
                       key: _inflationKey,
                       showAppBar: false,
-                      priceBasketService: sl.isRegistered<PriceBasketService>()
-                          ? sl<PriceBasketService>()
-                          : null,
                     ),
                   ),
                 ],

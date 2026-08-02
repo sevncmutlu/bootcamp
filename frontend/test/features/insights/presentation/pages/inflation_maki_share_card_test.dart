@@ -18,8 +18,16 @@ void main() {
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: InflationMakiShareCard(
-              personalInflation: personal,
+              personalSpendingChange: personal,
               officialInflation: official,
+              currentIncome: 20000,
+              currentExpenses: 9000,
+              debtPayments: 1000,
+              netCashFlow: 11000,
+              financialPressure: personal <= official ? 40 : 72,
+              status: 'ready',
+              currentTransactionCount: 4,
+              previousTransactionCount: 4,
             ),
           ),
         ),
@@ -34,7 +42,7 @@ void main() {
     await pumpCard(tester, personal: 28.5, official: 31.0);
 
     expect(find.byKey(const ValueKey('inflation-maki-proud')), findsOneWidget);
-    expect(find.text('Tebrikler, ritmin dengeli'), findsOneWidget);
+    expect(find.text('Tebrikler, bütçen dengeli'), findsOneWidget);
     expect(find.text('PNG indir'), findsOneWidget);
     expect(find.text('Paylaş'), findsOneWidget);
     expect(
@@ -44,7 +52,7 @@ void main() {
     expect(find.byKey(const ValueKey('share-inflation-card')), findsOneWidget);
   });
 
-  testWidgets('shows a concerned Maki when the personal basket rises faster', (
+  testWidgets('shows a concerned Maki when personal spending rises faster', (
     tester,
   ) async {
     await pumpCard(tester, personal: 38.2, official: 31.0);
@@ -76,7 +84,7 @@ void main() {
       find.byKey(const ValueKey('inflation-maki-waiting')),
       findsOneWidget,
     );
-    expect(find.text('ÖRNEK · VERİ BEKLENİYOR'), findsOneWidget);
+    expect(find.text('VERİ BİRİKİYOR'), findsOneWidget);
     expect(find.text('—'), findsNWidgets(2));
     expect(tester.takeException(), isNull);
   });

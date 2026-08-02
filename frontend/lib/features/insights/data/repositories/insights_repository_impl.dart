@@ -4,6 +4,7 @@ import 'package:maki_app/features/insights/domain/entities/forecast_day_entity.d
 import 'package:maki_app/features/insights/domain/entities/inflation_data_entity.dart';
 import 'package:maki_app/features/insights/domain/repositories/insights_repository.dart';
 import 'package:maki_app/features/insights/data/services/price_basket_service.dart';
+import 'package:maki_app/features/insights/data/services/personal_finance_insight_service.dart';
 import 'package:maki_app/core/config/app_environment.dart';
 import 'package:maki_app/core/database/money_minor_converter.dart';
 import 'package:maki_finance_core/maki_finance_core.dart';
@@ -16,11 +17,16 @@ class InsightsRepositoryImpl implements InsightsRepository {
     required this.database,
     required this.apiClient,
     PriceBasketService? priceBasketService,
+    PersonalFinanceInsightService? personalFinanceInsightService,
     AppEnvironment? environment,
   }) : priceBasketService = priceBasketService ?? PriceBasketService(database),
+       personalFinanceInsightService =
+           personalFinanceInsightService ??
+           PersonalFinanceInsightService(database),
        environment = environment ?? AppEnvironment.current;
 
   final PriceBasketService priceBasketService;
+  final PersonalFinanceInsightService personalFinanceInsightService;
   final AppEnvironment environment;
 
   @override
@@ -141,6 +147,6 @@ class InsightsRepositoryImpl implements InsightsRepository {
         // kaydedilmiş resmî snapshot varsa aşağıdaki hesap onu kullanır.
       }
     }
-    return priceBasketService.calculate();
+    return personalFinanceInsightService.calculate();
   }
 }

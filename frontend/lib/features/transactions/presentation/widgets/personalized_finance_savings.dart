@@ -4,10 +4,12 @@ class _SavingsGoalDashboardCard extends StatelessWidget {
   const _SavingsGoalDashboardCard({
     super.key,
     required this.goal,
+    this.onChooseGoal,
     this.onOpenGoal,
   });
 
   final SavingsGoalView goal;
+  final VoidCallback? onChooseGoal;
   final VoidCallback? onOpenGoal;
 
   IconData get _icon => switch (goal.iconKey) {
@@ -48,49 +50,69 @@ class _SavingsGoalDashboardCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.sm),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                  ),
-                  child: Icon(_icon, color: Colors.white, size: 22),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
+            Semantics(
+              button: onChooseGoal != null,
+              label: isTurkish ? 'Aktif hedefi seç' : 'Choose active goal',
+              child: InkWell(
+                key: const ValueKey('choose-savings-goal'),
+                onTap: onChooseGoal,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        isTurkish ? 'HEDEF ROTASI' : 'GOAL ROUTE',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.68),
-                          letterSpacing: 1.1,
-                          fontWeight: FontWeight.w800,
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                        child: Icon(_icon, color: Colors.white, size: 22),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isTurkish ? 'HEDEF ROTASI' : 'GOAL ROUTE',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: Colors.white.withValues(alpha: 0.68),
+                                letterSpacing: 1.1,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            Text(
+                              goal.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                color: Colors.white,
+                                fontFamily: 'MakiDisplay',
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        goal.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                          fontFamily: 'MakiDisplay',
-                          fontWeight: FontWeight.w700,
+                      if (onChooseGoal != null)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 18),
+                          child: Icon(
+                            Icons.expand_more_rounded,
+                            color: Colors.white,
+                          ),
                         ),
+                      const Mascot(
+                        pose: MascotPose.celebrate,
+                        size: 58,
+                        withBadge: false,
                       ),
                     ],
                   ),
                 ),
-                const Mascot(
-                  pose: MascotPose.celebrate,
-                  size: 58,
-                  withBadge: false,
-                ),
-              ],
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             Row(

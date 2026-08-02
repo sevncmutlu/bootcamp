@@ -4,11 +4,13 @@ class _FinanceHeroPager extends StatefulWidget {
   const _FinanceHeroPager({
     required this.financeCard,
     this.savingsGoal,
+    this.onChooseSavingsGoal,
     this.onOpenSavingsGoal,
   });
 
   final Widget financeCard;
   final SavingsGoalView? savingsGoal;
+  final VoidCallback? onChooseSavingsGoal;
   final VoidCallback? onOpenSavingsGoal;
 
   @override
@@ -77,6 +79,7 @@ class _FinanceHeroPagerState extends State<_FinanceHeroPager> {
                   : _SavingsGoalDashboardCard(
                       key: const ValueKey('savings-goal-page'),
                       goal: goal,
+                      onChooseGoal: widget.onChooseSavingsGoal,
                       onOpenGoal: widget.onOpenSavingsGoal,
                     ),
             ),
