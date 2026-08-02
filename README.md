@@ -16,7 +16,7 @@ Ormanı** içinde görünür ilerlemeye dönüşür; kullanıcı seçtiği rotay
 
 | Alan | Durum | Açıklama |
 |---|---|---|
-| Android | Doğrulandı | Debug APK fiziksel Xiaomi M2004J19C cihazına veri korunarak kuruldu. |
+| Android | Doğrulandı | Debug APK fiziksel cihaza kuruldu. |
 | Web | Preview / demo | Yalnız sentetik, oturumluk veriyle çalışır; gerçek finans verisi girişi ve production web derlemesi kapalıdır. |
 | iOS | Kod hazır | iOS proje yapısı mevcut; imza ve fiziksel cihaz doğrulaması macOS gerektirir. |
 | Flutter kalite | Geçti | `lib` ve `test` fatal analiz hatasız, **178/178 test başarılı**. |
