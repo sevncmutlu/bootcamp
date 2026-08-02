@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
+from pathlib import Path
 
 from cryptography import x509
 from fastapi import FastAPI
@@ -14,7 +15,8 @@ from maki.billing.app_store import AppStoreVerifier
 from maki.billing.google_play import GooglePlayVerifier, GooglePublisherClient
 from maki.billing.service import BillingService
 from maki.billing.verification import BillingVerificationService
-from maki.common.config import Settings
+from maki.coach.adaptive_service import AdaptiveCoachService
+from maki.common.config import ExecutionMode, Settings
 from maki.infrastructure.database import AsyncDatabase, DatabaseProbe, create_database
 from maki.infrastructure.entitlement_repository import (
     SqlAlchemyEntitlementRepository,
@@ -22,6 +24,10 @@ from maki.infrastructure.entitlement_repository import (
 from maki.infrastructure.job_repository import SqlAlchemyJobRepository
 from maki.infrastructure.leaderboard_repository import (
     SqlAlchemyLeaderboardRepository,
+)
+from maki.infrastructure.local_execution import LocalExecutionRuntime
+from maki.infrastructure.official_data_repository import (
+    SqlAlchemyOfficialDataRepository,
 )
 from maki.infrastructure.privacy_repository import SqlAlchemyPrivacyRepository
 from maki.infrastructure.redis_ephemeral_receipts import (
@@ -35,6 +41,10 @@ from maki.jobs.service import JobService
 from maki.leaderboard.service import LeaderboardService
 from maki.observability.logging import configure_logging
 from maki.observability.telemetry import Telemetry, configure_telemetry
+from maki.ocr.file_guard import FileGuard
+from maki.ocr.handler import ReceiptHandler
+from maki.ocr.paddle_adapter import OcrNotReadyError, PaddleOcrAdapter
+from maki.ocr.receipt_parser import ReceiptParser
 from maki.privacy.deletion import DeletionService
 from maki.privacy.export import DataExporter
 from maki.security.tokens import TokenVerifier
@@ -51,6 +61,7 @@ def create_runtime_app() -> FastAPI:
     )
     database = _database(settings)
     redis = _redis(settings)
+    local_runtime = _local_runtime(settings)
     probes: list[ReadinessProbe] = []
     if database is not None:
         probes.append(DatabaseProbe(database.engine))
@@ -60,6 +71,7 @@ def create_runtime_app() -> FastAPI:
         settings=settings,
         database=database,
         redis=redis,
+        local_runtime=local_runtime,
         probes=tuple(probes),
         telemetry=telemetry,
     )
@@ -69,7 +81,7 @@ def create_runtime_app() -> FastAPI:
         try:
             yield
         finally:
-            await _shutdown(database, redis, telemetry)
+            await _shutdown(database, redis, local_runtime, telemetry)
 
     return create_app(settings=settings, container=container, lifespan=lifespan)
 
@@ -101,12 +113,28 @@ def _container(
     settings: Settings,
     database: AsyncDatabase | None,
     redis: Redis | None,
+    local_runtime: LocalExecutionRuntime | None,
     probes: tuple[ReadinessProbe, ...],
     telemetry: Telemetry,
 ) -> Container:
     token_verifier = _token_verifier(settings)
     billing_verification = _billing_verification(settings, database)
     data_exporter, deletion_service = _privacy_services(database)
+    official_data = (
+        SqlAlchemyOfficialDataRepository(database.session_factory) if database is not None else None
+    )
+    if local_runtime is not None:
+        return Container(
+            readiness_probes=probes,
+            telemetry=telemetry,
+            enabled_job_kinds=local_runtime.enabled_job_kinds,
+            job_service=local_runtime,
+            token_verifier=token_verifier,
+            receipt_ingress=local_runtime.receipts,
+            job_query=local_runtime,
+            coach_request_acceptor=local_runtime,
+            official_data=official_data,
+        )
     if database is None or redis is None:
         return Container(
             readiness_probes=probes,
@@ -124,6 +152,7 @@ def _container(
                 if database is not None
                 else None
             ),
+            official_data=official_data,
         )
     repository = SqlAlchemyJobRepository(database.session_factory)
     results = RedisJobResultRepository(redis)
@@ -150,6 +179,52 @@ def _container(
             ),
             clock=_utc_now,
         ),
+        official_data=official_data,
+    )
+
+
+class _ZeroRetentionReceiptMetadata:
+    async def record_completion(
+        self,
+        job_id: str,
+        metadata: dict[str, object],
+    ) -> None:
+        del job_id, metadata
+
+
+def _local_runtime(settings: Settings) -> LocalExecutionRuntime | None:
+    if settings.execution_mode is not ExecutionMode.LOCAL:
+        return None
+    receipt_service = _local_receipt_service(settings)
+    server_key = settings.gemini_api_key
+    return LocalExecutionRuntime(
+        clock=_utc_now,
+        coach=AdaptiveCoachService(
+            model_name=settings.gemini_model,
+            server_api_key=(server_key.get_secret_value() if server_key is not None else None),
+        ),
+        receipt_service=receipt_service,
+    )
+
+
+def _local_receipt_service(settings: Settings) -> ReceiptHandler | None:
+    detection = settings.ocr.detection_model_dir
+    recognition = settings.ocr.recognition_model_dir
+    if detection is None or recognition is None:
+        return None
+    try:
+        adapter = PaddleOcrAdapter.from_local_models(
+            detection_model_dir=Path(detection),
+            recognition_model_dir=Path(recognition),
+        )
+    except (ModuleNotFoundError, OcrNotReadyError):
+        return None
+    return ReceiptHandler(
+        FileGuard(),
+        adapter,
+        ReceiptParser(),
+        _ZeroRetentionReceiptMetadata(),
+        _utc_now,
     )
 
 
@@ -238,8 +313,11 @@ def _utc_now() -> datetime:
 async def _shutdown(
     database: AsyncDatabase | None,
     redis: Redis | None,
+    local_runtime: LocalExecutionRuntime | None,
     telemetry: Telemetry,
 ) -> None:
+    if local_runtime is not None:
+        await local_runtime.close()
     if redis is not None:
         await redis.aclose()
     if database is not None:

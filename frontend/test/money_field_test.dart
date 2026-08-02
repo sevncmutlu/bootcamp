@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maki_app/widgets/money_field.dart';
+import 'package:maki_app/core/widgets/money_field.dart';
 
 void main() {
   group('MoneyField.tryParse', () {
@@ -27,6 +27,11 @@ void main() {
       expect(MoneyField.tryParse(''), isNull);
       expect(MoneyField.tryParse('abc'), isNull);
       expect(MoneyField.tryParse(null), isNull);
+    });
+
+    test('iki ondalıktan fazlasını sessizce yuvarlamaz', () {
+      expect(MoneyField.tryParse('12,345'), isNull);
+      expect(MoneyField.tryParseMinor('12,34'), 1234);
     });
   });
 }

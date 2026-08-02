@@ -1,194 +1,150 @@
-# 📋 Product Backlog — Maki Finans Koçu
+# Product Backlog — Maki Finans Koçu
 
-**Takım:** Takım 120 · **Product Owner:** Emir Hüseyin İnci · **Scrum Master:** Sevinç Mutlu
-**Product Backlog Aracı:** [Takım 120 Miro Backlog Board](https://miro.com/welcomeonboard/NXRRV0ovYXp6emtKV0lKWFdyUEZQSjhoNkVVMW5GdTRoVDRXZlNlci9VTXZvUzRwSDRBS2RWWEtRbVFCUE85ak9iQ09xYUhRUXpOR2hyaGdNdHA3a2tXRVlmR2hqbGFXcFp6RWVZemVzeU1BbnNDUVViaFpQc2E5U3VkSEowWldBd044SHFHaVlWYWk0d3NxeHNmeG9BPT0hdjE=?share_link_id=32213079148)
+**Takım:** Takım 120
 
-> Backlog; epic'lere ve epic'ler altında user story'lere bölünmüştür. Her story bir **öncelik** (🔴 Yüksek / 🟡 Orta / 🟢 Düşük), bir **story point (SP)** ve bir **hedef sprint** taşır.
->
-> **Story Point (SP) nedir?** Bir işin efor + karmaşıklık + belirsizliğini gösteren göreli büyüklük birimidir (saat değildir). Fibonacci ölçeği kullanılır: 1, 2, 3, 5, 8, 13. Örn. 13 SP'lik bir iş, 5 SP'lik bir işten belirgin şekilde daha büyük/riskli demektir.
+**Product Owner:** Emir Hüseyin İnci
 
----
+**Scrum Master:** Sevinç Mutlu
+**Son güncelleme:** 1 Ağustos 2026
 
-## 🧮 Puanlama & Dağıtım Mantığı
+## Durum sözlüğü
 
-- **Toplam proje puanı:** ~300 SP (3 sprint × ~100 SP)
-- Story point'ler **planning poker** ile göreli olarak (efor + belirsizlik + karmaşıklık) verilmiştir.
-- Riskli işler (Türkçe fiş OCR doğruluğu, RAG kaynaklandırma) erken sprintlere çekilmiştir.
-- Her sprint sonunda **demo edilebilir bir çıktı** olacak şekilde dağıtım yapılmıştır.
+- **Tamamlandı:** Kod, temel test ve kullanıcı akışı mevcut.
+- **Dış yapılandırma bekliyor:** Kod hazır; canlı hesap, imza veya servis değeri gerekir.
+- **Sonraki sürüm:** Teslim ZIP'inin kapsamına girmeyen geliştirme adayı.
 
-| Sprint | Tema | Hedef Puan |
-|--------|------|-----------|
-| Sprint 1 | Planlama & Proje Belirleme | ~100 SP |
-| Sprint 2 | Üretim yeniden yapılandırması ve mobil teslim | 100 SP |
-| Sprint 3 | Frontend tam yeniden yapılandırma + MVP tamamlama | ~100 SP |
+Story point; saat değil, efor + belirsizlik + karmaşıklık için göreli Fibonacci
+ölçeğidir. Tarihsel sprint kayıtları Sprint 1–3 klasörlerinde korunur.
 
----
+## Epic özeti
 
-## 🗂️ Epic'ler
+| Epic | Kapsam | Durum |
+|---|---|---|
+| E0 | Ürün vizyonu, hedef kitle ve mimari | Tamamlandı |
+| E1 | Flutter temel, tema, onboarding ve yerel profil | Tamamlandı |
+| E2 | Gelir/gider ve finans takvimi | Tamamlandı |
+| E3 | PaddleOCR fiş akışı | Tamamlandı |
+| E4 | Maki Koç, yerel rehber ve Gemini bağlantısı | Tamamlandı |
+| E5 | Kişisel enflasyon, tahmin ve paylaşılabilir kart | Tamamlandı |
+| E6 | Yaşayan Finans Ormanı ve 325 görev | Tamamlandı |
+| E7 | Akıllı bildirim zamanlaması | Tamamlandı |
+| E8 | Borç stratejileri ve premium sınırı | Dış yapılandırma bekliyor |
+| E9 | Gizlilik, yerel veri ve kimlik sınırı | Tamamlandı |
+| E10 | Gözlemlenebilirlik, CI ve güvenlik kapıları | Tamamlandı |
+| E11 | Android/iOS/web responsive ürün deneyimi | Tamamlandı |
+| E12 | Hedef rotaları ve cihaz içi raporlar | Tamamlandı |
+| E13 | Production kapanışı: kuruş tabanlı DB, gerçek bildirim, enflasyon/tahmin ve fail-closed release | Tamamlandı |
 
-| Epic | Açıklama |
-|------|----------|
-| **E0 — Planlama & Mimari** | Vizyon, teknoloji, kimlik ve gizlilik kararları |
-| **E1 — Temel & Altyapı** | Flutter iskeleti, tema, cihaz DB, onboarding |
-| **E2 — Harcama Yönetimi** | Manuel giriş, listeleme, kategori taksonomisi |
-| **E3 — Fiş OCR** | Kamera/galeri, PaddleOCR, alan çıkarımı |
-| **E4 — AI Koçluk (MakiKoç) & RAG** | Türkçe LLM koçu, güvenli istem ve kaynaklı tavsiye |
-| **E5 — Kişisel Enflasyon & Tahmin** | Kişisel enflasyon, TÜİK karşılaştırma, Prophet |
-| **E6 — Gamification & Orman** | Meydan okuma, XP/seviye, rozet, leaderboard, orman |
-| **E7 — Bildirim Optimizasyonu** | LinTS ile anonim, kişiye özel bildirim |
-| **E8 — Premium & Borç Simülatörü** | LightGBM borç simülasyonu, paywall |
-| **E9 — Gizlilik & Güvenlik** | Cihazda veri, anonim sinyal, şifreleme |
-| **E10 — Gözlemlenebilirlik & Teslim** | OpenTelemetry, güvenli loglar, kalite kapıları ve sürüm kanıtı |
-| **E11 — Frontend Tam Yeniden Yapılandırma** | Mobil arayüz, gezinme, durum yönetimi ve erişilebilirlik |
+## Sprint 1 — Ürün ve mimari
 
----
+| ID | User story / çıktı | SP | Durum |
+|---|---|---:|---|
+| S1-01 | Problem, hedef kitle ve değer önermesi | 13 | Tamamlandı |
+| S1-02 | Maki kimliği ve orman metaforu | 13 | Tamamlandı |
+| S1-03 | Flutter, FastAPI, Drift ve model yığını kararı | 21 | Tamamlandı |
+| S1-04 | Cihaz öncelikli gizlilik mimarisi | 21 | Tamamlandı |
+| S1-05 | Üç sprintlik kapsam, risk ve DoD | 13 | Tamamlandı |
+| S1-06 | Kategori taksonomisi ve ilk kullanıcı akışları | 8 | Tamamlandı |
+| S1-07 | Scrum kayıtları ve sunum materyalleri | 11 | Tamamlandı |
+|  | **Toplam** | **100** |  |
 
-## ✅ Sprint 2 Güncellenen Teslim Kapsamı
+## Sprint 2 — Güvenli çekirdek ve mobil teslim
 
-Sprint planlamasında temel ürün kapsamı korunmuş, üretim hazırlığı için teknik işler
-ayrı kabul kriterleriyle görünür hâle getirilmiştir. Ayrıntılı kayıt:
-[Sprint 2 Backlog](./Sprint-2/Sprint-2-Backlog.md).
+| ID | User story / çıktı | SP | Durum |
+|---|---|---:|---|
+| S2-01 | Flutter mimari sınırları ve Türkçe tasarım sistemi | 8 | Tamamlandı |
+| S2-02 | Drift/SQLite3MC yerel veri ve güvenli cihaz depolaması | 8 | Tamamlandı |
+| S2-03 | Gelir/gider, kategoriler ve form doğrulaması | 8 | Tamamlandı |
+| S2-04 | PaddleOCR iş kuyruğu ve fiş sonucu onayı | 8 | Tamamlandı |
+| S2-05 | Maki Koç, RAG/sağlayıcı sınırı ve kaynak kartları | 8 | Tamamlandı |
+| S2-06 | Deterministik para, oran ve kişisel enflasyon çekirdeği | 13 | Tamamlandı |
+| S2-07 | Tahmin, geriye dönük sınama ve model seçimi | 8 | Tamamlandı |
+| S2-08 | Borç kapatma motoru ve tutarlı silme akışı | 8 | Tamamlandı |
+| S2-09 | İlk Maki Ormanı, maskot ve uyarlanabilir ekranlar | 8 | Tamamlandı |
+| S2-10 | Pydantic v2 API, idempotency ve hata sözleşmesi | 8 | Tamamlandı |
+| S2-11 | OpenTelemetry, kişisel veri temizleme ve alarm kuralları | 8 | Tamamlandı |
+| S2-12 | CI, SBOM, güvenlik ve fiziksel Android kanıtı | 5 | Tamamlandı |
+|  | **Toplam** | **100** |  |
 
-| ID | İş | SP | Durum |
-|----|----|----|-------|
-| S2-01 | Mobil mimari, tasarım sistemi ve Türkçe arayüz | 8 | ✅ |
-| S2-02 | Şifreli yerel veri ve güvenli oturum yönetimi | 8 | ✅ |
-| S2-03 | Harcama yönetimi, kategoriler ve alan doğrulama | 8 | ✅ |
-| S2-04 | Güvenli fiş OCR iş akışı | 8 | ✅ |
-| S2-05 | Türkçe MakiKoç, RAG ve resmî kaynak kartları | 8 | ✅ |
-| S2-06 | Para güvenli finans çekirdeği ve kişisel enflasyon | 13 | ✅ |
-| S2-07 | Tahmin, geriye dönük sınama ve model seçimi | 8 | ✅ |
-| S2-08 | Borç kapatma motoru ve tutarlı silme akışı | 8 | ✅ |
-| S2-09 | Maki Ormanı, maskot ve uyarlanabilir ekranlar | 8 | ✅ |
-| S2-10 | Pydantic v2 API sözleşmeleri ve güvenilir iş kuyruğu | 8 | ✅ |
-| S2-11 | OpenTelemetry, kişisel veri temizleme ve alarmlar | 8 | ✅ |
-| S2-12 | CI kalite kapıları, SBOM ve telefon APK kaydı | 5 | ✅ |
-|  | **Toplam** | **100** | **✅** |
+## Sprint 3 — Kişiselleştirme ve Yaşayan Finans Ormanı
 
----
+| ID | User story / kabul özeti | SP | Durum |
+|---|---|---:|---|
+| S3-01 | Android, iOS ve web için responsive gezinme | 13 | Tamamlandı |
+| S3-02 | Dört amacın ana ekran, görev, öneri ve analizi değiştirmesi | 13 | Tamamlandı |
+| S3-03 | Haftalık özet ve tam ekran finans takvimi | 8 | Tamamlandı |
+| S3-04 | 325 benzersiz görev ve güne/rotaya bağlı deterministik seçim | 13 | Tamamlandı |
+| S3-05 | Seri, XP, tohum cüzdanı, mağaza ve koruma yaprağı | 13 | Tamamlandı |
+| S3-06 | Yerel bitki parselleri ve tam ekran orman deneyimi | 8 | Tamamlandı |
+| S3-07 | Hedef oluşturma, 30 duraklı harita ve kilometre taşları | 13 | Tamamlandı |
+| S3-08 | Gelir/gideri açık seçimle hedefe bağlama ve geri alma | 8 | Tamamlandı |
+| S3-09 | Günlük/haftalık/aylık cihaz içi PDF rapor merkezi | 8 | Tamamlandı |
+| S3-10 | Fiş toplam çıkarımı ve doğrudan gider taslağı | 8 | Tamamlandı |
+| S3-11 | Kişisel enflasyon Maki kartı, indirme ve paylaşma | 5 | Tamamlandı |
+| S3-12 | Sürüklenebilir, kenara yaslanan ve konumunu hatırlayan Maki | 5 | Tamamlandı |
+| S3-13 | Bildirim ekranındaki debug yüzeyini kaldırma ve yaş profili | 5 | Tamamlandı |
+| S3-14 | Yükleme, yönlendirme, ekran dönüşü ve düşük cihaz kararlılığı | 8 | Tamamlandı |
+| S3-15 | Tema renginin bütün ürün yüzeylerine uygulanması | 5 | Tamamlandı |
+| S3-16 | Borç için hazır/özel stratejiler ve sade Türkçe | 8 | Tamamlandı |
+| S3-17 | Yerel rehber + isteğe bağlı güvenli Gemini anahtarı | 5 | Tamamlandı |
+| S3-18 | Flutter analiz, 178 test, web preview release ve Android cihaz doğrulaması | 8 | Tamamlandı |
+| S3-19 | Android PDF için sistem “Farklı kaydet” akışı ve iptal durumunun doğru işlenmesi | 3 | Tamamlandı |
+| S3-20 | Int64 kuruş migration'ı, gerçek OS bildirimi, fiyat sepeti/Laspeyres, yerel tahmin, mega-widget ayrıştırması ve fail-closed release | 13 | Tamamlandı |
 
-## 🏗️ Sprint 3 Öncelik Kararı
+## Tamamlanan kabul ölçütleri
 
-Sprint 3'ün birincil işi frontend'in tamamen yeniden yapılandırılmasıdır. Sprint 2'de
-üretim seviyesine getirilen backend, API sözleşmeleri ve finans çekirdeği korunacak;
-yeni mobil uygulama doğrudan bu katmanların üzerine bağlanacaktır.
+### Finans ve hedefler
 
-| ID | İş | Öncelik | SP | Durum |
-|----|----|----------|----|-------|
-| S3-FE-01 | Frontend'i mimari ve görsel olarak tamamen yeniden yapılandırmak | 🔴 | 21 | ⏳ |
+- Kullanıcı gelir ve gideri gün/tür/kategori bazında kaydedebilir.
+- Takvimde seçilen günün gelir, gider, net ve işlem sayısı gösterilir.
+- Hedef kartının ikinci sayfası biriken, kalan, yüzde ve hedef tarihini gösterir.
+- İşlemler varsayılan olarak hedefi etkilemez; kullanıcı açıkça seçerse etkiler.
+- Bağlı gider, hedefte mevcut birikimden büyükse kayıt öncesinde engellenir.
+- Aynı hedefte aynı kilometre taşı yalnız bir kez ödül verir.
 
-### S3-FE-01 Kabul Kriterleri
+### Orman ve görevler
 
-- Eski ekranlar üzerinde parça parça yama yapılmaz; gezinme, ekranlar, ortak
-  bileşenler ve durum yönetimi yeniden kurulur.
-- Sprint 2 backend'i ve `maki_finance_core` tek doğruluk kaynağı olarak kullanılır;
-  paralel sahte finans mantığı yazılmaz.
-- MakiKoç marka kimliği, maskot ve orman fikri korunur; bilgi mimarisi ve kullanıcı
-  deneyimi yeniden tasarlanır.
-- Kullanıcı metinleri, doğrulamalar ve hata mesajları tamamen Türkçedir.
-- Dar ekran, büyük yazı ve klavye açık durumlarında piksel taşması oluşmaz.
-- Erişilebilirlik, widget, görsel regresyon ve kritik uçtan uca akış testleri kalite
-  kapısına eklenir.
-- Yeni frontend özellik eşitliğine ulaşmadan eski uygulama kaldırılmaz.
+- Katalog tam 325 benzersiz görev içerir.
+- Her gün üç rota görevi ve bir bonus görev deterministik biçimde seçilir.
+- Seçilen amaç görev ailelerini, ana kartı ve Maki önerisini değiştirir.
+- Tohum kazanımı ve mağaza harcaması cihazdaki deftere kaydedilir.
+- Büyüme aşaması ve görsel yol gerçek finans etkinliklerinden hesaplanır.
 
----
+### Gizlilik ve güvenlik
 
-## 📥 Detaylı Backlog (User Story'ler)
+- Finans kayıtları ve rapor üretimi cihaz içinde kalır.
+- Hata raporlarında e-posta, IBAN, kart ve telefon desenleri temizlenir.
+- Geliştirme oturumu ile üretim kimliği birbirinden ayrılır.
+- Backend yalnız EdDSA, ES256 veya RS256 kısa ömürlü belirteç kabul eder.
+- GitHub teslim paketi `.env`, anahtar, yerel DB, log veya kullanıcı verisi içermez.
 
-### E0 — Planlama & Mimari  · _Sprint 1_
+## Dış yapılandırma bekleyen işler
 
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-01 | Takım olarak problemi, hedef kitleyi ve değer önermesini netleştirmek istiyoruz ki doğru ürünü inşa edelim. | 🔴 | 8 | S1 |
-| US-02 | Takım olarak ürün kimliği ve metafor kararını (MakiKoç + orman) vermek istiyoruz ki tutarlı bir deneyim tasarlayalım. | 🔴 | 8 | S1 |
-| US-03 | Takım olarak teknoloji yığınını seçmek istiyoruz ki geliştirmeye net bir zeminle başlayalım. | 🔴 | 13 | S1 |
-| US-04 | Takım olarak gizlilik mimarisini (cihazda veri / anonim sinyal) belirlemek istiyoruz ki gizlilik sözünü teknik olarak garanti edelim. | 🔴 | 13 | S1 |
-| US-05 | Takım olarak kategori taksonomisi taslağını hazırlamak istiyoruz ki harcamalar tutarlı sınıflansın. | 🟡 | 5 | S1 |
-| US-06 | Takım olarak 3 sprintlik takvim ve kapsamı belirlemek istiyoruz ki zamanı doğru yönetelim. | 🔴 | 8 | S1 |
-| US-07 | Takım olarak riskleri tanımlamak istiyoruz ki erkenden önlem alalım. | 🟡 | 5 | S1 |
+| ID | İş | Tamamlanma koşulu |
+|---|---|---|
+| RC-01 | Android production signing | Release keystore ve Play Console erişimi |
+| RC-02 | iOS signing ve cihaz testi | macOS, Apple certificate ve provisioning profile |
+| RC-03 | Canlı OIDC | Issuer, client, audience ve redirect URI |
+| RC-04 | Canlı mağaza satın alması | Store ürünleri ve backend doğrulama hesapları |
+| RC-05 | Canlı yasal sayfalar | Privacy ve Terms HTTPS URL'leri |
+| RC-06 | Canlı servis izleme | Sentry DSN ve OTLP hedefi |
 
-### E1 — Temel & Altyapı  · _Sprint 2_
+Bu maddeler kod eksikliği değil, proje dışında yönetilen canlı yayın kimlikleri ve
+hesaplarıdır. Değerler kaynak koda eklenmez.
 
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-08 | Geliştirici olarak Flutter iskeleti ve klasör yapısını kurmak istiyorum ki geliştirmeye başlayabilelim. | 🔴 | 5 | S2 |
-| US-09 | Geliştirici olarak tema + tasarım sistemi oluşturmak istiyorum ki tutarlı bir arayüz elde edelim. | 🟡 | 5 | S2 |
-| US-10 | Geliştirici olarak cihaz DB şemasını (Isar/Drift) kurmak istiyorum ki veri offline saklansın. | 🔴 | 8 | S2 |
-| US-11 | Kullanıcı olarak onboarding'de "Para ile ne yapmak istiyorsun?" akışını görmek istiyorum ki deneyim bana özel başlasın. | 🟡 | 5 | S2 |
+## Sonraki sürüm adayları
 
-### E2 — Harcama Yönetimi  · _Sprint 2_
+| ID | Fikir | Öncelik |
+|---|---|---|
+| N-01 | Kullanıcı kontrollü, uçtan uca şifreli Drive/iCloud yedeği | Yüksek |
+| N-02 | Erişilebilirlik için ekran okuyucu senaryo paketi | Yüksek |
+| N-03 | OCR veri kümesinde mağaza ve fiş tipi bazlı kalite panosu | Orta |
+| N-04 | Tablet için iki panelli hedef/orman görünümü | Orta |
+| N-05 | Tamamen çevrimdışı cihaz içi OCR araştırması | Düşük |
 
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-12 | Kullanıcı olarak manuel harcama ekleyip listeleyebilmek istiyorum ki harcamalarımı takip edeyim. | 🔴 | 8 | S2 |
-| US-13 | Kullanıcı olarak harcamalarımı kategorilere göre görmek istiyorum ki nereye para gittiğini anlayayım. | 🟡 | 5 | S2 |
+## Definition of Done
 
-### E3 — Fiş OCR  · _Sprint 2_
-
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-14 | Kullanıcı olarak fişi fotoğraflayıp otomatik harcama oluşturmak istiyorum ki elle girmekle uğraşmayayım. | 🔴 | 13 | S2 |
-| US-15 | Kullanıcı olarak OCR sonrası çıkan bilgiyi düzenleyip onaylamak istiyorum ki hatalar düzeltilebilsin. | 🟡 | 5 | S2 |
-
-### E4 — AI Koçluk (MakiKoç) & RAG  · _Sprint 2–3_
-
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-16 | Kullanıcı olarak Türkçe bir finans koçuyla konuşmak istiyorum ki kişisel tavsiye alayım. | 🔴 | 8 | S2 |
-| US-17 | Kullanıcı olarak koçun tavsiyelerini TÜİK/Merkez Bankası kaynaklarıyla göstermesini istiyorum ki güvenilir olsun. | 🔴 | 13 | S2→S3 |
-| US-18 | Kullanıcı olarak günlük/haftalık kısa koçluk seansı görmek istiyorum ki düzenli rehberlik alayım. | 🟡 | 5 | S3 |
-
-### E5 — Kişisel Enflasyon & Tahmin  · _Sprint 3_
-
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-19 | Kullanıcı olarak kendi enflasyonumu TÜİK ile karşılaştıran grafik görmek istiyorum ki gerçek durumumu anlayayım. | 🔴 | 8 | S3 |
-| US-20 | Kullanıcı olarak gelecek harcama tahminimi (Prophet) görmek istiyorum ki bütçe planlayayım. | 🟡 | 5 | S3 |
-
-### E6 — Gamification & Orman  · _Sprint 3_
-
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-21 | Kullanıcı olarak masum günlük meydan okumalar almak istiyorum ki motive olayım. | 🟡 | 5 | S3 |
-| US-22 | Kullanıcı olarak XP/seviye ve rozet kazanmak istiyorum ki ilerlememi hissedeyim. | 🟡 | 5 | S3 |
-| US-23 | Kullanıcı olarak meydan okuma tamamladıkça orman/fidan ilerlemesi görmek istiyorum ki görsel geri bildirim alayım. | 🟢 | 5 | S3 |
-| US-24 | Kullanıcı olarak yüzde bazlı kimliksiz leaderboard görmek istiyorum ki gizliliğim korunarak yarışayım. | 🟢 | 5 | S3 |
-
-### E7 — Bildirim Optimizasyonu  · _Sprint 3_
-
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-25 | Kullanıcı olarak bana en uygun zamanda bildirim almak istiyorum ki rahatsız olmadan hatırlatılayım. (LinTS, yalnızca anonim özellikler) | 🟢 | 8 | S3 |
-
-### E8 — Premium & Borç Simülatörü  · _Sprint 3_
-
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-26 | Kullanıcı olarak sanal borç simülatörüyle borçtan çıkma planı görmek istiyorum ki hedef koyayım. (LightGBM, Premium) | 🟡 | 8 | S3 |
-| US-27 | Kullanıcı olarak premium özelliklere paywall'dan erişmek istiyorum ki uygulama sürdürülebilir olsun. | 🟢 | 5 | S3 |
-
-### E9 — Gizlilik & Güvenlik  · _Sürekli_
-
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| US-28 | Kullanıcı olarak tüm finans verimin cihazımda kalacağından emin olmak istiyorum ki gizliliğim korunsun. | 🔴 | 8 | S2–S3 |
-| US-29 | Kullanıcı olarak sunucuya yalnızca anonim sinyal gittiğini bilmek istiyorum ki güven duyayım. | 🔴 | 5 | S3 |
-
-### E11 — Frontend Tam Yeniden Yapılandırma  · _Sprint 3_
-
-| ID | User Story | Öncelik | SP | Sprint |
-|----|-----------|---------|----|--------|
-| S3-FE-01 | Kullanıcı olarak sade, hızlı, erişilebilir ve tutarlı bir mobil deneyim istiyorum ki finansal durumumu ekranda kaybolmadan yönetebileyim. | 🔴 | 21 | S3 |
-
----
-
-## 📌 Öncelik Sıralaması (İlk 10 — MVP Kritik)
-
-1. US-01, US-03, US-04 — Vizyon, teknoloji, gizlilik (S1)
-2. US-08, US-10 — İskelet + cihaz DB (S2)
-3. US-12 — Manuel harcama (S2)
-4. US-14 — Fiş OCR (S2)
-5. US-16, US-17 — AI koç + kaynaklandırma (S2→S3)
-6. S3-FE-01 — Frontend tam yeniden yapılandırma (S3)
-7. US-19 — Kişisel enflasyon (S3)
-8. US-28 — Cihazda veri garantisi (S2–S3)
+Bir backlog kalemi ancak kullanıcı akışı mevcutsa, hata/boş/yükleniyor durumu
+tanımlıysa, gizlilik sınırı korunuyorsa ve uygun analiz/test kapısı geçiyorsa
+“Tamamlandı” olarak işaretlenir. Dış hizmet gerektiren özellikler canlı hesap olmadan
+“üretimde çalışıyor” olarak sunulmaz.

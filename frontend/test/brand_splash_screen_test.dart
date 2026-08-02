@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maki_app/screens/brand_splash_screen.dart';
-import 'package:maki_app/widgets/brand_wordmark.dart';
-import 'package:maki_app/widgets/mascot.dart';
+import 'package:maki_app/features/auth/presentation/pages/brand_splash_screen.dart';
+import 'package:maki_app/core/widgets/brand_wordmark.dart';
+import 'package:maki_app/core/widgets/mascot.dart';
 
 void main() {
   testWidgets('maskotu ve MakiKoç imzasını gösterip tamamlanır', (

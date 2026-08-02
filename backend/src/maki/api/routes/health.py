@@ -5,6 +5,7 @@ from fastapi import APIRouter, Request, Response
 
 from maki.api.dependencies import Container, ReadinessProbe
 from maki.common.models import ApiModel
+from maki.jobs.models import JobKind
 
 router = APIRouter(prefix="/health", tags=["sağlık"])
 _READINESS_TIMEOUT_SECONDS = 0.25
@@ -30,6 +31,12 @@ class ReadinessResponse(ApiModel):
     bagimliliklar: tuple[DependencyHealth, ...]
 
 
+class CapabilityResponse(ApiModel):
+    fis_tarama: bool
+    maki_koc: bool
+    koc_modu: str
+
+
 @router.get(
     "/live",
     operation_id="health_live",
@@ -37,6 +44,22 @@ class ReadinessResponse(ApiModel):
 )
 async def liveness() -> LivenessResponse:
     return LivenessResponse()
+
+
+@router.get(
+    "/capabilities",
+    operation_id="health_capabilities",
+    description="İstemcinin kullanabileceği özellikleri sade durumlarla döndürür.",
+)
+async def capabilities(request: Request) -> CapabilityResponse:
+    container: Container = request.app.state.container
+    enabled = container.enabled_job_kinds or frozenset()
+    coach_ready = JobKind.COACH in enabled
+    return CapabilityResponse(
+        fis_tarama=JobKind.RECEIPT in enabled,
+        maki_koc=coach_ready,
+        koc_modu="yerel_rehber" if container.coach_request_acceptor is not None else "resmi_veri",
+    )
 
 
 @router.get(

@@ -40,6 +40,29 @@ jobs:
         working-directory: backend
         run: uv sync --frozen --all-extras --group dev
 
+      - name: Semgrep SAST
+        run: |
+          mkdir -p artifacts
+          uv tool install semgrep==1.172.0
+          semgrep scan \
+            --config .semgrep.yml \
+            --error \
+            --metrics=off \
+            --json \
+            --output artifacts/semgrep.json \
+            .
+
+      - name: Kaynak, secret ve IaC güvenlik taraması
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          trivy-config: security/trivy.yaml
+          format: sarif
+          output: artifacts/trivy-source.sarif
+          ignore-unfixed: true
+          version: v0.69.3
+
       - name: Kilit dosyasını doğrula
         working-directory: backend
         run: uv lock --check
@@ -124,6 +147,8 @@ jobs:
             artifacts/backend.cdx.json
             artifacts/coverage.xml
             artifacts/openapi.diff
+            artifacts/semgrep.json
+            artifacts/trivy-source.sarif
           if-no-files-found: warn
           retention-days: 14
 
@@ -168,3 +193,8 @@ jobs:
           flutter analyze --fatal-infos --fatal-warnings
           flutter test
           flutter build apk --debug
+          flutter build web --release `
+            --dart-define=MAKI_ENV=production `
+            --dart-define=BACKEND_URL=https://api.invalid.example `
+            --dart-define=PRIVACY_URL=https://maki.invalid.example/gizlilik `
+            --dart-define=TERMS_URL=https://maki.invalid.example/kosullar

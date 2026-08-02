@@ -2,6 +2,7 @@ from collections.abc import Callable
 from contextlib import AbstractAsyncContextManager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from maki.api.dependencies import Container
 from maki.api.handlers import register_handlers
@@ -15,6 +16,7 @@ from maki.api.routes.forecasts import router as forecast_router
 from maki.api.routes.health import router as health_router
 from maki.api.routes.jobs import router as jobs_router
 from maki.api.routes.leaderboard import router as leaderboard_router
+from maki.api.routes.official_data import router as official_data_router
 from maki.api.routes.privacy import router as privacy_router
 from maki.api.routes.receipts import router as receipt_router
 from maki.common.config import Settings
@@ -49,9 +51,40 @@ def create_app(
     app.include_router(jobs_router)
     app.include_router(leaderboard_router)
     app.include_router(privacy_router)
+    app.include_router(official_data_router)
     app.add_middleware(PrivacyMiddleware, telemetry=container.telemetry)
     app.add_middleware(BodyLimitMiddleware)
     if container.telemetry is not None:
         app.add_middleware(ObservabilityMiddleware, telemetry=container.telemetry)
     app.add_middleware(RequestContextMiddleware)
+    if settings.environment.is_development:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+            allow_credentials=False,
+            allow_methods=["GET", "POST", "OPTIONS"],
+            allow_headers=[
+                "Authorization",
+                "Content-Type",
+                "Idempotency-Key",
+                "X-Maki-Gemini-Key",
+                "X-Request-ID",
+            ],
+            expose_headers=["Retry-After", "X-Request-ID"],
+        )
+    elif settings.web_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(settings.web_origins),
+            allow_credentials=False,
+            allow_methods=["GET", "POST", "OPTIONS"],
+            allow_headers=[
+                "Authorization",
+                "Content-Type",
+                "Idempotency-Key",
+                "X-Maki-Gemini-Key",
+                "X-Request-ID",
+            ],
+            expose_headers=["Retry-After", "X-Request-ID"],
+        )
     return app

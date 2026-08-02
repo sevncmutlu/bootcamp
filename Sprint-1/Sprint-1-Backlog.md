@@ -27,7 +27,7 @@
 |-------|-------------|------|
 | — | — | US-01, US-02, US-03, US-04, US-05, US-06, US-07 |
 
-> _Board ekran görüntüsü buraya eklenecektir._
+Yukarıdaki tablo Sprint 1'in sürüm kontrollü ve teslimde esas alınan board kaydıdır.
 
 ---
 
@@ -55,4 +55,5 @@
 | 1. Hafta sonu | ~30 |
 | 2. Hafta sonu | 0 |
 
-> _Detaylı burndown grafiği buraya eklenecektir._
+Bu planlama sprintinde günlük saat kaydı tutulmadığı için burndown, doğrulanabilen
+haftalık story point özetiyle sınırlandırılmıştır.

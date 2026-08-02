@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/widgets/forest_progress_card.dart';
-import 'package:maki_app/widgets/mascot.dart';
+import 'package:maki_app/core/widgets/forest_progress_card.dart';
 
 void main() {
   testWidgets('orman aşaması gerçek ilerlemeyi dar ekranda gösterir', (
@@ -34,11 +33,24 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Büyüyen Fidan'), findsOneWidget);
+    expect(find.text('Çalı'), findsOneWidget);
     expect(find.text('Aşama 3 / 5'), findsOneWidget);
     expect(find.text('Orman sağlığı'), findsOneWidget);
     expect(find.text('%42'), findsOneWidget);
-    expect(find.byType(Mascot), findsOneWidget);
+    expect(find.byType(Image), findsOneWidget);
     expect(tester.takeException(), isNull);
+
+    final centers = List.generate(
+      5,
+      (index) =>
+          tester.getCenter(find.byKey(ValueKey('forest-stage-${index + 1}'))),
+    );
+    final gaps = List.generate(
+      4,
+      (index) => centers[index + 1].dx - centers[index].dx,
+    );
+    for (final gap in gaps.skip(1)) {
+      expect(gap, closeTo(gaps.first, 0.5));
+    }
   });
 }

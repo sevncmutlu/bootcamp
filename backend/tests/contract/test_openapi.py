@@ -28,15 +28,18 @@ def test_contract_has_no_web_or_test_routes() -> None:
 
     assert all("/test/" not in path for path in paths)
     assert set(paths) == {
+        "/api/v1/billing/account-binding",
         "/api/v1/billing/entitlements",
         "/api/v1/billing/verifications",
         "/api/v1/coach/queries",
         "/api/v1/forecasts/jobs",
         "/api/v1/jobs/{job_id}",
         "/api/v1/leaderboard/percentiles",
+        "/api/v1/official-data/inflation/latest",
         "/api/v1/privacy/data",
         "/api/v1/privacy/exports",
         "/api/v1/receipts/jobs",
+        "/health/capabilities",
         "/health/live",
         "/health/ready",
     }

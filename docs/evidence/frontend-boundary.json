@@ -1,9 +1,9 @@
 ﻿{
     "schema_version":  2,
-    "verified_at":  "2026-07-19",
+    "verified_at":  "2026-08-01",
     "scope":  "frontend/lib/** (Ã¼retilen kaynaklar hariÃ§)",
-    "file_count":  48,
-    "tree_sha256":  "92D654596C08ED333099AD591D920FE47B90EEECD5FD59EDF716EE483282E8D9",
-    "web_directory_present":  false,
+    "file_count":  180,
+    "tree_sha256":  "43AFDB3256E558A444681318D01465A1DC92A84991978EC3DF112C07C6316F94",
+    "web_directory_present":  true,
     "result":  "eÅŸleÅŸti"
 }

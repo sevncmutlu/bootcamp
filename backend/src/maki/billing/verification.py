@@ -1,4 +1,5 @@
 import hashlib
+from dataclasses import dataclass
 from typing import Protocol
 
 from maki.billing.account_tokens import AppleAccountTokenIssuer
@@ -8,6 +9,12 @@ from maki.billing.service import BillingService
 
 class ProviderNotConfigured(RuntimeError):  # noqa: N818
     pass
+
+
+@dataclass(frozen=True, slots=True)
+class StoreAccountBinding:
+    google_account_id: str
+    apple_account_token: str | None
 
 
 class GoogleVerifier(Protocol):
@@ -80,6 +87,16 @@ class BillingVerificationService:
             raise ProviderNotConfigured
         return await self._billing.list_for_subject(
             subject_hash=_subject_hash(subject_id),
+        )
+
+    def account_binding(self, *, subject_id: str) -> StoreAccountBinding:
+        return StoreAccountBinding(
+            google_account_id=_subject_hash(subject_id),
+            apple_account_token=(
+                self._apple_account_tokens.for_subject(subject_id)
+                if self._apple_account_tokens is not None
+                else None
+            ),
         )
 
 

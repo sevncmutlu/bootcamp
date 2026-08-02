@@ -248,7 +248,12 @@ _STATE_EVENT = {
     "SUBSCRIPTION_STATE_ON_HOLD": StoreEvent.EXPIRED,
     "SUBSCRIPTION_STATE_PAUSED": StoreEvent.EXPIRED,
 }
-_ACKNOWLEDGED = "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED"
+_VALID_ACKNOWLEDGEMENT_STATES = frozenset(
+    {
+        "ACKNOWLEDGEMENT_STATE_PENDING",
+        "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED",
+    }
+)
 _CLIENT_ERROR_MINIMUM = 400
 _SERVER_ERROR_MINIMUM = 500
 
@@ -321,8 +326,8 @@ class GooglePlayVerifier:
         subscription: _GoogleSubscription,
         subject_hash: str,
     ) -> _LineItem:
-        if subscription.acknowledgement_state != _ACKNOWLEDGED:
-            msg = "Google Play satın alımı onaylanmamış."
+        if subscription.acknowledgement_state not in _VALID_ACKNOWLEDGEMENT_STATES:
+            msg = "Google Play satın alım onay durumu geçersiz."
             raise StoreVerificationError(msg)
         if subscription.test_purchase is not None:
             msg = "Google Play test satın alımı üretimde kabul edilmez."

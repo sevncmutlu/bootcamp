@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/theme/app_theme.dart';
+import 'package:maki_app/core/theme/app_theme.dart';
 
 void main() {
   testWidgets('beş Türkçe menü dar ekranda taşmaz', (tester) async {
@@ -21,23 +21,23 @@ void main() {
             destinations: const [
               NavigationDestination(
                 icon: Icon(Icons.wallet_outlined),
-                label: 'Harcama',
+                label: 'Gelir/Gider',
               ),
               NavigationDestination(
-                icon: Icon(Icons.pie_chart_outline),
-                label: 'Analiz',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.credit_card_outlined),
+                icon: Icon(Icons.account_balance_wallet_outlined),
                 label: 'Borç',
               ),
               NavigationDestination(
-                icon: Icon(Icons.forest_outlined),
-                label: 'Orman',
+                icon: Icon(Icons.compare_arrows_rounded),
+                label: 'Karşılaştır',
               ),
               NavigationDestination(
-                icon: Icon(Icons.spa_outlined),
-                label: 'Koç',
+                icon: Icon(Icons.donut_large_outlined),
+                label: 'Analiz',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.leaderboard_outlined),
+                label: 'Lider',
               ),
             ],
           ),
@@ -46,7 +46,7 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Harcama'), findsOneWidget);
-    expect(find.text('Koç'), findsOneWidget);
+    expect(find.text('Gelir/Gider'), findsOneWidget);
+    expect(find.text('Lider'), findsOneWidget);
   });
 }

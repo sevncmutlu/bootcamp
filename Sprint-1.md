@@ -55,7 +55,8 @@
 - **Teknoloji Kararı:** Flutter + Isar/Drift + FastAPI + PaddleOCR + Prophet + RAG + Claude yığını netleştirildi.
 - **Risk Değerlendirmesi:** Zaman kısıtı, gizlilik ispatı ve Türkçe OCR doğruluğu ana riskler olarak not edildi.
 
-> _Daily Scrum ekran görüntüleri / toplantı notları buraya eklenecektir._
+Günlük kararların tarihsel kaydı [Sprint 1 Daily Scrum Notları](./Sprint-1/Daily-Scrum-Notes.md)
+dosyasında korunmaktadır.
 
 ---
 
@@ -65,7 +66,8 @@
 - Sprint 1 sonunda tüm planlama kalemleri **Done** sütununa taşındı.
 - Sprint 2 backlog'u (Temel & Altyapı, Fiş OCR, AI Koçluk başlangıcı) **To Do** olarak hazırlandı.
 
-> _Sprint board ekran görüntüsü buraya eklenecektir._
+Metinsel board kaydı ve tamamlanan story point dağılımı
+[Sprint 1 Backlog](./Sprint-1/Sprint-1-Backlog.md) içinde sürüm kontrollüdür.
 
 ---
 
@@ -78,7 +80,8 @@ Sprint 1 planlama sprinti olduğu için henüz çalışan bir uygulama ekranı y
 - ✅ Ürün kimliği (MakiKoç) ve gizlilik mimarisi kararı
 - ✅ 3 sprintlik yol haritası ve risk listesi
 
-> _Ürün konsept görselleri / mimari şeması buraya eklenecektir._
+Bu kararların çalışan ürüne dönüşen güncel mimari şeması ve ekran bağlantıları
+[proje README'sinde](./README.md) yer alır.
 
 ---
 

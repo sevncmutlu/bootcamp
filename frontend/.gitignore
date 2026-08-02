@@ -32,9 +32,14 @@ migrate_working_dir/
 /coverage/
 
 # Otomatik üretilen uygulama kaynakları
-/lib/database/database.g.dart
+*.g.dart
+*.freezed.dart
 /lib/l10n/app_localizations.dart
 /lib/l10n/app_localizations_*.dart
+
+# Environment variables
+.env
+*.env
 
 # Sembol dosyaları
 app.*.symbols

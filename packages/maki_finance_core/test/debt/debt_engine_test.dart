@@ -106,4 +106,73 @@ void main() {
     expect(high.payment.minorUnits, greaterThan(low.payment.minorUnits));
     expect(result.status, DebtSimulationStatus.horizonExceeded);
   });
+
+  test('custom plan applies selected rules in order', () {
+    final result = const DebtEngine().simulate(
+      DebtScenario(
+        debts: [
+          DebtAccount(
+            id: 'small-payment',
+            balance: Money(minorUnits: 100000, currency: currency),
+            annualRate: AnnualRate.zero,
+            minimumPayment: Money(minorUnits: 5000, currency: currency),
+          ),
+          DebtAccount(
+            id: 'large-payment',
+            balance: Money(minorUnits: 100000, currency: currency),
+            annualRate: AnnualRate.zero,
+            minimumPayment: Money(minorUnits: 10000, currency: currency),
+          ),
+        ],
+        monthlyBudget: const Money(minorUnits: 25000, currency: currency),
+        plan: DebtPlan(
+          primary: DebtCriterion.minimumPayment,
+          primaryDirection: DebtDirection.descending,
+          tieBreaker: DebtCriterion.balance,
+          tieBreakerDirection: DebtDirection.ascending,
+          allocation: DebtAllocation.focused,
+        ),
+        maxMonths: 1,
+      ),
+    );
+
+    final month = result.schedule.single;
+    final large = month.lines.singleWhere(
+      (line) => line.debtId == 'large-payment',
+    );
+    final small = month.lines.singleWhere(
+      (line) => line.debtId == 'small-payment',
+    );
+    expect(large.payment.minorUnits, 20000);
+    expect(small.payment.minorUnits, 5000);
+  });
+
+  test('balanced plan splits extra money between open debts', () {
+    final result = const DebtEngine().simulate(
+      DebtScenario(
+        debts: [
+          DebtAccount(
+            id: 'a',
+            balance: Money(minorUnits: 100000, currency: currency),
+            annualRate: AnnualRate.zero,
+            minimumPayment: Money(minorUnits: 5000, currency: currency),
+          ),
+          DebtAccount(
+            id: 'b',
+            balance: Money(minorUnits: 100000, currency: currency),
+            annualRate: AnnualRate.zero,
+            minimumPayment: Money(minorUnits: 5000, currency: currency),
+          ),
+        ],
+        monthlyBudget: const Money(minorUnits: 20000, currency: currency),
+        plan: DebtPlan.balanced(),
+        maxMonths: 1,
+      ),
+    );
+
+    expect(
+      result.schedule.single.lines.map((line) => line.payment.minorUnits),
+      everyElement(10000),
+    );
+  });
 }

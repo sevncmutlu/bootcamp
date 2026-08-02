@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from uuid import UUID
 
 from httpx import ASGITransport, AsyncClient
 
@@ -11,6 +12,7 @@ from maki.billing.models import (
     Store,
     StoreEvent,
 )
+from maki.billing.verification import StoreAccountBinding
 from maki.common.config import Environment, Settings
 
 from .job_fakes import FakeTokenVerifier, authorization_headers
@@ -49,6 +51,13 @@ class FakeBillingVerification:
     async def entitlements(self, *, subject_id: str) -> tuple[Entitlement, ...]:
         del subject_id
         return (_entitlement(),)
+
+    def account_binding(self, *, subject_id: str) -> StoreAccountBinding:
+        assert subject_id == "cihaz-1"
+        return StoreAccountBinding(
+            google_account_id="a" * 64,
+            apple_account_token=str(UUID(int=1, version=4)),
+        )
 
 
 async def test_billing_verification_hides_store_and_subject_secrets() -> None:
@@ -181,6 +190,31 @@ async def test_entitlements_are_owner_scoped_and_sanitized() -> None:
             }
         ]
     }
+
+
+async def test_store_account_binding_is_authenticated_and_pseudonymous() -> None:
+    app = create_app(
+        Settings(environment=Environment.TEST),
+        Container(
+            token_verifier=FakeTokenVerifier(),
+            billing_verification=FakeBillingVerification(),
+        ),
+    )
+    transport = ASGITransport(app=app, raise_app_exceptions=False)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        unauthenticated = await client.get("/api/v1/billing/account-binding")
+        response = await client.get(
+            "/api/v1/billing/account-binding",
+            headers=authorization_headers(),
+        )
+
+    assert unauthenticated.status_code == 401
+    assert response.status_code == 200
+    assert response.json() == {
+        "google_account_id": "a" * 64,
+        "apple_account_token": str(UUID(int=1, version=4)),
+    }
+    assert "cihaz-1" not in response.text
 
 
 def _entitlement(*, store: Store = Store.GOOGLE_PLAY) -> Entitlement:
