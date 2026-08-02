@@ -13,6 +13,7 @@ import 'package:maki_app/features/insights/presentation/bloc/inflation_bloc.dart
 import 'package:maki_app/features/coach/domain/repositories/coach_repository.dart';
 import 'package:maki_app/features/coach/data/repositories/coach_repository_impl.dart';
 import 'package:maki_app/features/coach/data/datasources/coach_connection_data_source.dart';
+import 'package:maki_app/features/coach/data/datasources/local_coach_engine.dart';
 import 'package:maki_app/features/coach/presentation/bloc/coach_bloc.dart';
 import 'package:maki_app/features/simulator/domain/repositories/simulator_repository.dart';
 import 'package:maki_app/features/simulator/data/repositories/simulator_repository_impl.dart';
@@ -82,11 +83,16 @@ Future<void> init() async {
   );
 
   // Coach
-  sl.registerLazySingleton<CoachRepository>(
-    () => CoachRepositoryImpl(apiClient: MakiApi.instance),
-  );
   sl.registerLazySingleton<CoachConnectionDataSource>(
     () => CoachConnectionDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton(LocalCoachEngine.new);
+  sl.registerLazySingleton<CoachRepository>(
+    () => CoachRepositoryImpl(
+      apiClient: MakiApi.instance,
+      connectionDataSource: sl(),
+      localCoach: sl(),
+    ),
   );
 
   // Simulator
