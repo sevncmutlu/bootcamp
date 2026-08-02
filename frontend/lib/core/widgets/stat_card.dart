@@ -19,20 +19,26 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    final grad = gradient ?? AppGradients.hero(brightness);
+    final theme = Theme.of(context);
+    final palette = theme.makiPalette;
+    final brightness = theme.brightness;
+    final grad = gradient ?? AppGradients.hero(palette);
 
     return Container(
       decoration: BoxDecoration(
         gradient: grad,
-        borderRadius: AppRadius.card,
-        boxShadow: AppShadows.soft(brightness),
+        borderRadius: const BorderRadius.all(Radius.circular(AppRadius.xl)),
+        boxShadow: AppShadows.soft(brightness, theme.colorScheme.primary),
       ),
       child: ClipRRect(
-        borderRadius: AppRadius.card,
+        borderRadius: const BorderRadius.all(Radius.circular(AppRadius.xl)),
         child: Stack(
           children: [
-            Positioned.fill(child: CustomPaint(painter: _CanopyMotifPainter())),
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _CanopyMotifPainter(theme.colorScheme.tertiary),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
@@ -87,14 +93,42 @@ class StatCard extends StatelessWidget {
 }
 
 class _CanopyMotifPainter extends CustomPainter {
+  const _CanopyMotifPainter(this.accent);
+
+  final Color accent;
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withValues(alpha: 0.06);
-    canvas.drawCircle(Offset(size.width * 0.85, size.height * 0.15), 60, paint);
-    canvas.drawCircle(Offset(size.width * 1.02, size.height * 0.6), 80, paint);
-    canvas.drawCircle(Offset(size.width * 0.7, size.height * 0.9), 40, paint);
+    final ring = Paint()
+      ..color = Colors.white.withValues(alpha: 0.065)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    final center = Offset(size.width * 0.92, size.height * 0.2);
+    for (var radius = 32.0; radius < size.width * 0.7; radius += 28) {
+      canvas.drawCircle(center, radius, ring);
+    }
+
+    final trail = Path()
+      ..moveTo(size.width * 0.48, size.height)
+      ..cubicTo(
+        size.width * 0.58,
+        size.height * 0.72,
+        size.width * 0.76,
+        size.height * 0.82,
+        size.width,
+        size.height * 0.5,
+      );
+    canvas.drawPath(
+      trail,
+      Paint()
+        ..color = accent.withValues(alpha: 0.28)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2
+        ..strokeCap = StrokeCap.round,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _CanopyMotifPainter oldDelegate) =>
+      accent != oldDelegate.accent;
 }

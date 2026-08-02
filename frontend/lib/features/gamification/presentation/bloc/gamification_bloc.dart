@@ -7,7 +7,8 @@ import 'dart:developer' as developer;
 class GamificationBloc extends Bloc<GamificationEvent, GamificationState> {
   final GamificationRepository repository;
 
-  GamificationBloc({required this.repository}) : super(GamificationState.initial()) {
+  GamificationBloc({required this.repository})
+    : super(GamificationState.initial()) {
     on<LoadGamificationDataEvent>(_onLoadGamificationData);
     on<ClaimXPEvent>(_onClaimXP);
     on<LoadLeaderboardEvent>(_onLoadLeaderboard);
@@ -22,20 +23,22 @@ class GamificationBloc extends Bloc<GamificationEvent, GamificationState> {
 
     try {
       final now = DateTime.now();
-      
+
       await repository.evaluateDailyChallenges(now);
       final challenges = await repository.getDailyChallenges(now);
       final status = await repository.getGamificationStatus();
       final score = await repository.getSavingsScoreBasisPoints();
       final hasWeeklyIncome = await repository.hasWeeklyIncome();
 
-      emit(state.copyWith(
-        isLoading: false,
-        status: status,
-        challenges: challenges,
-        savingsScoreBasisPoints: score,
-        hasWeeklyIncome: hasWeeklyIncome,
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          status: status,
+          challenges: challenges,
+          savingsScoreBasisPoints: score,
+          hasWeeklyIncome: hasWeeklyIncome,
+        ),
+      );
     } catch (e, stackTrace) {
       developer.log(
         'Failed to load gamification data',
@@ -43,7 +46,12 @@ class GamificationBloc extends Bloc<GamificationEvent, GamificationState> {
         stackTrace: stackTrace,
         name: 'GamificationBloc',
       );
-      emit(state.copyWith(isLoading: false, error: 'Oyunlaştırma verileri yüklenirken bir hata oluştu.'));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          error: 'Oyunlaştırma verileri yüklenirken bir hata oluştu.',
+        ),
+      );
     }
   }
 
@@ -55,16 +63,18 @@ class GamificationBloc extends Bloc<GamificationEvent, GamificationState> {
 
     try {
       final updatedStatus = await repository.claimXP(event.challenge);
-      
+
       // Refresh challenges after claiming
       final now = DateTime.now();
       final challenges = await repository.getDailyChallenges(now);
 
-      emit(state.copyWith(
-        status: updatedStatus,
-        challenges: challenges,
-        newlyClaimedXP: event.challenge.xpReward,
-      ));
+      emit(
+        state.copyWith(
+          status: updatedStatus,
+          challenges: challenges,
+          newlyClaimedXP: event.challenge.xpReward,
+        ),
+      );
     } catch (e, stackTrace) {
       developer.log(
         'Failed to claim XP',
@@ -80,17 +90,22 @@ class GamificationBloc extends Bloc<GamificationEvent, GamificationState> {
     LoadLeaderboardEvent event,
     Emitter<GamificationState> emit,
   ) async {
-    emit(state.copyWith(isLeaderboardLoading: true));
+    emit(
+      state.copyWith(isLeaderboardLoading: true, clearLeaderboardError: true),
+    );
     try {
       final leaderboard = await repository.getLeaderboard(
         ageBand: state.leaderboardAgeBand,
         householdBand: state.leaderboardHouseholdBand,
         scoreBasisPoints: state.savingsScoreBasisPoints,
       );
-      emit(state.copyWith(
-        isLeaderboardLoading: false,
-        leaderboard: leaderboard,
-      ));
+      emit(
+        state.copyWith(
+          isLeaderboardLoading: false,
+          leaderboard: leaderboard,
+          clearLeaderboardError: true,
+        ),
+      );
     } catch (e, stackTrace) {
       developer.log(
         'Failed to load leaderboard',
@@ -98,10 +113,12 @@ class GamificationBloc extends Bloc<GamificationEvent, GamificationState> {
         stackTrace: stackTrace,
         name: 'GamificationBloc',
       );
-      emit(state.copyWith(
-        isLeaderboardLoading: false,
-        leaderboardError: 'Sıralama verileri yüklenirken bir hata oluştu.',
-      ));
+      emit(
+        state.copyWith(
+          isLeaderboardLoading: false,
+          leaderboardError: 'Sıralama verileri yüklenirken bir hata oluştu.',
+        ),
+      );
     }
   }
 
@@ -109,10 +126,12 @@ class GamificationBloc extends Bloc<GamificationEvent, GamificationState> {
     UpdateLeaderboardFiltersEvent event,
     Emitter<GamificationState> emit,
   ) async {
-    emit(state.copyWith(
-      leaderboardAgeBand: event.ageBand,
-      leaderboardHouseholdBand: event.householdBand,
-    ));
+    emit(
+      state.copyWith(
+        leaderboardAgeBand: event.ageBand,
+        leaderboardHouseholdBand: event.householdBand,
+      ),
+    );
     add(const LoadLeaderboardEvent());
   }
 }

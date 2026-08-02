@@ -18,7 +18,9 @@ void main() {
 
   setUp(() {
     mockSimulatorBloc = MockSimulatorBloc();
-    when(() => mockSimulatorBloc.stream).thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockSimulatorBloc.stream,
+    ).thenAnswer((_) => const Stream.empty());
     when(() => mockSimulatorBloc.close()).thenAnswer((_) async {});
   });
 

@@ -46,15 +46,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       await repository.updatePrimaryGoal(event.goal);
       if (state.settings != null) {
-        emit(state.copyWith(
-          settings: SettingsEntity(
-            primaryGoal: event.goal,
-            isPremium: state.settings!.isPremium,
-            themeMode: state.settings!.themeMode,
-            accentColor: state.settings!.accentColor,
-            language: state.settings!.language,
+        emit(
+          state.copyWith(
+            settings: SettingsEntity(
+              primaryGoal: event.goal,
+              isPremium: state.settings!.isPremium,
+              themeMode: state.settings!.themeMode,
+              accentColor: state.settings!.accentColor,
+              language: state.settings!.language,
+            ),
           ),
-        ));
+        );
       }
     } catch (e) {
       emit(state.copyWith(error: 'errUpdateGoal'));
@@ -68,15 +70,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       await repository.updateThemeMode(event.themeMode);
       if (state.settings != null) {
-        emit(state.copyWith(
-          settings: SettingsEntity(
-            primaryGoal: state.settings!.primaryGoal,
-            isPremium: state.settings!.isPremium,
-            themeMode: event.themeMode,
-            accentColor: state.settings!.accentColor,
-            language: state.settings!.language,
+        emit(
+          state.copyWith(
+            settings: SettingsEntity(
+              primaryGoal: state.settings!.primaryGoal,
+              isPremium: state.settings!.isPremium,
+              themeMode: event.themeMode,
+              accentColor: state.settings!.accentColor,
+              language: state.settings!.language,
+            ),
           ),
-        ));
+        );
       }
     } catch (e) {
       emit(state.copyWith(error: 'errUpdateTheme'));
@@ -90,15 +94,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       await repository.updateAccentColor(event.accentColor);
       if (state.settings != null) {
-        emit(state.copyWith(
-          settings: SettingsEntity(
-            primaryGoal: state.settings!.primaryGoal,
-            isPremium: state.settings!.isPremium,
-            themeMode: state.settings!.themeMode,
-            accentColor: event.accentColor,
-            language: state.settings!.language,
+        emit(
+          state.copyWith(
+            settings: SettingsEntity(
+              primaryGoal: state.settings!.primaryGoal,
+              isPremium: state.settings!.isPremium,
+              themeMode: state.settings!.themeMode,
+              accentColor: event.accentColor,
+              language: state.settings!.language,
+            ),
           ),
-        ));
+        );
       }
     } catch (e) {
       emit(state.copyWith(error: 'errUpdateAccent'));
@@ -112,15 +118,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       await repository.updateLanguage(event.language);
       if (state.settings != null) {
-        emit(state.copyWith(
-          settings: SettingsEntity(
-            primaryGoal: state.settings!.primaryGoal,
-            isPremium: state.settings!.isPremium,
-            themeMode: state.settings!.themeMode,
-            accentColor: state.settings!.accentColor,
-            language: event.language,
+        emit(
+          state.copyWith(
+            settings: SettingsEntity(
+              primaryGoal: state.settings!.primaryGoal,
+              isPremium: state.settings!.isPremium,
+              themeMode: state.settings!.themeMode,
+              accentColor: state.settings!.accentColor,
+              language: event.language,
+            ),
           ),
-        ));
+        );
       }
     } catch (e) {
       emit(state.copyWith(error: 'errUpdateLang'));
@@ -134,15 +142,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       await repository.updatePremiumStatus(true);
       if (state.settings != null) {
-        emit(state.copyWith(
-          settings: SettingsEntity(
-            primaryGoal: state.settings!.primaryGoal,
-            isPremium: true,
-            themeMode: state.settings!.themeMode,
-            accentColor: state.settings!.accentColor,
-            language: state.settings!.language,
+        emit(
+          state.copyWith(
+            settings: SettingsEntity(
+              primaryGoal: state.settings!.primaryGoal,
+              isPremium: true,
+              themeMode: state.settings!.themeMode,
+              accentColor: state.settings!.accentColor,
+              language: state.settings!.language,
+            ),
           ),
-        ));
+        );
       }
     } catch (e) {
       emit(state.copyWith(error: 'errUpdatePremium'));
@@ -156,15 +166,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       await repository.updatePremiumStatus(event.isPremium);
       if (state.settings != null) {
-        emit(state.copyWith(
-          settings: SettingsEntity(
-            primaryGoal: state.settings!.primaryGoal,
-            isPremium: event.isPremium,
-            themeMode: state.settings!.themeMode,
-            accentColor: state.settings!.accentColor,
-            language: state.settings!.language,
+        emit(
+          state.copyWith(
+            settings: SettingsEntity(
+              primaryGoal: state.settings!.primaryGoal,
+              isPremium: event.isPremium,
+              themeMode: state.settings!.themeMode,
+              accentColor: state.settings!.accentColor,
+              language: state.settings!.language,
+            ),
           ),
-        ));
+        );
       }
     } catch (e) {
       emit(state.copyWith(error: 'errUpdatePremium'));

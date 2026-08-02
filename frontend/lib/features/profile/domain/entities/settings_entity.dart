@@ -17,10 +17,10 @@ class SettingsEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        primaryGoal,
-        isPremium,
-        themeMode,
-        accentColor,
-        language,
-      ];
+    primaryGoal,
+    isPremium,
+    themeMode,
+    accentColor,
+    language,
+  ];
 }

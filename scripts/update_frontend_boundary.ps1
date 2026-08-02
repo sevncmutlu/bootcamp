@@ -45,7 +45,7 @@ finally {
 $baseline = [ordered]@{
     schema_version = 2
     scope = 'frontend/lib/** (üretilen kaynaklar hariç)'
-    approved_source = 'Sevinç Mutlu Sprint 2 tasarımı ve onaylı backend entegrasyonu'
+    approved_source = 'MakiKoç 14 sayfa tasarımı, gizlilik sınırı ve güvenli kimlik entegrasyonu'
     current_source = [ordered]@{
         root = 'frontend/lib'
         files = $files

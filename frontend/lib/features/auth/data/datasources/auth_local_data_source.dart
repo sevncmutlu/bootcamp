@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract class AuthLocalDataSource {
@@ -8,26 +7,25 @@ abstract class AuthLocalDataSource {
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  final FlutterSecureStorage _storage;
-
-  AuthLocalDataSourceImpl(this._storage);
-
   static const _accessTokenKey = 'maki_access_token';
   static const _debugToken = String.fromEnvironment('MAKI_ACCESS_TOKEN');
 
+  AuthLocalDataSourceImpl(
+    this._storage, {
+    String developmentToken = _debugToken,
+  }) : _developmentToken = developmentToken.trim();
+
+  final FlutterSecureStorage _storage;
+  final String _developmentToken;
+
   @override
   Future<String?> getAccessToken() async {
+    if (_developmentToken.isNotEmpty) {
+      return _developmentToken;
+    }
     final stored = await _storage.read(key: _accessTokenKey);
     if (stored != null && stored.isNotEmpty) {
       return stored;
-    }
-    if (_debugToken.isNotEmpty) {
-      return _debugToken;
-    }
-    if (kDebugMode) {
-      const defaultToken = 'maki_debug_anonymous_session_token';
-      await _storage.write(key: _accessTokenKey, value: defaultToken);
-      return defaultToken;
     }
     return null;
   }

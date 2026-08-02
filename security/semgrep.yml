@@ -1,0 +1,104 @@
+rules:
+  - id: maki-no-legacy-password-auth-router
+    message: >
+      Backend parola veya oturum belirteci üretmemeli. Kimlik doğrulama, güvenli
+      çekirdeğin doğruladığı OIDC access token'ları üzerinden yürütülmelidir.
+    severity: ERROR
+    languages: [python]
+    paths:
+      include:
+        - '**/backend/src/**'
+    pattern-either:
+      - pattern: APIRouter(prefix="/v1/auth", ...)
+      - pattern: APIRouter(..., prefix="/v1/auth", ...)
+
+  - id: maki-no-insecure-password-reset
+    message: >
+      E-posta ve yeni parola alan bir reset endpointi hesap ele geçirmeye açıktır.
+      Reset işlemini doğrulanmış kimlik sağlayıcısına devredin.
+    severity: ERROR
+    languages: [python]
+    paths:
+      include:
+        - '**/backend/src/**'
+    patterns:
+      - pattern-either:
+          - pattern: |
+              @$ROUTER.post("/reset-password", ...)
+              async def $FUNC(...):
+                ...
+          - pattern: |
+              @$ROUTER.post("/v1/auth/reset-password", ...)
+              async def $FUNC(...):
+                ...
+
+  - id: maki-no-hardcoded-jwt-secret
+    message: JWT sırrı kaynak kodda sabitlenemez.
+    severity: ERROR
+    languages: [python]
+    paths:
+      include:
+        - '**/backend/src/**'
+    patterns:
+      - pattern: $SECRET = $VALUE
+      - metavariable-regex:
+          metavariable: $SECRET
+          regex: (?i).*jwt.*secret.*
+      - metavariable-regex:
+          metavariable: $VALUE
+          regex: ^["'].+["']$
+
+  - id: maki-no-wildcard-cors
+    message: Wildcard CORS finans API'sinde kullanılamaz.
+    severity: ERROR
+    languages: [python]
+    paths:
+      include:
+        - '**/backend/src/**'
+    pattern-either:
+      - pattern: |
+          $APP.add_middleware(
+            CORSMiddleware,
+            ...,
+            allow_origins=["*"],
+            ...
+          )
+      - pattern: allow_origins = ["*"]
+
+  - id: maki-no-legacy-auth-client-routes
+    message: >
+      Mobil istemci kaldırılmış parola API'sine bağlanamaz; OIDC/PKCE oturum
+      sınırını kullanın.
+    severity: ERROR
+    languages: [generic]
+    paths:
+      include:
+        - '**/frontend/lib/**'
+    pattern-regex: /v1/auth/(login|register|reset-password|change-password|users)
+
+  - id: maki-no-bundled-debug-token
+    message: Debug erişim belirteci kaynak koda gömülemez.
+    severity: ERROR
+    languages: [generic]
+    paths:
+      include:
+        - '**/frontend/lib/**'
+    pattern-regex: maki_debug_anonymous_session_token
+
+  - id: maki-no-json-identity-store
+    message: Kimlik veya parola verisi yerel JSON dosyasında saklanamaz.
+    severity: ERROR
+    languages: [generic]
+    paths:
+      include:
+        - '**/backend/src/**'
+    pattern-regex: (?i)(users_store\.json|user_store_path)
+
+  - id: maki-no-symmetric-session-jwt
+    message: Uygulama oturumu için paylaşımlı sırlı HS256 kullanılamaz.
+    severity: ERROR
+    languages: [generic]
+    paths:
+      include:
+        - '**/backend/src/**'
+    pattern-regex: (?i)(algorithms?\s*=\s*\[[^\]]*HS256|algorithm\s*=\s*["']HS256)

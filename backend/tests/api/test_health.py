@@ -5,6 +5,7 @@ from httpx import ASGITransport, AsyncClient
 from maki.api.app import create_app
 from maki.api.dependencies import Container, ReadinessProbe
 from maki.common.config import Environment, Settings
+from maki.jobs.models import JobKind
 
 
 class FailingProbe:
@@ -27,6 +28,23 @@ async def test_liveness_has_no_external_dependency(client: AsyncClient) -> None:
 
     assert response.status_code == 200
     assert response.json() == {"durum": "canli"}
+
+
+async def test_capabilities_use_plain_turkish_feature_states() -> None:
+    app = create_app(
+        settings=Settings(environment=Environment.TEST),
+        container=Container(enabled_job_kinds=frozenset({JobKind.COACH, JobKind.RECEIPT})),
+    )
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get("/health/capabilities")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "fis_tarama": True,
+        "maki_koc": True,
+        "koc_modu": "resmi_veri",
+    }
 
 
 async def test_readiness_hides_dependency_exception_details() -> None:

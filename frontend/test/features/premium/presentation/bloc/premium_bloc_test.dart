@@ -13,50 +13,58 @@ void main() {
 
   setUp(() {
     mockRepository = MockPremiumRepository();
+    when(() => mockRepository.localizedPrice).thenReturn(null);
+    when(() => mockRepository.purchaseAvailable).thenReturn(false);
     bloc = PremiumBloc(repository: mockRepository);
   });
 
-  tearDown(() {
-    bloc.close();
-  });
+  tearDown(() => bloc.close());
 
   group('PremiumBloc', () {
     test('initial state is correct', () {
       expect(bloc.state, PremiumState.initial());
     });
 
-    test('emits state with isPremium updated on CheckPremiumStatusEvent', () async {
+    test('loads the server-authoritative premium state', () async {
       when(() => mockRepository.isPremium()).thenAnswer((_) async => true);
 
-      final expectedStates = [
-        PremiumState.initial().copyWith(isPremium: true),
-      ];
-
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
+      expectLater(
+        bloc.stream,
+        emits(PremiumState.initial().copyWith(isPremium: true)),
+      );
       bloc.add(CheckPremiumStatusEvent());
     });
 
-    test('emits correct states on PurchasePremiumEvent', () async {
-      when(() => mockRepository.setPremium(true)).thenAnswer((_) async => {});
+    test('activates premium only after verified purchase', () async {
+      when(() => mockRepository.purchase()).thenAnswer((_) async => true);
 
-      final expectedStates = [
-        PremiumState.initial().copyWith(isLoading: true, clearError: true),
-        PremiumState.initial().copyWith(isLoading: false, isPremium: true, purchaseSuccess: true),
-      ];
-
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
+      expectLater(
+        bloc.stream,
+        emitsInOrder([
+          PremiumState.initial().copyWith(isLoading: true, clearError: true),
+          PremiumState.initial().copyWith(
+            isLoading: false,
+            isPremium: true,
+            purchaseSuccess: true,
+          ),
+        ]),
+      );
       bloc.add(PurchasePremiumEvent());
     });
-    
-    test('emits error state on PurchasePremiumEvent failure', () async {
-      when(() => mockRepository.setPremium(true)).thenThrow(Exception('Failed'));
 
-      final expectedStates = [
-        PremiumState.initial().copyWith(isLoading: true, clearError: true),
-        PremiumState.initial().copyWith(isLoading: false, error: 'Abonelik etkinleştirilemedi.'),
-      ];
+    test('keeps premium locked when verification fails', () async {
+      when(() => mockRepository.purchase()).thenThrow(Exception('Failed'));
 
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
+      expectLater(
+        bloc.stream,
+        emitsInOrder([
+          PremiumState.initial().copyWith(isLoading: true, clearError: true),
+          PremiumState.initial().copyWith(
+            isLoading: false,
+            error: 'Abonelik etkinleştirilemedi.',
+          ),
+        ]),
+      );
       bloc.add(PurchasePremiumEvent());
     });
   });

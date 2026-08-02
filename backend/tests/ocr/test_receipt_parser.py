@@ -33,3 +33,51 @@ def test_mismatched_total_requires_review() -> None:
     result = ReceiptParser().parse(OcrDocument.model_validate(payload))
 
     assert result.requires_review is True
+
+
+def test_total_accepts_turkish_lira_suffix() -> None:
+    payload = json.loads(json.dumps(_FIXTURE))
+    payload["lines"][-1]["text"] = "GENEL TOPLAM 61,00 TL"
+
+    result = ReceiptParser().parse(OcrDocument.model_validate(payload))
+
+    assert result.total_minor == 6100
+    assert result.requires_review is False
+
+
+def test_total_accepts_turkish_grouped_amount() -> None:
+    payload = json.loads(json.dumps(_FIXTURE))
+    payload["lines"][-1]["text"] = "GENEL TOPLAM 1.250,50 TL"
+
+    result = ReceiptParser().parse(OcrDocument.model_validate(payload))
+
+    assert result.total_minor == 125_050
+    assert result.requires_review is True
+
+
+def test_total_accepts_international_grouped_amount() -> None:
+    payload = json.loads(json.dumps(_FIXTURE))
+    payload["lines"][-1]["text"] = "KART TOPLAMI 1,250.50 TRY"
+
+    result = ReceiptParser().parse(OcrDocument.model_validate(payload))
+
+    assert result.total_minor == 125_050
+
+
+def test_total_accepts_safe_ocr_label_confusions() -> None:
+    payload = json.loads(json.dumps(_FIXTURE))
+    payload["lines"][-1]["text"] = "T0P1AM 61,00"
+
+    result = ReceiptParser().parse(OcrDocument.model_validate(payload))
+
+    assert result.total_minor == 6100
+    assert result.requires_review is False
+
+
+def test_payable_label_is_treated_as_total() -> None:
+    payload = json.loads(json.dumps(_FIXTURE))
+    payload["lines"][-1]["text"] = "ÖDENECEK 61,00 ₺"
+
+    result = ReceiptParser().parse(OcrDocument.model_validate(payload))
+
+    assert result.total_minor == 6100

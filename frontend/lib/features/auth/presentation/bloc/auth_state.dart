@@ -8,7 +8,7 @@ class AuthState extends Equatable {
   final UserEntity? user;
   final bool isLoading;
   final String? error;
-  final bool isSuccess; // Generic success flag for ops like password reset
+  final bool isSuccess;
 
   const AuthState({
     this.status = AuthStatus.initial,

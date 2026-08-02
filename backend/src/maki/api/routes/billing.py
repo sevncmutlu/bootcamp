@@ -57,6 +57,14 @@ class EntitlementCollection(ApiModel):
     items: tuple[EntitlementView, ...]
 
 
+class StoreAccountBindingView(ApiModel):
+    google_account_id: str = Field(pattern=r"^[0-9a-f]{64}$")
+    apple_account_token: str | None = Field(
+        default=None,
+        pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+    )
+
+
 @router.post(
     "/verifications",
     operation_id="billing_verification_create",
@@ -94,4 +102,20 @@ async def list_entitlements(
     entitlements = await service.entitlements(subject_id=subject_id)
     return EntitlementCollection(
         items=tuple(EntitlementView.from_entitlement(entitlement) for entitlement in entitlements)
+    )
+
+
+@router.get(
+    "/account-binding",
+    operation_id="billing_account_binding_get",
+    description="Mağaza işlemini oturuma bağlayan anonim hesap değerlerini döndürür.",
+)
+async def get_account_binding(
+    subject_id: Annotated[str, Depends(authenticated_subject)],
+    service: Annotated[BillingVerificationPort, Depends(billing_verification)],
+) -> StoreAccountBindingView:
+    binding = service.account_binding(subject_id=subject_id)
+    return StoreAccountBindingView(
+        google_account_id=binding.google_account_id,
+        apple_account_token=binding.apple_account_token,
     )

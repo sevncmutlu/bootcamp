@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Maki ile gelirini, giderini ve hedeflerini sakin bir finans ormanında takip et.">
+  <meta name="theme-color" content="#071A14">
+  <meta name="color-scheme" content="light dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Maki">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Maki · Kişisel Finans Koçun">
+  <meta property="og:description" content="Küçük finans adımlarını görünür bir gelişime dönüştür.">
+  <meta property="og:image" content="icons/Icon-512.png">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <title>Maki · Kişisel Finans Koçun</title>
+  <style>
+    html, body { width: 100%; min-height: 100%; margin: 0; background: #071A14; }
+    body { overflow: hidden; }
+    .maki-boot {
+      position: fixed; inset: 0; display: grid; place-items: center;
+      color: #F3F6F1; background:
+        radial-gradient(circle at 50% 38%, rgba(115,151,107,.22), transparent 24rem),
+        #071A14; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      opacity: 1; transition: opacity .22s ease-out; z-index: 9999;
+    }
+    .maki-boot--complete { opacity: 0; pointer-events: none; }
+    .maki-boot__content { text-align: center; animation: arrive .55s ease-out both; }
+    .maki-boot img { width: 112px; height: 112px; border-radius: 28px; box-shadow: 0 18px 52px rgba(0,0,0,.28); }
+    .maki-boot strong { display: block; margin-top: 18px; font: 700 34px/1.1 Georgia, serif; }
+    .maki-boot span { display: block; margin-top: 8px; color: #BFD0C5; font-size: 14px; letter-spacing: .02em; }
+    .maki-boot__ring { width: 40px; height: 40px; margin: 22px auto 0; border: 2px solid rgba(143,200,136,.18); border-top-color: #8FC888; border-radius: 50%; animation: turn 1s linear infinite; }
+    @keyframes arrive { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+    @keyframes turn { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .maki-boot { transition: none; }
+      .maki-boot__content, .maki-boot__ring { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="maki-boot" aria-label="Maki hazırlanıyor">
+    <div class="maki-boot__content">
+      <img src="icons/Icon-192.png" alt="" role="presentation">
+      <strong>Maki</strong>
+      <span>Finans ormanın hazırlanıyor…</span>
+      <div class="maki-boot__ring" aria-hidden="true"></div>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      const bootScreen = document.querySelector('.maki-boot');
+      if (!bootScreen) return;
+      bootScreen.classList.add('maki-boot--complete');
+      window.setTimeout(function () { bootScreen.remove(); }, 240);
+    }, { once: true });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

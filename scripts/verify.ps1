@@ -66,6 +66,11 @@ Invoke-Gate 'Frontend sınırı' {
         -File (Join-Path $root 'scripts\check_frontend_boundary.ps1')
 }
 
+Invoke-Gate 'Frontend yapısal sınırı' {
+    powershell -NoProfile -ExecutionPolicy Bypass `
+        -File (Join-Path $root 'scripts\check_frontend_structure.ps1')
+}
+
 if (-not $SkipMobile) {
     Push-Location (Join-Path $root 'packages\maki_finance_core')
     try {
@@ -121,13 +126,32 @@ if (-not $SkipContainers) {
 }
 
 if (-not $SkipSecurity) {
+    if (-not (Get-Command semgrep -ErrorAction SilentlyContinue)) {
+        throw 'Semgrep bulunamadı.'
+    }
     if (-not (Get-Command trivy -ErrorAction SilentlyContinue)) {
         throw 'Trivy bulunamadı.'
     }
-    Invoke-Gate 'İmaj güvenliği' {
+
+    Invoke-Gate 'Semgrep SAST' {
+        semgrep scan `
+            --config (Join-Path $root 'security\semgrep.yml') `
+            --error `
+            --metrics=off `
+            $root
+    }
+    Invoke-Gate 'Kaynak, secret ve IaC güvenliği' {
+        trivy fs `
+            --config (Join-Path $root 'security\trivy.yaml') `
+            $root
+    }
+
+    if (-not $SkipContainers) {
+        Invoke-Gate 'İmaj güvenliği' {
         trivy image `
             --config (Join-Path $root 'security\trivy.yaml') `
             'maki-api:dogrulama'
+        }
     }
 }
 

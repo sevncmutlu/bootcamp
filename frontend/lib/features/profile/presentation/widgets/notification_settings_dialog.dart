@@ -1,12 +1,7 @@
-import 'dart:developer' as developer;
-
-import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
-import 'package:maki_app/core/database/database.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:maki_app/core/di/injection_container.dart' as di;
+import 'package:maki_app/features/profile/data/services/smart_notification_service.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/features/profile/data/datasources/lints_bandit_local_data_source.dart';
-import 'package:maki_app/core/theme/app_tokens.dart';
 
 class NotificationSettingsDialog extends StatefulWidget {
   const NotificationSettingsDialog({super.key});
@@ -18,126 +13,43 @@ class NotificationSettingsDialog extends StatefulWidget {
 
 class _NotificationSettingsDialogState
     extends State<NotificationSettingsDialog> {
-  final _db = AppDatabase.instance;
-  late final LintsBanditLocalDataSource _banditService;
-
-  bool _isSmartEnabled = true;
+  late final SmartNotificationService _notificationService;
+  bool _isSmartEnabled = false;
   int _optimalHour = 9;
-  String _selectedSimArm = 'morning';
-
-  static const _smartEnabledKey = 'smart_notifications_enabled';
-
-  Map<String, BanditArmParams> _armParams = {};
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _banditService = LintsBanditLocalDataSource(_db);
-    _loadParams();
-    _loadPreference();
+    _notificationService = di.sl<SmartNotificationService>();
+    _loadState();
   }
 
-  Future<void> _loadPreference() async {
-    final prefs = await SharedPreferences.getInstance();
-    final value = prefs.getBool(_smartEnabledKey) ?? true;
-    if (mounted) {
-      setState(() {
-        _isSmartEnabled = value;
-      });
-    }
-  }
-
-  Future<void> _savePreference(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_smartEnabledKey, value);
-  }
-
-  Future<void> _loadParams() async {
-    setState(() => _isLoading = true);
-    int hour = 9;
-    final Map<String, BanditArmParams> params = {};
-
-    try {
-      hour = await _banditService.predictOptimalHour(DateTime.now());
-
-      final states = await _db.getBanditStates();
-
-      for (final arm in LintsBanditLocalDataSource.arms) {
-        final match = states.firstWhere(
-          (s) => s.arm == arm,
-          orElse: () => NotificationBanditState(
-            arm: arm,
-            precisionMatrixJson: '[[1.0, 0.0], [0.0, 1.0]]',
-            projectionVectorJson: '[0.0, 0.0]',
-          ),
-        );
-
-        _parseBanditParams(match, params);
-      }
-    } catch (e) {
-      developer.log(
-        'Bildirim zamanlama parametreleri yüklenemedi.',
-        error: e,
-        name: 'NotificationSettingsDialog',
-      );
-
-      for (final arm in LintsBanditLocalDataSource.arms) {
-        params[arm] = BanditArmParams(
-          A: [
-            [1.0, 0.0],
-            [0.0, 1.0],
-          ],
-          b: [0.0, 0.0],
-        );
-      }
-    }
-
+  Future<void> _loadState() async {
+    final hour = await _notificationService.currentOptimalHour();
+    if (!mounted) return;
     setState(() {
       _optimalHour = hour;
-      _armParams = params;
+      _isSmartEnabled = _notificationService.isEnabled;
       _isLoading = false;
     });
   }
 
-  void _parseBanditParams(
-    NotificationBanditState state,
-    Map<String, BanditArmParams> params,
-  ) {
-    params[state.arm] = BanditArmParams.fromJson(
-      precisionMatrixJson: state.precisionMatrixJson,
-      projectionVectorJson: state.projectionVectorJson,
-    );
-  }
-
-  Future<void> _simulateReward() async {
-    final now = DateTime.now();
-
-    await _banditService.updateFeedback(_selectedSimArm, now, 1.0);
-
-    if (mounted) {
+  Future<void> _toggle(bool requested) async {
+    final enabled = requested
+        ? await _notificationService.requestAndEnable()
+        : false;
+    if (!requested) await _notificationService.disable();
+    if (!mounted) return;
+    setState(() => _isSmartEnabled = enabled);
+    if (requested && !enabled) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.rewardSuccess),
-          backgroundColor: ForestColors.emerald,
+        const SnackBar(
+          content: Text(
+            'Bildirim izni verilmedi; akıllı hatırlatmalar kapalı kaldı.',
+          ),
         ),
       );
-    }
-
-    await _loadParams();
-  }
-
-  String _getArmDisplayName(BuildContext context, String arm) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (arm) {
-      case 'morning':
-        return l10n.morningArm;
-      case 'afternoon':
-        return l10n.afternoonArm;
-      case 'evening':
-        return l10n.eveningArm;
-      default:
-        return arm;
     }
   }
 
@@ -171,32 +83,27 @@ class _NotificationSettingsDialogState
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
-                l10n.smartOptimizationDesc,
+                'Maki, cihazındaki kullanım ritmine göre günde en fazla bir '
+                'sakin hatırlatma planlar. Veriler cihazdan çıkmaz.',
                 style: theme.textTheme.bodySmall,
               ),
               value: _isSmartEnabled,
-              onChanged: (val) async {
-                setState(() {
-                  _isSmartEnabled = val;
-                });
-                await _savePreference(val);
-              },
+              onChanged: _toggle,
               contentPadding: EdgeInsets.zero,
             ),
             const Divider(height: 24),
-
-            if (_isSmartEnabled) ...[
+            if (_isSmartEnabled)
               Card(
                 color: theme.colorScheme.primaryContainer.withValues(
                   alpha: 0.2,
                 ),
                 elevation: 0,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
                       Icon(
-                        Icons.auto_awesome,
+                        Icons.notifications_active_outlined,
                         color: theme.colorScheme.primary,
                       ),
                       const SizedBox(width: 12),
@@ -215,8 +122,12 @@ class _NotificationSettingsDialogState
                               l10n.preferredTriggerHourValue(_optimalHour),
                               style: theme.textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onSurface,
                               ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Sessiz saatler 21.00–09.00 arasında korunur.',
+                              style: theme.textTheme.bodySmall,
                             ),
                           ],
                         ),
@@ -225,99 +136,13 @@ class _NotificationSettingsDialogState
                   ),
                 ),
               ),
-              if (kDebugMode) ...[
-                const SizedBox(height: 20),
-
-                Text(
-                  l10n.precisionMatrixLabel,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ...LintsBanditLocalDataSource.arms.map((arm) {
-                  final p = _armParams[arm];
-                  if (p == null) return const SizedBox.shrink();
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _getArmDisplayName(context, arm),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "[b = [${p.b[0].toStringAsFixed(1)}, ${p.b[1].toStringAsFixed(1)}]]",
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontFamily: 'monospace',
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-                const Divider(height: 24),
-
-                Text(
-                  l10n.simulationSection,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.simulationDesc,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: _selectedSimArm,
-                        items: LintsBanditLocalDataSource.arms.map((arm) {
-                          return DropdownMenuItem<String>(
-                            value: arm,
-                            child: Text(_getArmDisplayName(context, arm)),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          if (val != null) {
-                            setState(() {
-                              _selectedSimArm = val;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    ElevatedButton(
-                      onPressed: _simulateReward,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primary,
-                        foregroundColor: theme.colorScheme.onPrimary,
-                        elevation: 0,
-                      ),
-                      child: Text(l10n.simulateOpenButton),
-                    ),
-                  ],
-                ),
-              ],
-            ],
           ],
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(AppLocalizations.of(context)!.closeButton),
+          child: Text(l10n.closeButton),
         ),
       ],
     );

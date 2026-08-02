@@ -15,9 +15,7 @@ class SettingsState extends Equatable {
   });
 
   factory SettingsState.initial() {
-    return const SettingsState(
-      isLoading: true,
-    );
+    return const SettingsState(isLoading: true);
   }
 
   SettingsState copyWith({

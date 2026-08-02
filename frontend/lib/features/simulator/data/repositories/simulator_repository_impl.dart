@@ -14,7 +14,7 @@ class SimulatorRepositoryImpl implements SimulatorRepository {
     required String strategy,
   }) async {
     const currency = finance.Currency('TRY');
-    
+
     final accounts = debts.map((debt) {
       return finance.DebtAccount(
         id: debt.id,
@@ -37,9 +37,7 @@ class SimulatorRepositoryImpl implements SimulatorRepository {
       (sum, account) => sum + account.minimumPayment.minorUnits,
     );
 
-    final debtStrategy = strategy == 'snowball'
-        ? finance.DebtStrategy.snowball
-        : finance.DebtStrategy.avalanche;
+    final plan = _plan(strategy, accounts);
 
     final result = const finance.DebtEngine().simulate(
       finance.DebtScenario(
@@ -48,7 +46,7 @@ class SimulatorRepositoryImpl implements SimulatorRepository {
           minorUnits: minimumPayments + (extraBudget * 100).round(),
           currency: currency,
         ),
-        strategy: debtStrategy,
+        plan: plan,
         maxMonths: 1200,
       ),
     );
@@ -60,12 +58,13 @@ class SimulatorRepositoryImpl implements SimulatorRepository {
     }
 
     final schedule = result.schedule.map((month) {
-      final remainingBalance = month.lines.fold<int>(
+      final remainingBalance =
+          month.lines.fold<int>(
             0,
             (sum, line) => sum + line.endingBalance.minorUnits,
           ) /
           100;
-      
+
       return PayoffMonthEntity(
         month: month.monthNumber,
         remainingBalance: remainingBalance,
@@ -78,4 +77,41 @@ class SimulatorRepositoryImpl implements SimulatorRepository {
       schedule: schedule,
     );
   }
+
+  finance.DebtPlan _plan(String strategy, List<finance.DebtAccount> accounts) {
+    if (strategy == 'snowball') {
+      return finance.DebtPlan.forStrategy(finance.DebtStrategy.snowball);
+    }
+    if (strategy == 'relief') return finance.DebtPlan.lowerMonthlyLoad();
+    if (strategy == 'balanced') return finance.DebtPlan.balanced();
+    if (strategy == 'manual') {
+      return finance.DebtPlan.manual(accounts.map((debt) => debt.id).toList());
+    }
+    if (strategy.startsWith('custom|')) {
+      final parts = strategy.split('|');
+      if (parts.length == 6) {
+        return finance.DebtPlan(
+          primary: _criterion(parts[1]),
+          primaryDirection: _direction(parts[2]),
+          tieBreaker: _criterion(parts[3]),
+          tieBreakerDirection: _direction(parts[4]),
+          allocation: parts[5] == 'equal'
+              ? finance.DebtAllocation.equal
+              : finance.DebtAllocation.focused,
+        );
+      }
+    }
+    return finance.DebtPlan.forStrategy(finance.DebtStrategy.avalanche);
+  }
+
+  finance.DebtCriterion _criterion(String value) => switch (value) {
+    'balance' => finance.DebtCriterion.balance,
+    'minimumPayment' => finance.DebtCriterion.minimumPayment,
+    'payoffMonths' => finance.DebtCriterion.payoffMonths,
+    _ => finance.DebtCriterion.interestRate,
+  };
+
+  finance.DebtDirection _direction(String value) => value == 'descending'
+      ? finance.DebtDirection.descending
+      : finance.DebtDirection.ascending;
 }

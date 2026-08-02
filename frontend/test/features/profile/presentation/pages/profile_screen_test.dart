@@ -50,10 +50,7 @@ void main() {
       avatarUrl: null,
       financialGoal: 'track_spending',
     );
-    mockAuthBloc.emit(AuthState(
-      status: AuthStatus.authenticated,
-      user: user,
-    ));
+    mockAuthBloc.emit(AuthState(status: AuthStatus.authenticated, user: user));
   });
 
   Widget createWidgetUnderTest() {
@@ -64,10 +61,7 @@ void main() {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('tr'),
-        Locale('en'),
-      ],
+      supportedLocales: const [Locale('tr'), Locale('en')],
       home: BlocProvider<AuthBloc>.value(
         value: mockAuthBloc,
         child: const ProfileScreen(),
@@ -82,35 +76,26 @@ void main() {
 
       expect(find.text('Test User'), findsNWidgets(2));
       expect(find.text('test@test.com'), findsNWidgets(2));
-      
-      // Check for logout and delete buttons by Icon or something standard since text depends on locale
-      expect(find.byIcon(Icons.logout_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.delete_forever_rounded), findsOneWidget);
+      await tester.drag(find.byType(ListView), const Offset(0, -400));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.phonelink_lock_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.lock_outlined), findsNothing);
+      expect(find.byIcon(Icons.person_remove_outlined), findsOneWidget);
     });
 
-    testWidgets('shows logout confirmation dialog', (tester) async {
+    testWidgets('shows delete device profile confirmation dialog', (
+      tester,
+    ) async {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.byIcon(Icons.logout_rounded));
+      await tester.drag(find.byType(ListView), const Offset(0, -800));
       await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.logout_rounded));
+      await tester.ensureVisible(find.byIcon(Icons.person_remove_outlined));
       await tester.pumpAndSettle();
-
-      // Check if dialog is shown by looking for a button
-      expect(find.byType(AlertDialog), findsOneWidget);
-    });
-
-    testWidgets('shows delete account confirmation dialog', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.tap(find.byIcon(Icons.person_remove_outlined));
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.byIcon(Icons.delete_forever_rounded));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.delete_forever_rounded));
-      await tester.pumpAndSettle();
-
-      // Check if dialog is shown
       expect(find.byType(AlertDialog), findsOneWidget);
     });
   });

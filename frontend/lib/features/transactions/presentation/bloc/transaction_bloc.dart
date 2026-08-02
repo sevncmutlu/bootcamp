@@ -11,7 +11,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   StreamSubscription<List<ExpenseEntity>>? _expensesSubscription;
   StreamSubscription<List<IncomeEntity>>? _incomesSubscription;
 
-  TransactionBloc({required this.repository}) : super(const TransactionState()) {
+  TransactionBloc({required this.repository})
+    : super(const TransactionState()) {
     on<LoadCategoriesEvent>(_onLoadCategories);
     on<AddExpenseEvent>(_onAddExpense);
     on<AddIncomeEvent>(_onAddIncome);

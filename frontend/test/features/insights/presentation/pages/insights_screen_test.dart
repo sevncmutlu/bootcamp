@@ -19,8 +19,11 @@ import 'package:maki_app/features/auth/domain/entities/user_entity.dart';
 import 'package:maki_app/core/di/injection_container.dart';
 
 class MockForecastBloc extends Mock implements ForecastBloc {}
+
 class MockInflationBloc extends Mock implements InflationBloc {}
+
 class MockPremiumBloc extends Mock implements PremiumBloc {}
+
 class MockAuthBloc extends Mock implements AuthBloc {}
 
 void main() {
@@ -32,29 +35,33 @@ void main() {
   setUpAll(() {
     registerFallbackValue(ForecastInitial());
     registerFallbackValue(InflationInitial());
-    registerFallbackValue(const PremiumState(isPremium: false, isLoading: false));
+    registerFallbackValue(
+      const PremiumState(isPremium: false, isLoading: false),
+    );
     registerFallbackValue(const AuthState());
   });
 
   setUp(() async {
     await sl.reset();
-    
+
     mockForecastBloc = MockForecastBloc();
     when(() => mockForecastBloc.stream).thenAnswer((_) => const Stream.empty());
     when(() => mockForecastBloc.close()).thenAnswer((_) async {});
-    
+
     mockInflationBloc = MockInflationBloc();
-    when(() => mockInflationBloc.stream).thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockInflationBloc.stream,
+    ).thenAnswer((_) => const Stream.empty());
     when(() => mockInflationBloc.close()).thenAnswer((_) async {});
-    
+
     mockPremiumBloc = MockPremiumBloc();
     when(() => mockPremiumBloc.stream).thenAnswer((_) => const Stream.empty());
     when(() => mockPremiumBloc.close()).thenAnswer((_) async {});
-    
+
     mockAuthBloc = MockAuthBloc();
     when(() => mockAuthBloc.stream).thenAnswer((_) => const Stream.empty());
     when(() => mockAuthBloc.close()).thenAnswer((_) async {});
-    
+
     sl.registerFactory<ForecastBloc>(() => mockForecastBloc);
     sl.registerFactory<InflationBloc>(() => mockInflationBloc);
   });
@@ -74,9 +81,7 @@ void main() {
       child: const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: InsightsScreen(),
-        ),
+        home: Scaffold(body: InsightsScreen()),
       ),
     );
   }
@@ -84,19 +89,29 @@ void main() {
   group('InsightsScreen UI Tests', () {
     testWidgets('renders tabs correctly', (tester) async {
       when(() => mockForecastBloc.state).thenReturn(const ForecastLoaded([]));
-      when(() => mockInflationBloc.state).thenReturn(const InflationLoaded(
-        InflationDataEntity(
-          hasPriceBasket: false,
-          personalInflation: null,
-          officialInflation: null,
-          breakdowns: [],
+      when(() => mockInflationBloc.state).thenReturn(
+        const InflationLoaded(
+          InflationDataEntity(
+            hasPriceBasket: false,
+            personalInflation: null,
+            officialInflation: null,
+            breakdowns: [],
+          ),
         ),
-      ));
-      when(() => mockPremiumBloc.state).thenReturn(const PremiumState(isPremium: true, isLoading: false));
-      when(() => mockAuthBloc.state).thenReturn(const AuthState(
-        status: AuthStatus.authenticated,
-        user: UserEntity(userId: '1', email: 'test@test.com', displayName: 'Test'),
-      ));
+      );
+      when(
+        () => mockPremiumBloc.state,
+      ).thenReturn(const PremiumState(isPremium: true, isLoading: false));
+      when(() => mockAuthBloc.state).thenReturn(
+        const AuthState(
+          status: AuthStatus.authenticated,
+          user: UserEntity(
+            userId: '1',
+            email: 'test@test.com',
+            displayName: 'Test',
+          ),
+        ),
+      );
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();

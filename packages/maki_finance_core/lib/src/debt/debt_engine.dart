@@ -113,14 +113,23 @@ final class DebtEngine {
     final payments = Map<String, int>.from(minimums);
     var extra = scenario.monthlyBudget.minorUnits - totalMinimum;
     final ordered = _orderedDebts(scenario, afterInterest);
-    for (final debt in ordered) {
-      if (extra == 0) {
-        break;
+    if (scenario.plan.allocation == DebtAllocation.equal) {
+      extra = _allocateEqually(
+        debts: ordered,
+        afterInterest: afterInterest,
+        payments: payments,
+        extra: extra,
+      );
+    } else {
+      for (final debt in ordered) {
+        if (extra == 0) {
+          break;
+        }
+        final capacity = afterInterest[debt.id]! - payments[debt.id]!;
+        final allocation = extra < capacity ? extra : capacity;
+        payments[debt.id] = payments[debt.id]! + allocation;
+        extra -= allocation;
       }
-      final capacity = afterInterest[debt.id]! - payments[debt.id]!;
-      final allocation = extra < capacity ? extra : capacity;
-      payments[debt.id] = payments[debt.id]! + allocation;
-      extra -= allocation;
     }
 
     final ending = <String, int>{};
@@ -169,24 +178,95 @@ final class DebtEngine {
         .where((debt) => afterInterest[debt.id]! > 0)
         .toList();
     active.sort((left, right) {
-      final primary = switch (scenario.strategy) {
-        DebtStrategy.avalanche => right.annualRate.compareTo(left.annualRate),
-        DebtStrategy.snowball => afterInterest[left.id]!.compareTo(
-          afterInterest[right.id]!,
-        ),
-      };
+      final primary = _compareCriterion(
+        scenario.plan.primary,
+        scenario.plan.primaryDirection,
+        left,
+        right,
+        afterInterest,
+        scenario.plan.manualDebtOrder,
+      );
       if (primary != 0) {
         return primary;
       }
-      final secondary = switch (scenario.strategy) {
-        DebtStrategy.avalanche => afterInterest[left.id]!.compareTo(
-          afterInterest[right.id]!,
-        ),
-        DebtStrategy.snowball => right.annualRate.compareTo(left.annualRate),
-      };
+      final secondary = _compareCriterion(
+        scenario.plan.tieBreaker,
+        scenario.plan.tieBreakerDirection,
+        left,
+        right,
+        afterInterest,
+        scenario.plan.manualDebtOrder,
+      );
       return secondary != 0 ? secondary : left.id.compareTo(right.id);
     });
     return active;
+  }
+
+  int _allocateEqually({
+    required List<DebtAccount> debts,
+    required Map<String, int> afterInterest,
+    required Map<String, int> payments,
+    required int extra,
+  }) {
+    var remaining = extra;
+    var active = debts
+        .where((debt) => afterInterest[debt.id]! > payments[debt.id]!)
+        .toList();
+    while (remaining > 0 && active.isNotEmpty) {
+      final share = (remaining ~/ active.length).clamp(1, remaining);
+      var allocated = 0;
+      for (final debt in active) {
+        if (remaining == 0) break;
+        final capacity = afterInterest[debt.id]! - payments[debt.id]!;
+        final amount = share < capacity ? share : capacity;
+        payments[debt.id] = payments[debt.id]! + amount;
+        remaining -= amount;
+        allocated += amount;
+      }
+      if (allocated == 0) break;
+      active = active
+          .where((debt) => afterInterest[debt.id]! > payments[debt.id]!)
+          .toList();
+    }
+    return remaining;
+  }
+
+  int _compareCriterion(
+    DebtCriterion criterion,
+    DebtDirection direction,
+    DebtAccount left,
+    DebtAccount right,
+    Map<String, int> balances,
+    List<String> manualOrder,
+  ) {
+    final comparison = switch (criterion) {
+      DebtCriterion.interestRate => left.annualRate.compareTo(right.annualRate),
+      DebtCriterion.balance => balances[left.id]!.compareTo(
+        balances[right.id]!,
+      ),
+      DebtCriterion.minimumPayment => left.minimumPayment.compareTo(
+        right.minimumPayment,
+      ),
+      DebtCriterion.payoffMonths => _comparePayoffMonths(left, right, balances),
+      DebtCriterion.manualOrder => _manualRank(
+        left.id,
+        manualOrder,
+      ).compareTo(_manualRank(right.id, manualOrder)),
+    };
+    return direction == DebtDirection.ascending ? comparison : -comparison;
+  }
+
+  int _comparePayoffMonths(
+    DebtAccount left,
+    DebtAccount right,
+    Map<String, int> balances,
+  ) => (balances[left.id]! * right.minimumPayment.minorUnits).compareTo(
+    balances[right.id]! * left.minimumPayment.minorUnits,
+  );
+
+  int _manualRank(String id, List<String> order) {
+    final index = order.indexOf(id);
+    return index < 0 ? order.length : index;
   }
 
   DebtSimulation _result({

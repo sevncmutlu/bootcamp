@@ -18,9 +18,10 @@ class InitChatEvent extends CoachEvent {
 
 class SendMessageEvent extends CoachEvent {
   final String text;
+  final String? contextHint;
 
-  const SendMessageEvent(this.text);
+  const SendMessageEvent(this.text, {this.contextHint});
 
   @override
-  List<Object?> get props => [text];
+  List<Object?> get props => [text, contextHint];
 }

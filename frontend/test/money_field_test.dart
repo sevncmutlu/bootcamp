@@ -28,5 +28,10 @@ void main() {
       expect(MoneyField.tryParse('abc'), isNull);
       expect(MoneyField.tryParse(null), isNull);
     });
+
+    test('iki ondalıktan fazlasını sessizce yuvarlamaz', () {
+      expect(MoneyField.tryParse('12,345'), isNull);
+      expect(MoneyField.tryParseMinor('12,34'), 1234);
+    });
   });
 }

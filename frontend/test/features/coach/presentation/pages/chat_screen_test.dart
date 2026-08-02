@@ -35,7 +35,9 @@ void main() {
 
   group('ChatScreen UI Tests', () {
     testWidgets('renders initial UI correctly', (tester) async {
-      when(() => mockCoachBloc.state).thenReturn(CoachState.initial('mock_session_id'));
+      when(
+        () => mockCoachBloc.state,
+      ).thenReturn(CoachState.initial('mock_session_id'));
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();

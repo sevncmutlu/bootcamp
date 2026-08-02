@@ -14,17 +14,26 @@ from maki.ocr.models import (
 )
 from maki.official_data.normalization import normalize_decimal
 
+_MONEY_AMOUNT_PATTERN = (
+    r"(?:\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?"
+    r"|\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?"
+    r"|\d+(?:[.,]\d{1,2})?)"
+)
 _ITEM_WITH_QUANTITY = re.compile(
     r"^(?P<name>.+?)\s+"
     r"(?P<quantity>\d+(?:[.,]\d+)?)\s*[xX]\s*"
-    r"(?P<unit>\d+(?:[.,]\d{1,2})?)\s+"
-    r"(?P<total>\d+(?:[.,]\d{1,2})?)$"
+    rf"(?P<unit>{_MONEY_AMOUNT_PATTERN})\s+"
+    rf"(?P<total>{_MONEY_AMOUNT_PATTERN})$"
 )
-_MONEY_AT_END = re.compile(r"(?P<value>\d+(?:[.,]\d{1,2})?)$")
+_MONEY_AT_END = re.compile(
+    rf"(?P<value>{_MONEY_AMOUNT_PATTERN})(?:\s*(?:TL|TRY|₺))?\s*$",
+    re.IGNORECASE,
+)
 _VERTICAL_TOLERANCE = 5
 _MINIMUM_CONFIDENCE = 0.70
 _MONEY_SCALE = Decimal(100)
 _RECONCILIATION_TOLERANCE_MINOR = 1
+_THOUSANDS_GROUP_DIGITS = 3
 _TURKISH_ASCII = str.maketrans(
     {
         "İ": "I",
@@ -178,20 +187,26 @@ def _center_y(box: OcrBox) -> int:
 
 
 def _summary(line: _GroupedLine) -> tuple[str, int] | None:
-    normalized = _normalize_label(line.text)
-    field_name: str | None = None
-    if "GENEL TOPLAM" in normalized or normalized.startswith("TOPLAM "):
-        field_name = "total"
-    elif "ARA TOPLAM" in normalized:
-        field_name = "subtotal"
-    elif normalized.startswith("KDV "):
-        field_name = "tax"
-    elif normalized.startswith(("INDIRIM ", "ISKONTO ")):
-        field_name = "discount"
-    if field_name is None:
-        return None
     match = _MONEY_AT_END.search(line.text)
     if match is None:
+        return None
+    normalized = _normalize_label(line.text[: match.start()])
+    field_name: str | None = None
+    if normalized in {
+        "TOPLAM",
+        "GENEL TOPLAM",
+        "ODENECEK",
+        "KART TOPLAMI",
+        "TOPKAM",
+    }:
+        field_name = "total"
+    elif normalized == "ARA TOPLAM":
+        field_name = "subtotal"
+    elif normalized == "KDV":
+        field_name = "tax"
+    elif normalized in {"INDIRIM", "ISKONTO"}:
+        field_name = "discount"
+    if field_name is None:
         return None
     return field_name, _money_minor(match.group("value"))
 
@@ -213,7 +228,7 @@ def _item(line: _GroupedLine) -> ReceiptItem | None:
 
 
 def _money_minor(value: str) -> int:
-    decimal_value = normalize_decimal(value)
+    decimal_value = Decimal(_normalize_money(value))
     minor = decimal_value * _MONEY_SCALE
     integral = minor.to_integral_value()
     if minor != integral:
@@ -222,5 +237,22 @@ def _money_minor(value: str) -> int:
     return int(integral)
 
 
+def _normalize_money(value: str) -> str:
+    compact = value.strip().replace(" ", "")
+    if "," in compact and "." in compact:
+        decimal_separator = "," if compact.rfind(",") > compact.rfind(".") else "."
+        thousands_separator = "." if decimal_separator == "," else ","
+        return compact.replace(thousands_separator, "").replace(decimal_separator, ".")
+    for separator in (",", "."):
+        if separator not in compact:
+            continue
+        whole, fraction = compact.rsplit(separator, maxsplit=1)
+        if len(fraction) == _THOUSANDS_GROUP_DIGITS and len(whole) <= _THOUSANDS_GROUP_DIGITS:
+            return compact.replace(separator, "")
+        return f"{whole.replace(separator, '')}.{fraction}"
+    return compact
+
+
 def _normalize_label(value: str) -> str:
-    return value.upper().translate(_TURKISH_ASCII)
+    normalized = " ".join(value.upper().translate(_TURKISH_ASCII).split())
+    return normalized.replace("0", "O").replace("1", "L")

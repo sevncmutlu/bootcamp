@@ -4,7 +4,6 @@ import 'package:maki_app/features/premium/data/datasources/premium_local_data_so
 import 'package:maki_app/features/profile/domain/entities/settings_entity.dart';
 import 'package:maki_app/features/profile/domain/repositories/settings_repository.dart';
 
-
 class SettingsRepositoryImpl implements SettingsRepository {
   final OnboardingLocalDataSource onboardingDataSource;
   final PremiumLocalDataSource premiumDataSource;

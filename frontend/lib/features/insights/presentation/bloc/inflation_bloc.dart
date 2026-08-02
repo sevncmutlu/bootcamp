@@ -20,7 +20,12 @@ class InflationBloc extends Bloc<InflationEvent, InflationState> {
       final inflationData = await repository.getInflation();
       emit(InflationLoaded(inflationData));
     } catch (e, stackTrace) {
-      developer.log('Inflation unexpected error', error: e, stackTrace: stackTrace, name: 'InflationBloc');
+      developer.log(
+        'Inflation unexpected error',
+        error: e,
+        stackTrace: stackTrace,
+        name: 'InflationBloc',
+      );
       emit(const InflationError('Beklenmeyen bir hata oluştu.'));
     }
   }

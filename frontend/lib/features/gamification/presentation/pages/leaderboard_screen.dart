@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
 import 'package:maki_app/core/theme/app_tokens.dart';
+import 'package:maki_app/core/widgets/maki_app_bar_title.dart';
+import 'package:maki_app/core/widgets/maki_background.dart';
 import 'package:maki_app/features/gamification/presentation/bloc/gamification_bloc.dart';
 import 'package:maki_app/features/gamification/presentation/bloc/gamification_event.dart';
 import 'package:maki_app/features/gamification/presentation/bloc/gamification_state.dart';
 import 'package:maki_app/features/gamification/domain/entities/leaderboard_entity.dart';
+import 'package:maki_app/main.dart';
 
 class LeaderboardScreen extends StatelessWidget {
-  const LeaderboardScreen({
-    required this.userLevel,
-    super.key,
-  });
+  const LeaderboardScreen({required this.userLevel, super.key});
   final int userLevel;
 
   @override
@@ -19,24 +19,20 @@ class LeaderboardScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n.leaderboardTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+        leading: IconButton(
+          icon: const Icon(Icons.menu_rounded),
+          onPressed: () => MainNavigationScreen.openDrawer(),
         ),
-        centerTitle: true,
+        title: MakiAppBarTitle(title: l10n.leaderboardTitle),
+        centerTitle: false,
       ),
-      body: LeaderboardView(
-        userLevel: userLevel,
-      ),
+      body: MakiBackground(child: LeaderboardView(userLevel: userLevel)),
     );
   }
 }
 
 class LeaderboardView extends StatefulWidget {
-  const LeaderboardView({
-    required this.userLevel,
-    super.key,
-  });
+  const LeaderboardView({required this.userLevel, super.key});
 
   final int userLevel;
 
@@ -55,10 +51,13 @@ class _LeaderboardViewState extends State<LeaderboardView>
     context.read<GamificationBloc>().add(const LoadLeaderboardEvent());
   }
 
-
-
   Widget _buildFilters(
-      BuildContext context, AppLocalizations l10n, ThemeData theme, String ageBand, String householdBand) {
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+    String ageBand,
+    String householdBand,
+  ) {
     return Row(
       children: [
         Expanded(
@@ -142,13 +141,7 @@ class _LeaderboardViewState extends State<LeaderboardView>
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _buildFilters(
-                      context,
-                      l10n,
-                      theme,
-                      ageBand,
-                      householdBand,
-                    ),
+                    _buildFilters(context, l10n, theme, ageBand, householdBand),
                   ],
                 ),
               ),
@@ -157,7 +150,7 @@ class _LeaderboardViewState extends State<LeaderboardView>
               const SliverFillRemaining(
                 child: Center(child: CircularProgressIndicator()),
               )
-            else if (state.error != null && leaderboard == null)
+            else if (state.leaderboardError != null && leaderboard == null)
               SliverFillRemaining(
                 child: Center(
                   child: Padding(
@@ -172,14 +165,16 @@ class _LeaderboardViewState extends State<LeaderboardView>
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          state.error!,
+                          state.leaderboardError!,
                           textAlign: TextAlign.center,
                           style: const TextStyle(color: Colors.grey),
                         ),
                         const SizedBox(height: 16),
                         FilledButton.icon(
                           onPressed: () {
-                            context.read<GamificationBloc>().add(const LoadLeaderboardEvent());
+                            context.read<GamificationBloc>().add(
+                              const LoadLeaderboardEvent(),
+                            );
                           },
                           icon: const Icon(Icons.refresh),
                           label: Text(l10n.leaderboardCalculateCta),
@@ -312,11 +307,9 @@ class _StandingCard extends StatelessWidget {
               '${l10n.leaderboardTrees(trees)} · ${l10n.currentLevel(level)}',
               style: theme.textTheme.bodySmall,
             ),
-
           ],
         ),
       ),
     );
   }
 }
-

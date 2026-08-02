@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maki_app/core/widgets/brand_wordmark.dart';
 import 'package:maki_app/core/widgets/mascot.dart';
+import 'package:maki_app/core/widgets/maki_background.dart';
 
 class BrandSplashScreen extends StatefulWidget {
   const BrandSplashScreen({
@@ -25,6 +26,7 @@ class _BrandSplashScreenState extends State<BrandSplashScreen>
   late final Animation<Offset> _wordmarkPosition;
   bool _started = false;
   bool _completed = false;
+  bool _completionScheduled = false;
 
   @override
   void initState() {
@@ -32,7 +34,7 @@ class _BrandSplashScreenState extends State<BrandSplashScreen>
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          _complete();
+          _scheduleCompletion();
         }
       });
     _mascotEntrance = CurvedAnimation(
@@ -61,16 +63,20 @@ class _BrandSplashScreenState extends State<BrandSplashScreen>
 
     if (MediaQuery.maybeOf(context)?.disableAnimations ?? false) {
       _controller.value = 1;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _complete());
       return;
     }
     _controller.forward();
   }
 
-  void _complete() {
-    if (_completed || !mounted) return;
-    _completed = true;
-    widget.onCompleted();
+  void _scheduleCompletion() {
+    if (_completed || _completionScheduled || !mounted) return;
+    _completionScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _completionScheduled = false;
+      if (_completed || !mounted) return;
+      _completed = true;
+      widget.onCompleted();
+    });
   }
 
   @override
@@ -84,58 +90,60 @@ class _BrandSplashScreenState extends State<BrandSplashScreen>
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Semantics(
-            container: true,
-            label: 'MakiKoç açılış ekranı',
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ScaleTransition(
-                  scale: Tween<double>(
-                    begin: 0.68,
-                    end: 1,
-                  ).animate(_mascotEntrance),
-                  child: FadeTransition(
-                    opacity: _mascotEntrance,
-                    child: SlideTransition(
-                      position: _mascotPosition,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 224,
-                            height: 224,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: RadialGradient(
-                                colors: [
-                                  scheme.primary.withValues(alpha: 0.18),
-                                  scheme.primary.withValues(alpha: 0),
-                                ],
+      body: MakiBackground(
+        child: SafeArea(
+          child: Center(
+            child: Semantics(
+              container: true,
+              label: 'MakiKoç açılış ekranı',
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ScaleTransition(
+                    scale: Tween<double>(
+                      begin: 0.68,
+                      end: 1,
+                    ).animate(_mascotEntrance),
+                    child: FadeTransition(
+                      opacity: _mascotEntrance,
+                      child: SlideTransition(
+                        position: _mascotPosition,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 224,
+                              height: 224,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    scheme.primary.withValues(alpha: 0.18),
+                                    scheme.primary.withValues(alpha: 0),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          const Mascot(
-                            pose: MascotPose.wave,
-                            size: 168,
-                            withBadge: false,
-                          ),
-                        ],
+                            const Mascot(
+                              pose: MascotPose.wave,
+                              size: 168,
+                              withBadge: false,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                FadeTransition(
-                  opacity: _wordmarkEntrance,
-                  child: SlideTransition(
-                    position: _wordmarkPosition,
-                    child: const BrandWordmark(fontSize: 42),
+                  const SizedBox(height: 12),
+                  FadeTransition(
+                    opacity: _wordmarkEntrance,
+                    child: SlideTransition(
+                      position: _wordmarkPosition,
+                      child: const BrandWordmark(fontSize: 42),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

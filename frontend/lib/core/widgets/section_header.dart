@@ -27,6 +27,17 @@ class SectionHeader extends StatelessWidget {
       padding: padding,
       child: Row(
         children: [
+          Container(
+            width: 4,
+            height: 20,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.tertiary,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AppRadius.pill),
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
           if (icon != null) ...[
             Icon(icon, size: 18, color: theme.colorScheme.primary),
             const SizedBox(width: AppSpacing.sm),

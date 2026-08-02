@@ -16,6 +16,24 @@ uv run pytest
 Gerçek anahtarları kaynak koda veya `.env` dosyasına eklemeyin. Yerel değişken adları için
 `.env.example` dosyasını kullanın.
 
+## Kimlik güvenlik sınırı
+
+API parola kaydetmez; kayıt, giriş, parola değiştirme veya parola sıfırlama ucu sunmaz.
+Korumalı uçlar yalnızca dışarıdaki doğrulanmış bir kimlik sağlayıcısının ürettiği kısa
+ömürlü erişim belirtecini kabul eder. Doğrulayıcı:
+
+- yalnız `EdDSA`, `ES256` veya `RS256` algoritmalarını kabul eder;
+- `kid`, `iss`, `aud`, `sub`, `jti`, `iat`, `nbf` ve `exp` alanlarını zorunlu tutar;
+- süreyi en fazla 3.600 saniyeyle sınırlar;
+- özel anahtar veya paylaşımlı JWT sırrı taşımaz.
+
+Mobil istemci yerel profili cihazda tutar. Bir API oturumu gerektiğinde erişim belirteci
+güvenli depoya dış kimlik akışı tarafından yazılır; geliştirmedeki `MAKI_ACCESS_TOKEN`
+derleme tanımı yalnız açıkça verildiğinde kullanılır. Native API tarayıcı oturumu
+olmadığı için CORS başlığı yayınlamaz.
+
+Ayrıntılar ve tehdit modeli: [kimlik güvenlik sınırı](../docs/security/identity-boundary.md).
+
 ## Borç risk modeli
 
 Eğitim çevrim dışında, onaylı veri manifestiyle çalışır. Üretim terfisinde Ed25519 özel anahtarı

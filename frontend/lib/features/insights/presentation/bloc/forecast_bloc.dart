@@ -24,11 +24,21 @@ class ForecastBloc extends Bloc<ForecastEvent, ForecastState> {
       if (e.code == 'INSUFFICIENT_DATA') {
         emit(ForecastError(e.userMessage, hasInsufficientHistory: true));
       } else {
-        developer.log('Forecast exception', error: e.code, stackTrace: stackTrace, name: 'ForecastBloc');
+        developer.log(
+          'Forecast exception',
+          error: e.code,
+          stackTrace: stackTrace,
+          name: 'ForecastBloc',
+        );
         emit(ForecastError(e.userMessage));
       }
     } catch (e, stackTrace) {
-      developer.log('Forecast unexpected error', error: e, stackTrace: stackTrace, name: 'ForecastBloc');
+      developer.log(
+        'Forecast unexpected error',
+        error: e,
+        stackTrace: stackTrace,
+        name: 'ForecastBloc',
+      );
       emit(ForecastError('Beklenmeyen bir hata oluştu.'));
     }
   }

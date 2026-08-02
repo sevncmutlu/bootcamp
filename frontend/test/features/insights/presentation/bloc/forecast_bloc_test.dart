@@ -31,28 +31,30 @@ void main() {
       expect(bloc.state, isA<ForecastInitial>());
     });
 
-    test('emits [ForecastLoading, ForecastLoaded] when LoadForecastEvent is successful', () async {
-      when(() => mockRepository.getForecast()).thenAnswer((_) async => tForecasts);
+    test(
+      'emits [ForecastLoading, ForecastLoaded] when LoadForecastEvent is successful',
+      () async {
+        when(
+          () => mockRepository.getForecast(),
+        ).thenAnswer((_) async => tForecasts);
 
-      final expectedStates = [
-        isA<ForecastLoading>(),
-        isA<ForecastLoaded>(),
-      ];
+        final expectedStates = [isA<ForecastLoading>(), isA<ForecastLoaded>()];
 
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
-      bloc.add(LoadForecastEvent());
-    });
+        expectLater(bloc.stream, emitsInOrder(expectedStates));
+        bloc.add(LoadForecastEvent());
+      },
+    );
 
-    test('emits [ForecastLoading, ForecastError] when LoadForecastEvent fails', () async {
-      when(() => mockRepository.getForecast()).thenThrow(Exception('Failed'));
+    test(
+      'emits [ForecastLoading, ForecastError] when LoadForecastEvent fails',
+      () async {
+        when(() => mockRepository.getForecast()).thenThrow(Exception('Failed'));
 
-      final expectedStates = [
-        isA<ForecastLoading>(),
-        isA<ForecastError>(),
-      ];
+        final expectedStates = [isA<ForecastLoading>(), isA<ForecastError>()];
 
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
-      bloc.add(LoadForecastEvent());
-    });
+        expectLater(bloc.stream, emitsInOrder(expectedStates));
+        bloc.add(LoadForecastEvent());
+      },
+    );
   });
 }

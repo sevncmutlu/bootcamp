@@ -9,11 +9,15 @@ $ErrorActionPreference = 'Stop'
 
 $root = (Resolve-Path -LiteralPath $ProjectRoot).Path.TrimEnd('\')
 $baseline = Get-Content -LiteralPath $BaselinePath -Raw | ConvertFrom-Json
+$generatedFrontendFiles = @(
+    'frontend/lib/database/database.g.dart',
+    'frontend/lib/core/database/database.g.dart'
+)
 $expected = @(
     $baseline.current_source.files |
         Where-Object {
             $_.path -like 'frontend/lib/*' -and
-            $_.path -ne 'frontend/lib/database/database.g.dart' -and
+            $_.path -notin $generatedFrontendFiles -and
             $_.path -notlike 'frontend/lib/l10n/app_localizations*.dart'
         } |
         ForEach-Object {
@@ -28,7 +32,7 @@ $actual = @(
         ForEach-Object {
             $relativePath = $_.FullName.Substring($root.Length + 1).Replace('\', '/')
             if (
-                $relativePath -ne 'frontend/lib/database/database.g.dart' -and
+                $relativePath -notin $generatedFrontendFiles -and
                 $relativePath -notlike 'frontend/lib/l10n/app_localizations*.dart'
             ) {
                 $sha256 = Get-FrontendBoundaryHash -LiteralPath $_.FullName

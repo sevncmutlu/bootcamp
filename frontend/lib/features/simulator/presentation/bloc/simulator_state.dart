@@ -42,18 +42,19 @@ class SimulatorState extends Equatable {
       extraBudget: extraBudget ?? this.extraBudget,
       strategy: strategy ?? this.strategy,
       isLoading: isLoading ?? this.isLoading,
-      error: error, // If error is not passed, it gets cleared by default unless we want to keep it. We usually clear it.
+      error:
+          error, // If error is not passed, it gets cleared by default unless we want to keep it. We usually clear it.
       result: clearResult ? null : (result ?? this.result),
     );
   }
 
   @override
   List<Object?> get props => [
-        debts,
-        extraBudget,
-        strategy,
-        isLoading,
-        error,
-        result,
-      ];
+    debts,
+    extraBudget,
+    strategy,
+    isLoading,
+    error,
+    result,
+  ];
 }

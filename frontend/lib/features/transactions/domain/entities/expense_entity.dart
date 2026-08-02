@@ -7,6 +7,9 @@ class ExpenseEntity extends Equatable {
   final DateTime date;
   final String category;
   final String? notes;
+  final String sourceType;
+  final String? sourceRef;
+  final String? goalId;
 
   const ExpenseEntity({
     this.id,
@@ -15,8 +18,21 @@ class ExpenseEntity extends Equatable {
     required this.date,
     required this.category,
     this.notes,
+    this.sourceType = 'manual',
+    this.sourceRef,
+    this.goalId,
   });
 
   @override
-  List<Object?> get props => [id, title, amount, date, category, notes];
+  List<Object?> get props => [
+    id,
+    title,
+    amount,
+    date,
+    category,
+    notes,
+    sourceType,
+    sourceRef,
+    goalId,
+  ];
 }
