@@ -2,42 +2,44 @@ import hashlib
 import json
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Annotated, Any
 
 import jwt
 from fastapi import APIRouter, Header, HTTPException, status
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/v1/auth", tags=["auth"])
 
-_JWT_SECRET = "maki_finance_auth_secret_key_2026"
+_JWT_SECRET = "maki_finance_auth_secret_key_2026"  # noqa: S105
 _JWT_ALGORITHM = "HS256"
 
 _STORAGE_FILE = Path(__file__).parent.parent.parent / "users_store.json"
-_USERS_DB: dict[str, dict] = {}
+_USERS_DB: dict[str, dict[str, Any]] = {}
 _EMAIL_TO_USER_ID: dict[str, str] = {}
 
 
-def _load_users_from_disk():
-    global _USERS_DB, _EMAIL_TO_USER_ID
+def _load_users_from_disk() -> None:
     if _STORAGE_FILE.exists():
         try:
-            with open(_STORAGE_FILE, "r", encoding="utf-8") as f:
+            with _STORAGE_FILE.open("r", encoding="utf-8") as f:
                 data = json.load(f)
-                _USERS_DB = data.get("users", {})
-                _EMAIL_TO_USER_ID = data.get("email_map", {})
-        except Exception:
-            _USERS_DB = {}
-            _EMAIL_TO_USER_ID = {}
+                _USERS_DB.clear()
+                _USERS_DB.update(data.get("users", {}))
+                _EMAIL_TO_USER_ID.clear()
+                _EMAIL_TO_USER_ID.update(data.get("email_map", {}))
+        except (json.JSONDecodeError, OSError):
+            _USERS_DB.clear()
+            _EMAIL_TO_USER_ID.clear()
 
 
-def _save_users_to_disk():
+def _save_users_to_disk() -> None:
     try:
-        with open(_STORAGE_FILE, "w", encoding="utf-8") as f:
+        with _STORAGE_FILE.open("w", encoding="utf-8") as f:
             json.dump({
                 "users": _USERS_DB,
                 "email_map": _EMAIL_TO_USER_ID,
             }, f, indent=2)
-    except Exception:
+    except OSError:
         pass
 
 
@@ -73,7 +75,7 @@ class ChangePasswordRequest(BaseModel):
 
 class AuthTokenResponse(BaseModel):
     access_token: str
-    token_type: str = "bearer"
+    token_type: str = "bearer"  # noqa: S105
     user_id: str
     email: str
     display_name: str
@@ -108,11 +110,11 @@ def _create_token(user_id: str, email: str) -> str:
     return jwt.encode(payload, _JWT_SECRET, algorithm=_JWT_ALGORITHM)
 
 
-def _verify_token(token: str) -> dict:
+def _verify_token(token: str) -> dict[str, Any]:
     try:
-        if token.startswith("Bearer "):
-            token = token[7:]
-        return jwt.decode(token, _JWT_SECRET, algorithms=[_JWT_ALGORITHM])
+        clean_token = token.removeprefix("Bearer ").strip()
+        decoded = jwt.decode(clean_token, _JWT_SECRET, algorithms=[_JWT_ALGORITHM])
+        return dict(decoded)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -120,8 +122,8 @@ def _verify_token(token: str) -> dict:
         ) from e
 
 
-@router.post("/register", response_model=AuthTokenResponse)
-async def register(req: RegisterRequest):
+@router.post("/register")
+async def register(req: RegisterRequest) -> AuthTokenResponse:
     _load_users_from_disk()
     email_clean = req.email.strip().lower()
     if email_clean in _EMAIL_TO_USER_ID:
@@ -130,14 +132,15 @@ async def register(req: RegisterRequest):
             detail="Bu e-posta adresi ile zaten kayıtlı bir hesap var.",
         )
 
-    user_id = f"usr_{hashlib.md5(email_clean.encode()).hexdigest()[:12]}"
+    user_id = f"usr_{hashlib.sha256(email_clean.encode()).hexdigest()[:12]}"
     created_at = datetime.now(UTC).isoformat()
+    display_name = req.display_name.strip()
 
-    user_record = {
+    user_record: dict[str, Any] = {
         "user_id": user_id,
         "email": email_clean,
         "password_hash": _hash_password(req.password),
-        "display_name": req.display_name.strip(),
+        "display_name": display_name,
         "avatar_url": None,
         "financial_goal": "track_spending",
         "created_at": created_at,
@@ -151,14 +154,14 @@ async def register(req: RegisterRequest):
         access_token=token,
         user_id=user_id,
         email=email_clean,
-        display_name=user_record["display_name"],
-        avatar_url=user_record["avatar_url"],
-        financial_goal=user_record["financial_goal"],
+        display_name=display_name,
+        avatar_url=None,
+        financial_goal="track_spending",
     )
 
 
-@router.post("/login", response_model=AuthTokenResponse)
-async def login(req: LoginRequest):
+@router.post("/login")
+async def login(req: LoginRequest) -> AuthTokenResponse:
     _load_users_from_disk()
     email_clean = req.email.strip().lower()
     user_id = _EMAIL_TO_USER_ID.get(email_clean)
@@ -170,28 +173,31 @@ async def login(req: LoginRequest):
             detail="E-posta adresi veya şifre hatalı.",
         )
 
-    token = _create_token(user["user_id"], email_clean)
+    token = _create_token(str(user["user_id"]), email_clean)
     return AuthTokenResponse(
         access_token=token,
-        user_id=user["user_id"],
+        user_id=str(user["user_id"]),
         email=email_clean,
-        display_name=user["display_name"],
-        avatar_url=user["avatar_url"],
-        financial_goal=user["financial_goal"],
+        display_name=str(user["display_name"]),
+        avatar_url=user.get("avatar_url"),
+        financial_goal=user.get("financial_goal"),
     )
 
 
-@router.get("/me", response_model=UserProfileResponse)
-async def get_current_user(authorization: str = Header(...)):
+@router.get("/me")
+async def get_current_user(
+    authorization: Annotated[str, Header(...)],
+) -> UserProfileResponse:
     payload = _verify_token(authorization)
-    user_id = payload.get("sub")
-    email = payload.get("email", "").lower()
-    user = _USERS_DB.get(user_id)
+    sub = payload.get("sub")
+    user_id_str = str(sub) if sub is not None else ""
+    email = str(payload.get("email", "")).lower()
+    user = _USERS_DB.get(user_id_str) if user_id_str else None
 
     if not user:
-        user_id = user_id or f"usr_{hashlib.md5(email.encode()).hexdigest()[:12]}"
+        final_user_id = user_id_str or f"usr_{hashlib.sha256(email.encode()).hexdigest()[:12]}"
         user = {
-            "user_id": user_id,
+            "user_id": final_user_id,
             "email": email,
             "password_hash": "",
             "display_name": email.split("@")[0].capitalize() if "@" in email else "User",
@@ -199,31 +205,35 @@ async def get_current_user(authorization: str = Header(...)):
             "financial_goal": "track_spending",
             "created_at": datetime.now(UTC).isoformat(),
         }
-        _USERS_DB[user_id] = user
-        _EMAIL_TO_USER_ID[email] = user_id
+        _USERS_DB[final_user_id] = user
+        _EMAIL_TO_USER_ID[email] = final_user_id
         _save_users_to_disk()
 
     return UserProfileResponse(
-        user_id=user["user_id"],
-        email=user["email"],
-        display_name=user["display_name"],
-        avatar_url=user["avatar_url"],
-        financial_goal=user["financial_goal"],
-        created_at=user["created_at"],
+        user_id=str(user["user_id"]),
+        email=str(user["email"]),
+        display_name=str(user["display_name"]),
+        avatar_url=user.get("avatar_url"),
+        financial_goal=user.get("financial_goal"),
+        created_at=str(user["created_at"]),
     )
 
 
-@router.put("/profile", response_model=UserProfileResponse)
-async def update_profile(req: UpdateProfileRequest, authorization: str = Header(...)):
+@router.put("/profile")
+async def update_profile(
+    req: UpdateProfileRequest,
+    authorization: Annotated[str, Header(...)],
+) -> UserProfileResponse:
     payload = _verify_token(authorization)
-    user_id = payload.get("sub")
-    email = payload.get("email", "").lower()
-    user = _USERS_DB.get(user_id)
+    sub = payload.get("sub")
+    user_id_str = str(sub) if sub is not None else ""
+    email = str(payload.get("email", "")).lower()
+    user = _USERS_DB.get(user_id_str) if user_id_str else None
 
     if not user:
-        user_id = user_id or f"usr_{hashlib.md5(email.encode()).hexdigest()[:12]}"
+        final_user_id = user_id_str or f"usr_{hashlib.sha256(email.encode()).hexdigest()[:12]}"
         user = {
-            "user_id": user_id,
+            "user_id": final_user_id,
             "email": email,
             "password_hash": "",
             "display_name": email.split("@")[0].capitalize() if "@" in email else "User",
@@ -231,22 +241,24 @@ async def update_profile(req: UpdateProfileRequest, authorization: str = Header(
             "financial_goal": "track_spending",
             "created_at": datetime.now(UTC).isoformat(),
         }
-        _USERS_DB[user_id] = user
-        _EMAIL_TO_USER_ID[email] = user_id
+        _USERS_DB[final_user_id] = user
+        _EMAIL_TO_USER_ID[email] = final_user_id
 
     if req.display_name is not None:
-        user["display_name"] = req.display_name.strip()
+        user["display_name"] = str(req.display_name.strip())
     if req.email is not None:
         new_email = req.email.strip().lower()
-        if new_email != user["email"]:
-            if new_email in _EMAIL_TO_USER_ID and _EMAIL_TO_USER_ID[new_email] != user_id:
+        current_email = str(user["email"])
+        if new_email != current_email:
+            existing_owner = _EMAIL_TO_USER_ID.get(new_email)
+            if existing_owner and existing_owner != str(user["user_id"]):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Bu e-posta adresi başka bir hesap tarafından kullanılıyor.",
                 )
-            _EMAIL_TO_USER_ID.pop(user["email"], None)
+            _EMAIL_TO_USER_ID.pop(current_email, None)
             user["email"] = new_email
-            _EMAIL_TO_USER_ID[new_email] = user_id
+            _EMAIL_TO_USER_ID[new_email] = str(user["user_id"])
     if req.avatar_url is not None:
         user["avatar_url"] = req.avatar_url
     if req.financial_goal is not None:
@@ -255,41 +267,45 @@ async def update_profile(req: UpdateProfileRequest, authorization: str = Header(
     _save_users_to_disk()
 
     return UserProfileResponse(
-        user_id=user["user_id"],
-        email=user["email"],
-        display_name=user["display_name"],
-        avatar_url=user["avatar_url"],
-        financial_goal=user["financial_goal"],
-        created_at=user["created_at"],
+        user_id=str(user["user_id"]),
+        email=str(user["email"]),
+        display_name=str(user["display_name"]),
+        avatar_url=user.get("avatar_url"),
+        financial_goal=user.get("financial_goal"),
+        created_at=str(user["created_at"]),
     )
 
 
 @router.delete("/account")
-async def delete_account(authorization: str = Header(...)):
+async def delete_account(
+    authorization: Annotated[str, Header(...)],
+) -> dict[str, str]:
     payload = _verify_token(authorization)
-    user_id = payload.get("sub")
-    user = _USERS_DB.pop(user_id, None)
+    sub = payload.get("sub")
+    user_id_str = str(sub) if sub is not None else ""
+    user = _USERS_DB.pop(user_id_str, None) if user_id_str else None
 
     if user:
-        _EMAIL_TO_USER_ID.pop(user["email"], None)
+        _EMAIL_TO_USER_ID.pop(str(user["email"]), None)
         _save_users_to_disk()
 
     return {"status": "success", "message": "Hesap başarıyla silindi."}
 
 
 @router.post("/reset-password")
-async def reset_password(req: ResetPasswordRequest):
+async def reset_password(req: ResetPasswordRequest) -> dict[str, str]:
     email_clean = req.email.strip().lower()
     user_id = _EMAIL_TO_USER_ID.get(email_clean)
     user = _USERS_DB.get(user_id) if user_id else None
 
     if not user:
-        user_id = f"usr_{hashlib.md5(email_clean.encode()).hexdigest()[:12]}"
+        user_id = f"usr_{hashlib.sha256(email_clean.encode()).hexdigest()[:12]}"
+        default_name = email_clean.split("@")[0].capitalize() if "@" in email_clean else "User"
         user = {
             "user_id": user_id,
             "email": email_clean,
             "password_hash": _hash_password(req.new_password),
-            "display_name": email_clean.split("@")[0].capitalize() if "@" in email_clean else "User",
+            "display_name": default_name,
             "avatar_url": None,
             "financial_goal": "track_spending",
             "created_at": datetime.now(UTC).isoformat(),
@@ -305,10 +321,14 @@ async def reset_password(req: ResetPasswordRequest):
 
 
 @router.put("/change-password")
-async def change_password(req: ChangePasswordRequest, authorization: str = Header(...)):
+async def change_password(
+    req: ChangePasswordRequest,
+    authorization: Annotated[str, Header(...)],
+) -> dict[str, str]:
     payload = _verify_token(authorization)
-    user_id = payload.get("sub")
-    user = _USERS_DB.get(user_id)
+    sub = payload.get("sub")
+    user_id_str = str(sub) if sub is not None else ""
+    user = _USERS_DB.get(user_id_str) if user_id_str else None
 
     if not user:
         raise HTTPException(
@@ -328,7 +348,7 @@ async def change_password(req: ChangePasswordRequest, authorization: str = Heade
 
 
 @router.get("/users")
-async def list_users():
+async def list_users() -> dict[str, Any]:
     users_summary = [
         {
             "user_id": u["user_id"],

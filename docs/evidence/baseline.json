@@ -6,9 +6,14 @@
                            "root":  "frontend/lib",
                            "files":  [
                                          {
-                                             "path":  "frontend/lib/features/premium/presentation/bloc/premium_state.dart",
-                                             "sha256":  "F475F2B727BD741A3CF16063B4E3875D5AF27D7CC78A989C00A543F810610988",
-                                             "size_bytes":  1389
+                                             "path":  "frontend/lib/features/premium/presentation/bloc/premium_bloc.dart",
+                                             "sha256":  "2C7DEE06ACEF1AD1A26D7BC1A0734F6D578C6D116684090B128308CFAFB89D62",
+                                             "size_bytes":  2426
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/premium/domain/repositories/premium_repository.dart",
+                                             "sha256":  "001517426F48A0AB39E8514394CF32838A574B14AA41F6C68B0DE1586349655C",
+                                             "size_bytes":  206
                                          },
                                          {
                                              "path":  "frontend/lib/features/premium/presentation/bloc/premium_event.dart",
@@ -21,24 +26,24 @@
                                              "size_bytes":  10777
                                          },
                                          {
-                                             "path":  "frontend/lib/features/profile/data/datasources/onboarding_local_data_source.dart",
-                                             "sha256":  "6E9A4CE5CCEE8AB06ABFA69D9E62296817962B1ED20D62283D563F0BFB108A95",
-                                             "size_bytes":  2369
+                                             "path":  "frontend/lib/features/premium/presentation/bloc/premium_state.dart",
+                                             "sha256":  "F475F2B727BD741A3CF16063B4E3875D5AF27D7CC78A989C00A543F810610988",
+                                             "size_bytes":  1389
                                          },
                                          {
-                                             "path":  "frontend/lib/features/profile/data/datasources/lints_bandit_local_data_source.dart",
-                                             "sha256":  "52AD0CCC470F0ED7927DF6607D6EC360E1E02A3D1F6C67479DEE68762B6B869B",
-                                             "size_bytes":  5503
+                                             "path":  "frontend/lib/features/premium/data/repositories/premium_repository_impl.dart",
+                                             "sha256":  "D521EA9A2331E87399289CC4C96E7AB259776DE7868F82F77F90E48339F1ACC2",
+                                             "size_bytes":  8315
                                          },
                                          {
-                                             "path":  "frontend/lib/features/premium/presentation/bloc/premium_bloc.dart",
-                                             "sha256":  "2C7DEE06ACEF1AD1A26D7BC1A0734F6D578C6D116684090B128308CFAFB89D62",
-                                             "size_bytes":  2426
+                                             "path":  "frontend/lib/features/insights/presentation/widgets/inflation_maki_waiting_card.dart",
+                                             "sha256":  "489C25B8680F0E3385ACA04B47DE0347F2FD81CB89BEEEEE1C04EFF5284EAA01",
+                                             "size_bytes":  3944
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/presentation/widgets/inflation_share_actions.dart",
-                                             "sha256":  "A3978B60B1C9F188D02EB8E895185767AEAB5D1393A3CF8B1F081641257AC46D",
-                                             "size_bytes":  2905
+                                             "path":  "frontend/lib/features/insights/presentation/widgets/inflation_maki_share_card.dart",
+                                             "sha256":  "0CA0FD56A3CCCB581F4C49A1CEBEBFA63C6C68CC482CAC7388C34A5DD25A2BED",
+                                             "size_bytes":  12374
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/widgets/inflation_metric.dart",
@@ -51,19 +56,14 @@
                                              "size_bytes":  638
                                          },
                                          {
-                                             "path":  "frontend/lib/features/premium/domain/repositories/premium_repository.dart",
-                                             "sha256":  "001517426F48A0AB39E8514394CF32838A574B14AA41F6C68B0DE1586349655C",
-                                             "size_bytes":  206
+                                             "path":  "frontend/lib/features/insights/presentation/widgets/inflation_share_actions.dart",
+                                             "sha256":  "A3978B60B1C9F188D02EB8E895185767AEAB5D1393A3CF8B1F081641257AC46D",
+                                             "size_bytes":  2905
                                          },
                                          {
-                                             "path":  "frontend/lib/features/premium/data/repositories/premium_repository_impl.dart",
-                                             "sha256":  "D521EA9A2331E87399289CC4C96E7AB259776DE7868F82F77F90E48339F1ACC2",
-                                             "size_bytes":  8315
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/profile/presentation/pages/profile_screen.dart",
-                                             "sha256":  "DCE84EA8983067F5881E02B2584F4D7D7CF40AAE4944F31B8C5645E018DF4C5A",
-                                             "size_bytes":  19824
+                                             "path":  "frontend/lib/features/profile/data/datasources/lints_bandit_local_data_source.dart",
+                                             "sha256":  "52AD0CCC470F0ED7927DF6607D6EC360E1E02A3D1F6C67479DEE68762B6B869B",
+                                             "size_bytes":  5701
                                          },
                                          {
                                              "path":  "frontend/lib/features/profile/presentation/bloc/settings_state.dart",
@@ -71,14 +71,14 @@
                                              "size_bytes":  965
                                          },
                                          {
-                                             "path":  "frontend/lib/features/profile/presentation/pages/settings_screen.dart",
-                                             "sha256":  "FB9D25D417169D2CE506062E256F021F12E13F56B406894FA03ADEB50B9CB6BA",
-                                             "size_bytes":  27801
+                                             "path":  "frontend/lib/features/profile/presentation/bloc/settings_event.dart",
+                                             "sha256":  "98F50D4E7EE635A4862AA89261DCD3752573044AAF3D6D82585E9186A1819D04",
+                                             "size_bytes":  1230
                                          },
                                          {
-                                             "path":  "frontend/lib/features/reports/data/maki_pdf_report_service.dart",
-                                             "sha256":  "F525D643CFFC8601D2C396BE1F71A0B8FD0058920D037172DF88195BBD1E7812",
-                                             "size_bytes":  16952
+                                             "path":  "frontend/lib/features/profile/presentation/pages/profile_screen.dart",
+                                             "sha256":  "DCE84EA8983067F5881E02B2584F4D7D7CF40AAE4944F31B8C5645E018DF4C5A",
+                                             "size_bytes":  19824
                                          },
                                          {
                                              "path":  "frontend/lib/features/profile/presentation/widgets/notification_settings_dialog.dart",
@@ -86,24 +86,9 @@
                                              "size_bytes":  4959
                                          },
                                          {
-                                             "path":  "frontend/lib/features/profile/presentation/bloc/settings_event.dart",
-                                             "sha256":  "98F50D4E7EE635A4862AA89261DCD3752573044AAF3D6D82585E9186A1819D04",
-                                             "size_bytes":  1230
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/profile/data/services/smart_notification_service.dart",
-                                             "sha256":  "D8354D068291ED2B18718D6BFFBB2786DB267DBC2C7D30580ED4AEE85940CE1E",
-                                             "size_bytes":  11311
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/profile/data/repositories/settings_repository_impl.dart",
-                                             "sha256":  "D4A0B7708515F04D5815DBE7C6E1DEB159B82DB598CFA190A353C8D33AEBDB47",
-                                             "size_bytes":  2102
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/profile/domain/entities/settings_entity.dart",
-                                             "sha256":  "8F49B462EE6271BA90B98387419166E5E09D8FB90E01C6D731C9A52DFD5AE2E8",
-                                             "size_bytes":  525
+                                             "path":  "frontend/lib/features/profile/presentation/pages/settings_screen.dart",
+                                             "sha256":  "FB9D25D417169D2CE506062E256F021F12E13F56B406894FA03ADEB50B9CB6BA",
+                                             "size_bytes":  27801
                                          },
                                          {
                                              "path":  "frontend/lib/features/profile/presentation/bloc/settings_bloc.dart",
@@ -111,19 +96,39 @@
                                              "size_bytes":  5918
                                          },
                                          {
+                                             "path":  "frontend/lib/features/profile/data/repositories/settings_repository_impl.dart",
+                                             "sha256":  "D4A0B7708515F04D5815DBE7C6E1DEB159B82DB598CFA190A353C8D33AEBDB47",
+                                             "size_bytes":  2102
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/profile/data/datasources/onboarding_local_data_source.dart",
+                                             "sha256":  "6E9A4CE5CCEE8AB06ABFA69D9E62296817962B1ED20D62283D563F0BFB108A95",
+                                             "size_bytes":  2369
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/profile/data/services/smart_notification_service.dart",
+                                             "sha256":  "D8354D068291ED2B18718D6BFFBB2786DB267DBC2C7D30580ED4AEE85940CE1E",
+                                             "size_bytes":  11311
+                                         },
+                                         {
                                              "path":  "frontend/lib/features/profile/domain/repositories/settings_repository.dart",
                                              "sha256":  "BAEEFA003CB75C1E77BF48BE2A606F94E03E053ED6C94BD7B447C53F9DFA1740",
                                              "size_bytes":  431
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/presentation/widgets/inflation_maki_waiting_card.dart",
-                                             "sha256":  "489C25B8680F0E3385ACA04B47DE0347F2FD81CB89BEEEEE1C04EFF5284EAA01",
-                                             "size_bytes":  3944
+                                             "path":  "frontend/lib/features/profile/domain/entities/settings_entity.dart",
+                                             "sha256":  "8F49B462EE6271BA90B98387419166E5E09D8FB90E01C6D731C9A52DFD5AE2E8",
+                                             "size_bytes":  525
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/domain/entities/category_breakdown_entity.dart",
-                                             "sha256":  "7B9CFD1058C9036D8F8E797A81B7DBA4413721C29AEA5FEAA4BC6163E0CC9515",
-                                             "size_bytes":  380
+                                             "path":  "frontend/lib/features/insights/data/services/personal_finance_insight_service.dart",
+                                             "sha256":  "AB902F65C3BF29715D7CC96E5CE9C5D4DE024043BF10D5257F158E69D34376A2",
+                                             "size_bytes":  7240
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/insights/data/repositories/insights_repository_impl.dart",
+                                             "sha256":  "7BDDBEC7D2DE1A85DCF67AAFBAD4124F4322F00EBBBF0CD527CC9F27BF5EE544",
+                                             "size_bytes":  5365
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/data/services/price_basket_service.dart",
@@ -136,24 +141,24 @@
                                              "size_bytes":  400
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/domain/repositories/insights_repository.dart",
-                                             "sha256":  "4D0C33B351DB43E06FEB5CB3D3159A64A7CF8D51A71782D1827C45568E0B5B1C",
-                                             "size_bytes":  308
+                                             "path":  "frontend/lib/features/insights/domain/entities/category_breakdown_entity.dart",
+                                             "sha256":  "7B9CFD1058C9036D8F8E797A81B7DBA4413721C29AEA5FEAA4BC6163E0CC9515",
+                                             "size_bytes":  380
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/domain/entities/inflation_data_entity.dart",
-                                             "sha256":  "479F3A6ACCFBB4F92A0619DFF2A422B869F5F54749B1A4A8907C7FDF7380531A",
-                                             "size_bytes":  1156
+                                             "path":  "frontend/lib/features/gamification/presentation/widgets/living_forest_hub.dart",
+                                             "sha256":  "103B399AEF08DED88BCBEFE8D962ABA8DF5A517B47D2173230A2E372DFDCAD05",
+                                             "size_bytes":  19279
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/data/services/personal_finance_insight_service.dart",
-                                             "sha256":  "AB902F65C3BF29715D7CC96E5CE9C5D4DE024043BF10D5257F158E69D34376A2",
-                                             "size_bytes":  7240
+                                             "path":  "frontend/lib/features/gamification/presentation/widgets/forest_district.dart",
+                                             "sha256":  "8194646C1D8A622263746F4162263388CE2E09723F9D879EE8C6BF285E9E83D4",
+                                             "size_bytes":  9196
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/widgets/forest_path_button.dart",
-                                             "sha256":  "82821BD1CF094E9891A1344B049B4F23EE46826477F07F1FE8A25CFF821F3398",
-                                             "size_bytes":  1823
+                                             "path":  "frontend/lib/features/gamification/presentation/pages/leaderboard_screen.dart",
+                                             "sha256":  "64D4AF22DFD72367A0EE35556DF176CF2CE2245362EAE3E5ECA4658772671CED",
+                                             "size_bytes":  10562
                                          },
                                          {
                                              "path":  "frontend/lib/features/gamification/presentation/widgets/forest_flora_catalog.dart",
@@ -166,19 +171,14 @@
                                              "size_bytes":  2779
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/data/repositories/insights_repository_impl.dart",
-                                             "sha256":  "7BDDBEC7D2DE1A85DCF67AAFBAD4124F4322F00EBBBF0CD527CC9F27BF5EE544",
-                                             "size_bytes":  5365
+                                             "path":  "frontend/lib/features/gamification/presentation/widgets/forest_path_button.dart",
+                                             "sha256":  "82821BD1CF094E9891A1344B049B4F23EE46826477F07F1FE8A25CFF821F3398",
+                                             "size_bytes":  1823
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/widgets/living_forest_hub.dart",
-                                             "sha256":  "103B399AEF08DED88BCBEFE8D962ABA8DF5A517B47D2173230A2E372DFDCAD05",
-                                             "size_bytes":  19279
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/insights/presentation/pages/inflation_breakdown_section.dart",
-                                             "sha256":  "FF743C2FFC113974795578EE5F3EE59565DB05CE4C1C1E52E81F6B7605163EDE",
-                                             "size_bytes":  7233
+                                             "path":  "frontend/lib/features/insights/domain/entities/inflation_data_entity.dart",
+                                             "sha256":  "479F3A6ACCFBB4F92A0619DFF2A422B869F5F54749B1A4A8907C7FDF7380531A",
+                                             "size_bytes":  1156
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/pages/forecast_screen.dart",
@@ -186,14 +186,14 @@
                                              "size_bytes":  12906
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/presentation/pages/inflation_screen.dart",
-                                             "sha256":  "AD7AEC6A2FF26FE800D7D0303934E26207C5D1DD9E683DDC01191D7BD217B7F1",
-                                             "size_bytes":  6171
+                                             "path":  "frontend/lib/features/insights/presentation/bloc/inflation_state.dart",
+                                             "sha256":  "B61D60D21098C2727EA67C940ABD0D969A3909B4A5106DDBAE30032C3B0D41F6",
+                                             "size_bytes":  692
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/presentation/widgets/inflation_maki_share_card.dart",
-                                             "sha256":  "B102BF4DD7FCF7332A618D19908A63E039964F09AC28FF7673AAB97A9AFDC110",
-                                             "size_bytes":  12471
+                                             "path":  "frontend/lib/features/insights/presentation/pages/inflation_breakdown_section.dart",
+                                             "sha256":  "FF743C2FFC113974795578EE5F3EE59565DB05CE4C1C1E52E81F6B7605163EDE",
+                                             "size_bytes":  7233
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/pages/insights_screen.dart",
@@ -201,24 +201,9 @@
                                              "size_bytes":  6596
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/presentation/bloc/inflation_state.dart",
-                                             "sha256":  "B61D60D21098C2727EA67C940ABD0D969A3909B4A5106DDBAE30032C3B0D41F6",
-                                             "size_bytes":  692
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/insights/presentation/bloc/forecast_event.dart",
-                                             "sha256":  "E4E181F0ED7243E5AEA82288EF23396B0705584FB36AD46F8E41EB0AB4E1CB28",
-                                             "size_bytes":  216
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/insights/presentation/bloc/forecast_bloc.dart",
-                                             "sha256":  "A8714368DC5A4C7086BD6696DF8EE0AD88056E03266FF589A4ADA1CA2F4CAD56",
-                                             "size_bytes":  1508
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/insights/presentation/bloc/forecast_state.dart",
-                                             "sha256":  "D476CD9218DE79BE97F8CC1593802C8FD3074FB93624E53D462C0810D6C18C76",
-                                             "size_bytes":  794
+                                             "path":  "frontend/lib/features/insights/presentation/pages/inflation_screen.dart",
+                                             "sha256":  "AD7AEC6A2FF26FE800D7D0303934E26207C5D1DD9E683DDC01191D7BD217B7F1",
+                                             "size_bytes":  6171
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/bloc/inflation_event.dart",
@@ -226,19 +211,34 @@
                                              "size_bytes":  220
                                          },
                                          {
+                                             "path":  "frontend/lib/features/insights/presentation/bloc/forecast_bloc.dart",
+                                             "sha256":  "A8714368DC5A4C7086BD6696DF8EE0AD88056E03266FF589A4ADA1CA2F4CAD56",
+                                             "size_bytes":  1508
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/insights/domain/repositories/insights_repository.dart",
+                                             "sha256":  "4D0C33B351DB43E06FEB5CB3D3159A64A7CF8D51A71782D1827C45568E0B5B1C",
+                                             "size_bytes":  308
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/insights/presentation/bloc/forecast_event.dart",
+                                             "sha256":  "E4E181F0ED7243E5AEA82288EF23396B0705584FB36AD46F8E41EB0AB4E1CB28",
+                                             "size_bytes":  216
+                                         },
+                                         {
                                              "path":  "frontend/lib/features/insights/presentation/bloc/inflation_bloc.dart",
                                              "sha256":  "2EA3DD87A5ED7B6F0095AAD08E936215BB3B01325848EB9F73C7FC44233BCA76",
                                              "size_bytes":  1090
                                          },
                                          {
-                                             "path":  "frontend/lib/features/reports/presentation/pages/report_center_screen.dart",
-                                             "sha256":  "CA37EDF7FAA429B367ABE44D6501967F125710D63B1C2161661F190CF5C4A46C",
-                                             "size_bytes":  13652
+                                             "path":  "frontend/lib/features/insights/presentation/bloc/forecast_state.dart",
+                                             "sha256":  "D476CD9218DE79BE97F8CC1593802C8FD3074FB93624E53D462C0810D6C18C76",
+                                             "size_bytes":  794
                                          },
                                          {
-                                             "path":  "frontend/lib/features/transactions/presentation/forms/income_entry_form.dart",
-                                             "sha256":  "57ACA5FA06442BFEA687925F93E4E4E751CD0743BED97466D5E6EFA67F88F860",
-                                             "size_bytes":  11327
+                                             "path":  "frontend/lib/features/reports/data/maki_pdf_report_service.dart",
+                                             "sha256":  "F525D643CFFC8601D2C396BE1F71A0B8FD0058920D037172DF88195BBD1E7812",
+                                             "size_bytes":  16952
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/forms/expense_entry_form.dart",
@@ -246,14 +246,14 @@
                                              "size_bytes":  11777
                                          },
                                          {
-                                             "path":  "frontend/lib/features/transactions/presentation/pages/comparison_screen.dart",
-                                             "sha256":  "7F9AF0DFD710965CD04EF93679EF52ADD45A73D1DC6BE702416A4F0A3BF31CFA",
-                                             "size_bytes":  12934
+                                             "path":  "frontend/lib/features/transactions/presentation/controllers/expense_entry_view_controller.dart",
+                                             "sha256":  "A65BE314344AF6045D45BC3F3E5290A1177E398039EAFC4C641EE4076C783A16",
+                                             "size_bytes":  17530
                                          },
                                          {
-                                             "path":  "frontend/lib/features/transactions/presentation/pages/expense_entry_helpers.dart",
-                                             "sha256":  "898C89D744228B17514D737FE8EBDD7CCDE36EAFC8D9F404EE54D01C68A539E7",
-                                             "size_bytes":  2129
+                                             "path":  "frontend/lib/features/transactions/presentation/forms/income_entry_form.dart",
+                                             "sha256":  "57ACA5FA06442BFEA687925F93E4E4E751CD0743BED97466D5E6EFA67F88F860",
+                                             "size_bytes":  11327
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/pages/expense_entry_goal_action.dart",
@@ -261,24 +261,9 @@
                                              "size_bytes":  6326
                                          },
                                          {
-                                             "path":  "frontend/lib/features/transactions/presentation/controllers/expense_entry_view_controller.dart",
-                                             "sha256":  "A65BE314344AF6045D45BC3F3E5290A1177E398039EAFC4C641EE4076C783A16",
-                                             "size_bytes":  17530
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/transactions/domain/repositories/transaction_repository.dart",
-                                             "sha256":  "BD6F6D4A81E3106A3776B0539D1091E08866782A51546CE7740F29E4B0F4C9CB",
-                                             "size_bytes":  642
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/transactions/domain/entities/income_entity.dart",
-                                             "sha256":  "025BB1C34EFF61DE448BBD4DA6E2365E1E0B8A22BFC4898472286D41CEB3240A",
-                                             "size_bytes":  509
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/transactions/presentation/bloc/transaction_bloc.dart",
-                                             "sha256":  "4E6E15BCD0CA1EE47BA5406579C8172D7AE333C57BE08246A06CF31863AB134E",
-                                             "size_bytes":  3561
+                                             "path":  "frontend/lib/features/transactions/presentation/pages/comparison_screen.dart",
+                                             "sha256":  "7F9AF0DFD710965CD04EF93679EF52ADD45A73D1DC6BE702416A4F0A3BF31CFA",
+                                             "size_bytes":  12934
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/bloc/transaction_state.dart",
@@ -286,9 +271,34 @@
                                              "size_bytes":  1363
                                          },
                                          {
+                                             "path":  "frontend/lib/features/transactions/domain/entities/income_entity.dart",
+                                             "sha256":  "025BB1C34EFF61DE448BBD4DA6E2365E1E0B8A22BFC4898472286D41CEB3240A",
+                                             "size_bytes":  509
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/transactions/domain/entities/expense_entity.dart",
+                                             "sha256":  "7F324444332801A611E402C872DB62D7ADB169A9B12B2873D7869E88677B6739",
+                                             "size_bytes":  687
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/transactions/domain/repositories/transaction_repository.dart",
+                                             "sha256":  "BD6F6D4A81E3106A3776B0539D1091E08866782A51546CE7740F29E4B0F4C9CB",
+                                             "size_bytes":  656
+                                         },
+                                         {
                                              "path":  "frontend/lib/features/transactions/presentation/bloc/transaction_event.dart",
                                              "sha256":  "64C519CCFB44BB1DAE97E8DABDC1C52E6F2D9B86DA6C407B7B93C12EFDA14E61",
-                                             "size_bytes":  1423
+                                             "size_bytes":  1481
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/transactions/presentation/bloc/transaction_bloc.dart",
+                                             "sha256":  "4E6E15BCD0CA1EE47BA5406579C8172D7AE333C57BE08246A06CF31863AB134E",
+                                             "size_bytes":  3561
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/transactions/presentation/pages/expense_entry_helpers.dart",
+                                             "sha256":  "898C89D744228B17514D737FE8EBDD7CCDE36EAFC8D9F404EE54D01C68A539E7",
+                                             "size_bytes":  2129
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/widgets/personalized_finance_overview.dart",
@@ -307,13 +317,13 @@
                                          },
                                          {
                                              "path":  "frontend/lib/l10n/app_tr.arb",
-                                             "sha256":  "7009DF3EBEB0B4ED51B6EABD9808A1EA66EEAA731E69EFF93EAF30D88716CF40",
-                                             "size_bytes":  19281
+                                             "sha256":  "34A2D5795CEC5307EDE6F28927C4408D00F714CCAC575451CD601E2B53C5257C",
+                                             "size_bytes":  20178
                                          },
                                          {
                                              "path":  "frontend/lib/l10n/app_en.arb",
-                                             "sha256":  "0E0685A0557C4C4BF1BE2380401DF880F03ED30258BD1B2B35E88C381425E390",
-                                             "size_bytes":  18302
+                                             "sha256":  "0FE5D2E5138E6DAF9F0765F7A3D47420D37EE74CE43EC477AB1A4395A21FA9BA",
+                                             "size_bytes":  19179
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/widgets/personalized_finance_goal.dart",
@@ -346,34 +356,9 @@
                                              "size_bytes":  22213
                                          },
                                          {
-                                             "path":  "frontend/lib/features/transactions/domain/entities/expense_entity.dart",
-                                             "sha256":  "7F324444332801A611E402C872DB62D7ADB169A9B12B2873D7869E88677B6739",
-                                             "size_bytes":  687
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/simulator/domain/entities/debt_entity.dart",
-                                             "sha256":  "BB4B948E9C9C7342B8C63D68A17D4C71E23F8DA1CBD34AC32A3F961E372CED39",
-                                             "size_bytes":  455
-                                         },
-                                         {
                                              "path":  "frontend/lib/features/simulator/data/repositories/simulator_repository_impl.dart",
                                              "sha256":  "D6B11A2372ED9B79BFB411DDE1CBFD8B5D7CD5FFF4D293209BCF517FB8008496",
                                              "size_bytes":  3941
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/simulator/domain/entities/payoff_month_entity.dart",
-                                             "sha256":  "EF5070C08E9A34BE9730311B58623E8F406183731C73B5A7771CAF57910E1EED",
-                                             "size_bytes":  307
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/simulator/domain/repositories/simulator_repository.dart",
-                                             "sha256":  "E4019D9548259AE775A2246D84481397FB4237A40D7E8CDA12E816A9A8500A3B",
-                                             "size_bytes":  396
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/simulator/domain/entities/simulation_result_entity.dart",
-                                             "sha256":  "31A03BFECDE5175AE113C12122411CD5DECF088F2D6B1C26BF2AF1C476B0AAD2",
-                                             "size_bytes":  614
                                          },
                                          {
                                              "path":  "frontend/lib/features/simulator/data/datasources/debt_plan_local_data_source.dart",
@@ -381,19 +366,19 @@
                                              "size_bytes":  2909
                                          },
                                          {
-                                             "path":  "frontend/lib/features/session/domain/maki_session.dart",
-                                             "sha256":  "3FE036C77284BFB23A70BC5BFDB6FF455798E7121E21EE55F695C222F34B68A7",
-                                             "size_bytes":  908
+                                             "path":  "frontend/lib/features/simulator/domain/entities/debt_entity.dart",
+                                             "sha256":  "BB4B948E9C9C7342B8C63D68A17D4C71E23F8DA1CBD34AC32A3F961E372CED39",
+                                             "size_bytes":  455
                                          },
                                          {
-                                             "path":  "frontend/lib/features/session/data/oidc_session_repository.dart",
-                                             "sha256":  "A64063430F7DEA398B5D36654166F14A644423489B12E3D1319C0E10F4EE942C",
-                                             "size_bytes":  7161
+                                             "path":  "frontend/lib/features/simulator/domain/entities/simulation_result_entity.dart",
+                                             "sha256":  "31A03BFECDE5175AE113C12122411CD5DECF088F2D6B1C26BF2AF1C476B0AAD2",
+                                             "size_bytes":  614
                                          },
                                          {
-                                             "path":  "frontend/lib/features/session/domain/session_repository.dart",
-                                             "sha256":  "EABC10D3229A4C6171A218D8BE8FAC9185975B22B1BDC2494CC8AF2D041CE4E7",
-                                             "size_bytes":  322
+                                             "path":  "frontend/lib/features/simulator/domain/entities/payoff_month_entity.dart",
+                                             "sha256":  "EF5070C08E9A34BE9730311B58623E8F406183731C73B5A7771CAF57910E1EED",
+                                             "size_bytes":  307
                                          },
                                          {
                                              "path":  "frontend/lib/features/session/presentation/pages/connection_privacy_screen.dart",
@@ -401,9 +386,34 @@
                                              "size_bytes":  14112
                                          },
                                          {
+                                             "path":  "frontend/lib/features/session/data/oidc_session_repository.dart",
+                                             "sha256":  "1D75B5ACB7711A78B0BB73DD94548616C9344ACD83ED42CCDC5A508C71B6FBFD",
+                                             "size_bytes":  7068
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/reports/presentation/pages/report_center_screen.dart",
+                                             "sha256":  "DA8C998ADF379C73ADD9A0335D5A4BB06C6D21B3086FB68C072566895992C8C9",
+                                             "size_bytes":  13575
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/session/domain/maki_session.dart",
+                                             "sha256":  "3FE036C77284BFB23A70BC5BFDB6FF455798E7121E21EE55F695C222F34B68A7",
+                                             "size_bytes":  908
+                                         },
+                                         {
                                              "path":  "frontend/lib/features/session/presentation/cubit/session_cubit.dart",
                                              "sha256":  "1FEF3EF9B49CDDFE2827A234BE4AFDA7C39ED2EECDC6E76FBE36DFF636CB4A57",
                                              "size_bytes":  768
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/session/domain/session_repository.dart",
+                                             "sha256":  "EABC10D3229A4C6171A218D8BE8FAC9185975B22B1BDC2494CC8AF2D041CE4E7",
+                                             "size_bytes":  322
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/simulator/domain/repositories/simulator_repository.dart",
+                                             "sha256":  "E4019D9548259AE775A2246D84481397FB4237A40D7E8CDA12E816A9A8500A3B",
+                                             "size_bytes":  396
                                          },
                                          {
                                              "path":  "frontend/lib/features/simulator/presentation/pages/debt_simulator_screen.dart",
@@ -423,7 +433,7 @@
                                          {
                                              "path":  "frontend/lib/features/transactions/domain/entities/category_entity.dart",
                                              "sha256":  "C2D6394FE084D8E7DF7FE608EA4320366133C0F40C8A710206306B1B9D205428",
-                                             "size_bytes":  382
+                                             "size_bytes":  400
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/data/repositories/transaction_repository_impl.dart",
@@ -463,17 +473,17 @@
                                          {
                                              "path":  "frontend/lib/core/widgets/brand_wordmark.dart",
                                              "sha256":  "CC568DD299019B43FCF541907C2EF59451B6279AD4744D2D9B25194F2D69E647",
-                                             "size_bytes":  2478
+                                             "size_bytes":  2561
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/async_state_view.dart",
                                              "sha256":  "299B9641CD3A72D45E4A8A5102A713AFD0A269879715FAAD010252FAA8EA045C",
-                                             "size_bytes":  874
+                                             "size_bytes":  916
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/date_field.dart",
                                              "sha256":  "EE33147BE7F3E6D80256D4346188FFCA4CB470FE7652362CEE8446A1611CB30E",
-                                             "size_bytes":  1289
+                                             "size_bytes":  1338
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/empty_state.dart",
@@ -493,7 +503,7 @@
                                          {
                                              "path":  "frontend/lib/core/utils/category_l10n.dart",
                                              "sha256":  "93E7A46FA3BBEC05D3C6BBB9B3261ABDA146FBC454FEE88BBF4BD6CA4FF4DE7D",
-                                             "size_bytes":  947
+                                             "size_bytes":  983
                                          },
                                          {
                                              "path":  "frontend/lib/core/theme/app_tokens.dart",
@@ -508,22 +518,17 @@
                                          {
                                              "path":  "frontend/lib/core/utils/pii_scrubber.dart",
                                              "sha256":  "892031907362BE64096AF39CB6FF49FD1EADA7DE89FE2E31AE5D9C7696B69BCB",
-                                             "size_bytes":  934
+                                             "size_bytes":  970
                                          },
                                          {
                                              "path":  "frontend/lib/core/utils/dates.dart",
                                              "sha256":  "2307E0EDB437A7C152090ACA73CFCD3719A9CD17F089F2CC28ED228145D365FF",
-                                             "size_bytes":  589
+                                             "size_bytes":  610
                                          },
                                          {
-                                             "path":  "frontend/lib/core/widgets/mascot.dart",
-                                             "sha256":  "D4A6BE15534EC46D8F54788C459D63100E5ABE068A7476AFBCACFDACC6BCA322",
-                                             "size_bytes":  5857
-                                         },
-                                         {
-                                             "path":  "frontend/lib/core/widgets/maki_navigation_dock.dart",
-                                             "sha256":  "DEA7F3DC10DA739A35FA413BB10AE134612B95AD7871AF7A72C7107FD8BF451B",
-                                             "size_bytes":  1412
+                                             "path":  "frontend/lib/core/widgets/error_state.dart",
+                                             "sha256":  "20C1B1A9F00FC6F6347FAB2C20C0D2C2852962967B3EAA422138BD57FBD59EF2",
+                                             "size_bytes":  1788
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/money_field.dart",
@@ -531,29 +536,29 @@
                                              "size_bytes":  1934
                                          },
                                          {
+                                             "path":  "frontend/lib/core/widgets/mascot.dart",
+                                             "sha256":  "D4A6BE15534EC46D8F54788C459D63100E5ABE068A7476AFBCACFDACC6BCA322",
+                                             "size_bytes":  5857
+                                         },
+                                         {
+                                             "path":  "frontend/lib/core/widgets/money_text.dart",
+                                             "sha256":  "0D798D3AE710EC6CCE11CBC46E69E82C5800065FEFB2D3783037A64104182555",
+                                             "size_bytes":  1347
+                                         },
+                                         {
+                                             "path":  "frontend/lib/core/widgets/password_strength_indicator.dart",
+                                             "sha256":  "978B78C22886FA7D465CF8621B03B36A9E12160FDFA7E40453A14416BCD51E90",
+                                             "size_bytes":  3283
+                                         },
+                                         {
                                              "path":  "frontend/lib/core/widgets/net_balance_card.dart",
                                              "sha256":  "8CAFB663493573194663BB058DC16A31C051AD170A5EC31BF176BD3B50A3E3EB",
                                              "size_bytes":  8996
                                          },
                                          {
-                                             "path":  "frontend/lib/core/widgets/money_text.dart",
-                                             "sha256":  "0D798D3AE710EC6CCE11CBC46E69E82C5800065FEFB2D3783037A64104182555",
-                                             "size_bytes":  1293
-                                         },
-                                         {
-                                             "path":  "frontend/lib/core/widgets/maki_lazy_indexed_stack.dart",
-                                             "sha256":  "78DF6B5319AC4D5CE51472E66B14C9AD49265900AF2F10F4F57DB7893DBC01BD",
-                                             "size_bytes":  4431
-                                         },
-                                         {
-                                             "path":  "frontend/lib/core/widgets/forest_progress_card.dart",
-                                             "sha256":  "C8E0E648468C795CFF9C8DCED99613168B5F8CE0E6F89E8561DE444A4C137051",
-                                             "size_bytes":  24512
-                                         },
-                                         {
-                                             "path":  "frontend/lib/core/widgets/error_state.dart",
-                                             "sha256":  "20C1B1A9F00FC6F6347FAB2C20C0D2C2852962967B3EAA422138BD57FBD59EF2",
-                                             "size_bytes":  1728
+                                             "path":  "frontend/lib/core/widgets/maki_navigation_dock.dart",
+                                             "sha256":  "DEA7F3DC10DA739A35FA413BB10AE134612B95AD7871AF7A72C7107FD8BF451B",
+                                             "size_bytes":  1412
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/maki_adaptive_navigation.dart",
@@ -561,9 +566,9 @@
                                              "size_bytes":  3822
                                          },
                                          {
-                                             "path":  "frontend/lib/core/widgets/maki_background.dart",
-                                             "sha256":  "7437F1FBE073195EA8B383B2D7F834E3650947D53F0EA4253B153484DA8E5443",
-                                             "size_bytes":  2769
+                                             "path":  "frontend/lib/core/widgets/forest_progress_card.dart",
+                                             "sha256":  "C8E0E648468C795CFF9C8DCED99613168B5F8CE0E6F89E8561DE444A4C137051",
+                                             "size_bytes":  24512
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/maki_app_bar_title.dart",
@@ -571,14 +576,19 @@
                                              "size_bytes":  1114
                                          },
                                          {
-                                             "path":  "frontend/lib/core/theme/app_theme.dart",
-                                             "sha256":  "9D89810C15EFE50CA2595713D53FDCB3E7436439431E71CF1B15A142BADB006F",
-                                             "size_bytes":  14134
+                                             "path":  "frontend/lib/core/widgets/maki_lazy_indexed_stack.dart",
+                                             "sha256":  "78DF6B5319AC4D5CE51472E66B14C9AD49265900AF2F10F4F57DB7893DBC01BD",
+                                             "size_bytes":  4431
+                                         },
+                                         {
+                                             "path":  "frontend/lib/core/widgets/maki_background.dart",
+                                             "sha256":  "7437F1FBE073195EA8B383B2D7F834E3650947D53F0EA4253B153484DA8E5443",
+                                             "size_bytes":  2769
                                          },
                                          {
                                              "path":  "frontend/lib/core/database/connection/connection.dart",
                                              "sha256":  "7220AAF0F315D95E678444BA4BE2B8051346EA2DDB230EF9DB0A183FE5B0541B",
-                                             "size_bytes":  193
+                                             "size_bytes":  197
                                          },
                                          {
                                              "path":  "frontend/lib/core/database/secure_key_helper.dart",
@@ -588,17 +598,17 @@
                                          {
                                              "path":  "frontend/lib/core/database/connection/connection_native.dart",
                                              "sha256":  "9CDC51325C85CA1386F426B29BBC3465B673C69A53E575A019F32D1EC8BA789C",
-                                             "size_bytes":  669
+                                             "size_bytes":  690
                                          },
                                          {
                                              "path":  "frontend/lib/core/database/connection/connection_web.dart",
-                                             "sha256":  "00DD07586B1733E359A44D14363A03A5E345B730B36D9B3EE5FEF581B442177B",
-                                             "size_bytes":  894
+                                             "sha256":  "25A5ABD10D5954AC6A49DAEB6886289A3C469268E5C8ED0A07243345A210EA14",
+                                             "size_bytes":  914
                                          },
                                          {
                                              "path":  "frontend/lib/core/database/connection/connection_unsupported.dart",
                                              "sha256":  "8774D7DD32B0A4C4188A20AF9E2DC63504A0D8DB9DE94B7D30D3C449A5F882CC",
-                                             "size_bytes":  149
+                                             "size_bytes":  154
                                          },
                                          {
                                              "path":  "frontend/lib/core/database/money_minor_converter.dart",
@@ -607,8 +617,8 @@
                                          },
                                          {
                                              "path":  "frontend/lib/core/config/app_environment.dart",
-                                             "sha256":  "5E9BDA1CCA04D6B9B2300D297A9D79C1191F8FD00239EE7A985811186321B3AE",
-                                             "size_bytes":  7127
+                                             "sha256":  "3B2CD55187F9718EAB89B1B3779F987323BD026E40A65C595C85771A4A3D9C03",
+                                             "size_bytes":  7178
                                          },
                                          {
                                              "path":  "frontend/lib/main.dart",
@@ -631,14 +641,9 @@
                                              "size_bytes":  27662
                                          },
                                          {
-                                             "path":  "frontend/lib/core/notifications/notification_scheduler_stub.dart",
-                                             "sha256":  "8F1376470BF46EFC04744C4CFF092EB3005CE3F84802D263AABCB3138C5E5187",
-                                             "size_bytes":  636
-                                         },
-                                         {
-                                             "path":  "frontend/lib/core/notifications/notification_scheduler_native.dart",
-                                             "sha256":  "A68BF5F16D93268B00A773F22771AAC6B636A200B92AC3E95F9DD559D5071667",
-                                             "size_bytes":  3486
+                                             "path":  "frontend/lib/core/di/injection_container.dart",
+                                             "sha256":  "FE0465F0D53054EB5CC77487771C46EDE8A0D93BCACB332BB821753454DF1FEB",
+                                             "size_bytes":  8401
                                          },
                                          {
                                              "path":  "frontend/lib/core/persistence/coach_bubble_position_store.dart",
@@ -646,9 +651,9 @@
                                              "size_bytes":  1004
                                          },
                                          {
-                                             "path":  "frontend/lib/core/personalization/goal_route_banner.dart",
-                                             "sha256":  "99C1A349C911F8A0EDA1CAEE2B79815E62EE232964F73BFA21753B9A60A0F41D",
-                                             "size_bytes":  3090
+                                             "path":  "frontend/lib/core/notifications/notification_scheduler_stub.dart",
+                                             "sha256":  "8F1376470BF46EFC04744C4CFF092EB3005CE3F84802D263AABCB3138C5E5187",
+                                             "size_bytes":  636
                                          },
                                          {
                                              "path":  "frontend/lib/core/personalization/goal_experience.dart",
@@ -656,19 +661,19 @@
                                              "size_bytes":  6184
                                          },
                                          {
-                                             "path":  "frontend/lib/core/notifications/notification_scheduler_contract.dart",
-                                             "sha256":  "AF0FB0C0A485AF1DD034D199F25F1CC353F56D90F9DEC0B5F5D39021724E07D8",
-                                             "size_bytes":  408
+                                             "path":  "frontend/lib/core/theme/app_theme.dart",
+                                             "sha256":  "9D89810C15EFE50CA2595713D53FDCB3E7436439431E71CF1B15A142BADB006F",
+                                             "size_bytes":  14134
                                          },
                                          {
-                                             "path":  "frontend/lib/core/errors/app_error_reporter.dart",
-                                             "sha256":  "BCD6E7CC01CF4A810174BAFFB33F711DCC3C91482E392EDBA5AFE4BCB9BCA04D",
-                                             "size_bytes":  2566
+                                             "path":  "frontend/lib/core/personalization/goal_route_banner.dart",
+                                             "sha256":  "99C1A349C911F8A0EDA1CAEE2B79815E62EE232964F73BFA21753B9A60A0F41D",
+                                             "size_bytes":  3090
                                          },
                                          {
-                                             "path":  "frontend/lib/core/di/injection_container.dart",
-                                             "sha256":  "FE0465F0D53054EB5CC77487771C46EDE8A0D93BCACB332BB821753454DF1FEB",
-                                             "size_bytes":  8401
+                                             "path":  "frontend/lib/core/notifications/notification_scheduler_native.dart",
+                                             "sha256":  "D0C90754E630F303BA5A04C658522CE476DA0F8A62E9438B332730542552DE42",
+                                             "size_bytes":  3519
                                          },
                                          {
                                              "path":  "frontend/lib/core/network/api_config.dart",
@@ -676,9 +681,9 @@
                                              "size_bytes":  158
                                          },
                                          {
-                                             "path":  "frontend/lib/core/notifications/notification_scheduler.dart",
-                                             "sha256":  "CAE97EDB2494295C0005DF8F19677D3B7A08A8077C9BEB64B67A95DEFAD185C1",
-                                             "size_bytes":  328
+                                             "path":  "frontend/lib/core/errors/app_error_reporter.dart",
+                                             "sha256":  "33938F346DFB0DE077E17A2A5B4D6E8A1EAC013C7F1945C80F0C97A9435E9E7C",
+                                             "size_bytes":  2781
                                          },
                                          {
                                              "path":  "frontend/lib/core/network/maki_api_client.dart",
@@ -686,54 +691,19 @@
                                              "size_bytes":  21643
                                          },
                                          {
+                                             "path":  "frontend/lib/core/notifications/notification_scheduler_contract.dart",
+                                             "sha256":  "AF0FB0C0A485AF1DD034D199F25F1CC353F56D90F9DEC0B5F5D39021724E07D8",
+                                             "size_bytes":  408
+                                         },
+                                         {
+                                             "path":  "frontend/lib/core/notifications/notification_scheduler.dart",
+                                             "sha256":  "CAE97EDB2494295C0005DF8F19677D3B7A08A8077C9BEB64B67A95DEFAD185C1",
+                                             "size_bytes":  328
+                                         },
+                                         {
                                              "path":  "frontend/lib/core/widgets/premium_gate.dart",
                                              "sha256":  "982ED97BACB85775C808D078335A00B390B398962B796CBC6BD0631F939C816C",
                                              "size_bytes":  2768
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/gamification/domain/entities/daily_challenge_entity.dart",
-                                             "sha256":  "49B40977385843CB3F5C1CC620E5D616BDD9F6B8D8EAD5E27163D155616F761D",
-                                             "size_bytes":  555
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/gamification/domain/entities/daily_challenge_catalog.dart",
-                                             "sha256":  "A080E57DCE7CBE1B15C6033F04ABEC6C645609C9DEAA17160FCCE6B20D632494",
-                                             "size_bytes":  10370
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/gamification/domain/entities/gamification_status_entity.dart",
-                                             "sha256":  "76913F677F0538AEFF39AC3BCD6B78192FA88E02EC673BB6B90845191627F9EF",
-                                             "size_bytes":  263
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/gamification/domain/entities/living_forest_snapshot.dart",
-                                             "sha256":  "0D7FABE599F04C5D1188263642EDF6B0017FB6131F5324F77C3F7BF7F684359E",
-                                             "size_bytes":  2471
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/gamification/domain/entities/leaderboard_entity.dart",
-                                             "sha256":  "0A1B1B11E235D4333F0FB2ABB6557CA991D149E2925D2CCEFF2FBC7104843AC7",
-                                             "size_bytes":  360
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/gamification/data/services/living_forest_service.dart",
-                                             "sha256":  "3E1FE25F98139722B2373677990A62760E0B539633801313C9A4B8C7165F26DD",
-                                             "size_bytes":  22260
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/coach/presentation/pages/chat_screen.dart",
-                                             "sha256":  "46F3B3B88E2AC1CDB5555295F26B0FF53C0DD37176E6F358A2561A085616C379",
-                                             "size_bytes":  18942
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/coach/presentation/bloc/coach_state.dart",
-                                             "sha256":  "786A4BA24300331A452936103B056273668E5926BCE4D93A15264952CEF812DB",
-                                             "size_bytes":  996
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/gamification/data/datasources/gamification_local_data_source.dart",
-                                             "sha256":  "C49535243F04968C05DAA9C2884A2E8E0AA954FFD02F1D9570D6FAF8BBE4D64C",
-                                             "size_bytes":  2981
                                          },
                                          {
                                              "path":  "frontend/lib/features/gamification/data/services/daily_activity_engine.dart",
@@ -746,9 +716,64 @@
                                              "size_bytes":  17628
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/pages/forest_store_actions.dart",
-                                             "sha256":  "8D3CE809A2708C022EABAD584459C91466053D01EE3D6F9CCD71952408A70A60",
-                                             "size_bytes":  3559
+                                             "path":  "frontend/lib/features/gamification/data/services/living_forest_service.dart",
+                                             "sha256":  "3E1FE25F98139722B2373677990A62760E0B539633801313C9A4B8C7165F26DD",
+                                             "size_bytes":  22260
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/gamification/domain/entities/daily_challenge_entity.dart",
+                                             "sha256":  "49B40977385843CB3F5C1CC620E5D616BDD9F6B8D8EAD5E27163D155616F761D",
+                                             "size_bytes":  555
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/gamification/domain/entities/daily_challenge_catalog.dart",
+                                             "sha256":  "A080E57DCE7CBE1B15C6033F04ABEC6C645609C9DEAA17160FCCE6B20D632494",
+                                             "size_bytes":  10370
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/gamification/data/datasources/gamification_local_data_source.dart",
+                                             "sha256":  "C49535243F04968C05DAA9C2884A2E8E0AA954FFD02F1D9570D6FAF8BBE4D64C",
+                                             "size_bytes":  2981
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/coach/presentation/bloc/coach_bloc.dart",
+                                             "sha256":  "382317510419959CE532D7B80E7DD9766F1A6D3A3D9D72CAEE115440DFA5EF0E",
+                                             "size_bytes":  2998
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/coach/domain/repositories/coach_repository.dart",
+                                             "sha256":  "288A7D11EFF11C1073D90FF6FF2F132718C56D95C2B6F6A7A7FA80B62437534E",
+                                             "size_bytes":  227
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/coach/presentation/bloc/coach_event.dart",
+                                             "sha256":  "EA09796173F280EA3F069C6081D87062D00C331038423F5E37984898C9448EFA",
+                                             "size_bytes":  558
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/coach/presentation/pages/chat_screen.dart",
+                                             "sha256":  "46F3B3B88E2AC1CDB5555295F26B0FF53C0DD37176E6F358A2561A085616C379",
+                                             "size_bytes":  18942
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/coach/presentation/bloc/coach_state.dart",
+                                             "sha256":  "786A4BA24300331A452936103B056273668E5926BCE4D93A15264952CEF812DB",
+                                             "size_bytes":  996
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/gamification/domain/entities/gamification_status_entity.dart",
+                                             "sha256":  "76913F677F0538AEFF39AC3BCD6B78192FA88E02EC673BB6B90845191627F9EF",
+                                             "size_bytes":  263
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/gamification/presentation/pages/forest_localization.dart",
+                                             "sha256":  "12300AC2B209EA752FDA6F2028A406F8B721C89EEB936E4219D63D29592D8617",
+                                             "size_bytes":  6397
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/gamification/presentation/pages/forest_goal_forms.dart",
+                                             "sha256":  "DC32457759586B3621833FBD5375DBD95BD94DA77579EF6105E61B7189C43881",
+                                             "size_bytes":  10726
                                          },
                                          {
                                              "path":  "frontend/lib/features/gamification/presentation/pages/forest_screen.dart",
@@ -761,24 +786,24 @@
                                              "size_bytes":  16565
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/widgets/forest_district.dart",
-                                             "sha256":  "8194646C1D8A622263746F4162263388CE2E09723F9D879EE8C6BF285E9E83D4",
-                                             "size_bytes":  9196
+                                             "path":  "frontend/lib/features/gamification/presentation/pages/forest_store_actions.dart",
+                                             "sha256":  "8D3CE809A2708C022EABAD584459C91466053D01EE3D6F9CCD71952408A70A60",
+                                             "size_bytes":  3559
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/pages/leaderboard_screen.dart",
-                                             "sha256":  "64D4AF22DFD72367A0EE35556DF176CF2CE2245362EAE3E5ECA4658772671CED",
-                                             "size_bytes":  10562
+                                             "path":  "frontend/lib/features/gamification/presentation/bloc/gamification_state.dart",
+                                             "sha256":  "74C4F0A606460F02F3B73843A66DD2B96FB7807820218B4E04167C3F81F21347",
+                                             "size_bytes":  3054
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/pages/forest_localization.dart",
-                                             "sha256":  "12300AC2B209EA752FDA6F2028A406F8B721C89EEB936E4219D63D29592D8617",
-                                             "size_bytes":  6397
+                                             "path":  "frontend/lib/features/gamification/domain/entities/living_forest_snapshot.dart",
+                                             "sha256":  "0D7FABE599F04C5D1188263642EDF6B0017FB6131F5324F77C3F7BF7F684359E",
+                                             "size_bytes":  2471
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/bloc/gamification_bloc.dart",
-                                             "sha256":  "E013C367E1AD1D199DEF1E6B13B949A45EF0C69D4EB93F2BFA92C0184F0D4C90",
-                                             "size_bytes":  4062
+                                             "path":  "frontend/lib/features/gamification/domain/entities/leaderboard_entity.dart",
+                                             "sha256":  "0A1B1B11E235D4333F0FB2ABB6557CA991D149E2925D2CCEFF2FBC7104843AC7",
+                                             "size_bytes":  360
                                          },
                                          {
                                              "path":  "frontend/lib/features/gamification/domain/repositories/gamification_repository.dart",
@@ -791,19 +816,19 @@
                                              "size_bytes":  870
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/pages/forest_goal_forms.dart",
-                                             "sha256":  "DC32457759586B3621833FBD5375DBD95BD94DA77579EF6105E61B7189C43881",
-                                             "size_bytes":  10726
+                                             "path":  "frontend/lib/features/gamification/presentation/bloc/gamification_bloc.dart",
+                                             "sha256":  "E013C367E1AD1D199DEF1E6B13B949A45EF0C69D4EB93F2BFA92C0184F0D4C90",
+                                             "size_bytes":  4062
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/bloc/gamification_state.dart",
-                                             "sha256":  "74C4F0A606460F02F3B73843A66DD2B96FB7807820218B4E04167C3F81F21347",
-                                             "size_bytes":  3054
+                                             "path":  "frontend/lib/features/auth/data/repositories/auth_repository_impl.dart",
+                                             "sha256":  "61B95D76F3C89BA457944D4B9D3AA70CEF51908D8F29A96A64551A2AB9FBD51A",
+                                             "size_bytes":  3784
                                          },
                                          {
-                                             "path":  "frontend/lib/features/coach/presentation/bloc/coach_event.dart",
-                                             "sha256":  "EA09796173F280EA3F069C6081D87062D00C331038423F5E37984898C9448EFA",
-                                             "size_bytes":  558
+                                             "path":  "frontend/lib/features/auth/data/datasources/auth_remote_data_source.dart",
+                                             "sha256":  "5DDE0DC0E6996DDDF3C60816E616BF12385C8EA75BD3068AF7154F00152D3CC4",
+                                             "size_bytes":  6160
                                          },
                                          {
                                              "path":  "frontend/lib/features/auth/domain/entities/user_entity.dart",
@@ -811,24 +836,14 @@
                                              "size_bytes":  532
                                          },
                                          {
-                                             "path":  "frontend/lib/features/auth/data/repositories/auth_repository_impl.dart",
-                                             "sha256":  "84638B60B5EB6EDDC2668B7E0A2F22C295B4ACED357344A671B87B70EB7DC05A",
-                                             "size_bytes":  3719
+                                             "path":  "frontend/lib/features/auth/presentation/bloc/auth_bloc.dart",
+                                             "sha256":  "802DA096FD3591949769A6FD1F0C1980659C23D0E96A317ED5E27F1C243284AB",
+                                             "size_bytes":  3057
                                          },
                                          {
                                              "path":  "frontend/lib/features/auth/domain/repositories/auth_repository.dart",
                                              "sha256":  "70B2439EF3D803629F4173717E48F17B983DFC54EA4BC5C3DAE29698FA4F45A2",
                                              "size_bytes":  524
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/auth/presentation/bloc/auth_event.dart",
-                                             "sha256":  "18A17018704AE69C19A77AEFECBE707EFF4EE4822980B426BD9E836CBCCAC978",
-                                             "size_bytes":  1046
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/auth/presentation/bloc/auth_bloc.dart",
-                                             "sha256":  "802DA096FD3591949769A6FD1F0C1980659C23D0E96A317ED5E27F1C243284AB",
-                                             "size_bytes":  3057
                                          },
                                          {
                                              "path":  "frontend/lib/features/auth/data/datasources/auth_local_data_source.dart",
@@ -843,17 +858,17 @@
                                          {
                                              "path":  "frontend/lib/core/widgets/privacy_notice.dart",
                                              "sha256":  "A486BBFF1763E7C51F39C2937FA4591741A383B4BEAB83DE8B38968DEE99D63F",
-                                             "size_bytes":  1631
+                                             "size_bytes":  1684
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/source_card.dart",
                                              "sha256":  "67D97F2BF887076D1CDB5FB8E18E85FE3F6DBF3A8370AAD322E09BD724D84081",
-                                             "size_bytes":  2267
+                                             "size_bytes":  2345
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/tree_growth.dart",
                                              "sha256":  "8BE45EB17B7240B86D2BBD54D39FCF7975EE711E29775D8A581325ABA9F2DF98",
-                                             "size_bytes":  4054
+                                             "size_bytes":  4198
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/stat_card.dart",
@@ -861,9 +876,19 @@
                                              "size_bytes":  3986
                                          },
                                          {
-                                             "path":  "frontend/lib/features/coach/domain/entities/coach_message_entity.dart",
-                                             "sha256":  "0604F5E1FAF881E2AA0D413021BFD32E1B63345B2BBF2E697875C48A0B01B4CD",
-                                             "size_bytes":  433
+                                             "path":  "frontend/lib/features/auth/presentation/bloc/auth_event.dart",
+                                             "sha256":  "FA6E2588DED838C7F4FC07304B2898964DDA0177BAB5B4E7A26895DD52FF15F0",
+                                             "size_bytes":  1828
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/coach/data/datasources/local_coach_engine.dart",
+                                             "sha256":  "FEB2CE0D180C216F73C4F52FE3B5AEB69B3F9B282275A22038C38F204E24F268",
+                                             "size_bytes":  9420
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/coach/data/datasources/coach_connection_data_source.dart",
+                                             "sha256":  "4A8DD8B6E9ACB0891878DCBB81DA3D1EC4D70D7DAAAADD854A2B9C2D52C77EE3",
+                                             "size_bytes":  1211
                                          },
                                          {
                                              "path":  "frontend/lib/features/coach/data/repositories/coach_repository_impl.dart",
@@ -876,24 +901,19 @@
                                              "size_bytes":  368
                                          },
                                          {
-                                             "path":  "frontend/lib/features/coach/presentation/bloc/coach_bloc.dart",
-                                             "sha256":  "382317510419959CE532D7B80E7DD9766F1A6D3A3D9D72CAEE115440DFA5EF0E",
-                                             "size_bytes":  2998
+                                             "path":  "frontend/lib/features/coach/domain/entities/coach_message_entity.dart",
+                                             "sha256":  "0604F5E1FAF881E2AA0D413021BFD32E1B63345B2BBF2E697875C48A0B01B4CD",
+                                             "size_bytes":  433
                                          },
                                          {
-                                             "path":  "frontend/lib/features/coach/domain/repositories/coach_repository.dart",
-                                             "sha256":  "288A7D11EFF11C1073D90FF6FF2F132718C56D95C2B6F6A7A7FA80B62437534E",
-                                             "size_bytes":  227
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/coach/data/datasources/local_coach_engine.dart",
-                                             "sha256":  "FEB2CE0D180C216F73C4F52FE3B5AEB69B3F9B282275A22038C38F204E24F268",
-                                             "size_bytes":  9420
+                                             "path":  "frontend/lib/features/auth/presentation/utils/avatar_utils.dart",
+                                             "sha256":  "E52566D284CDB988103A18AF8A4583C1603F8BB10B54DD7451C919BB24DE49FD",
+                                             "size_bytes":  870
                                          },
                                          {
                                              "path":  "frontend/lib/features/auth/presentation/pages/brand_splash_screen.dart",
-                                             "sha256":  "E4140C52321AFAA82C18FFC0F7C04516939EB0D682412558DAECA851E55D4B79",
-                                             "size_bytes":  4816
+                                             "sha256":  "62FB6DBBA34AA77E256BC2259253620CAF36507814B4B8D4B279642E56261ADC",
+                                             "size_bytes":  4973
                                          },
                                          {
                                              "path":  "frontend/lib/features/auth/presentation/bloc/auth_state.dart",
@@ -901,19 +921,19 @@
                                              "size_bytes":  931
                                          },
                                          {
+                                             "path":  "frontend/lib/features/auth/presentation/pages/login_screen.dart",
+                                             "sha256":  "72CED7D6093F5FBED8C5C4AADD095F6ABEA775E0A2398728E0ED587D7B68D1A3",
+                                             "size_bytes":  11922
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/auth/presentation/pages/register_screen.dart",
+                                             "sha256":  "B30E78864CB8D2939E8490E16A31BEAC3A7755A0A61F3E72F9D345392C74A42E",
+                                             "size_bytes":  8391
+                                         },
+                                         {
                                              "path":  "frontend/lib/features/auth/presentation/pages/onboarding_screen.dart",
                                              "sha256":  "4DAB898F93012EF57E9B84124254D8ACB568102C4569F82AEFFA620431877716",
                                              "size_bytes":  8913
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/coach/data/datasources/coach_connection_data_source.dart",
-                                             "sha256":  "4A8DD8B6E9ACB0891878DCBB81DA3D1EC4D70D7DAAAADD854A2B9C2D52C77EE3",
-                                             "size_bytes":  1211
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/auth/presentation/utils/avatar_utils.dart",
-                                             "sha256":  "E52566D284CDB988103A18AF8A4583C1603F8BB10B54DD7451C919BB24DE49FD",
-                                             "size_bytes":  841
                                          }
                                      ]
                        }
