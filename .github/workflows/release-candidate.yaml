@@ -1,0 +1,100 @@
+name: Sürüm adayı
+
+on:
+  push:
+    tags:
+      - "rc-*"
+
+permissions:
+  contents: read
+
+jobs:
+  kalite:
+    name: Temiz CI kapısı
+    uses: ./.github/workflows/ci.yaml
+
+  yayim:
+    name: İmzalı üretim imajları
+    needs: kalite
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: release-candidate
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Kaynak kodu al
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Python ve uv kur
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          version: "0.11.29"
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Cosign kur
+        uses: sigstore/cosign-installer@ba7bc0a3fef59531c69a25acd34668d6d3fe6f22 # v4.1.0
+
+      - name: Yayım koşullarını doğrula
+        shell: bash
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF_TYPE" == "tag" && "$GITHUB_REF_NAME" == rc-* ]] || exit 1
+          [[ -n "$COSIGN_PRIVATE_KEY" && -n "$COSIGN_PASSWORD" ]] || exit 1
+
+      - name: Kayıt deposunda oturum aç
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GITHUB_TOKEN" | docker login ghcr.io --username "${GITHUB_ACTOR}" --password-stdin
+
+      - name: SBOM üret
+        working-directory: backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv sync --frozen --group dev
+          mkdir -p ../artifacts
+          uv run cyclonedx-py environment .venv/bin/python \
+            --pyproject pyproject.toml \
+            --output-reproducible \
+            --of JSON \
+            -o ../artifacts/backend.cdx.json
+
+      - name: İmajları üret, yayımla ve imzala
+        shell: bash
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          image_root="ghcr.io/${GITHUB_REPOSITORY,,}"
+          docker buildx create --use
+          : > artifacts/image-digests.txt
+          for target in api dispatcher worker-coach worker-forecast worker-ocr worker-data; do
+            image="${image_root}/${target}:${GITHUB_REF_NAME}"
+            docker buildx build \
+              --target "$target" \
+              --tag "$image" \
+              --provenance=true \
+              --sbom=true \
+              --push \
+              backend
+            cosign sign --yes --key env://COSIGN_PRIVATE_KEY "$image"
+            docker buildx imagetools inspect "$image" >> artifacts/image-digests.txt
+          done
+
+      - name: Yayım kanıtlarını yükle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: surum-adayi-kanitlari
+          path: |
+            artifacts/backend.cdx.json
+            artifacts/image-digests.txt
+          if-no-files-found: error
+          retention-days: 30
