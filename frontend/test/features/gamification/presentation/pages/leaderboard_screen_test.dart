@@ -18,7 +18,9 @@ void main() {
 
   setUp(() {
     mockGamificationBloc = MockGamificationBloc();
-    when(() => mockGamificationBloc.stream).thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockGamificationBloc.stream,
+    ).thenAnswer((_) => const Stream.empty());
     when(() => mockGamificationBloc.close()).thenAnswer((_) async {});
   });
 
@@ -35,7 +37,9 @@ void main() {
 
   group('LeaderboardScreen UI Tests', () {
     testWidgets('renders initial UI correctly', (tester) async {
-      when(() => mockGamificationBloc.state).thenReturn(GamificationState.initial());
+      when(
+        () => mockGamificationBloc.state,
+      ).thenReturn(GamificationState.initial());
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();

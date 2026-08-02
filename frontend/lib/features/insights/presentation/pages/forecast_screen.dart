@@ -18,7 +18,6 @@ class ForecastScreen extends StatefulWidget {
 
 class ForecastScreenState extends State<ForecastScreen>
     with AutomaticKeepAliveClientMixin {
-  
   @override
   bool get wantKeepAlive => true;
 
@@ -64,9 +63,14 @@ class ForecastScreenState extends State<ForecastScreen>
           }
         },
         builder: (context, state) {
-          final isLoading = state is ForecastLoading || state is ForecastInitial;
-          final hasInsufficientHistory = state is ForecastError && state.hasInsufficientHistory;
-          final forecast = state is ForecastLoaded ? state.forecast : <ForecastDayEntity>[];
+          final isLoading =
+              state is ForecastLoading || state is ForecastInitial;
+          final hasInsufficientHistory =
+              state is ForecastError && state.hasInsufficientHistory;
+          final forecast = state is ForecastLoaded
+              ? state.forecast
+              : <ForecastDayEntity>[];
+          final forecastMeta = forecast.isEmpty ? null : forecast.first;
 
           return RefreshIndicator(
             onRefresh: () async => _fetchAndCalculateForecast(),
@@ -111,10 +115,11 @@ class ForecastScreenState extends State<ForecastScreen>
                                     const SizedBox(width: 12),
                                     Text(
                                       l10n.projectedSpend,
-                                      style: theme.textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: theme.colorScheme.primary,
-                                      ),
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.primary,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -132,15 +137,19 @@ class ForecastScreenState extends State<ForecastScreen>
                         ),
                         const SizedBox(height: 20),
 
+                        if (forecastMeta != null) ...[
+                          _ForecastSourceCard(forecast: forecastMeta),
+                          const SizedBox(height: 16),
+                        ],
+
                         if (hasInsufficientHistory)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 20.0),
                             child: Container(
                               padding: const EdgeInsets.all(16.0),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.errorContainer.withValues(
-                                  alpha: 0.2,
-                                ),
+                                color: theme.colorScheme.errorContainer
+                                    .withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(16.0),
                                 border: Border.all(
                                   color: theme.colorScheme.error.withValues(
@@ -159,9 +168,12 @@ class ForecastScreenState extends State<ForecastScreen>
                                   Expanded(
                                     child: Text(
                                       l10n.forecastEmpty,
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        color: theme.colorScheme.onErrorContainer,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onErrorContainer,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -184,7 +196,9 @@ class ForecastScreenState extends State<ForecastScreen>
                                     child: Row(
                                       children: [
                                         CircleAvatar(
-                                          backgroundColor: theme.colorScheme.primary
+                                          backgroundColor: theme
+                                              .colorScheme
+                                              .primary
                                               .withValues(alpha: 0.1),
                                           child: Icon(
                                             Icons.calendar_month,
@@ -211,7 +225,8 @@ class ForecastScreenState extends State<ForecastScreen>
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                color: theme.colorScheme.onSurface,
+                                                color:
+                                                    theme.colorScheme.onSurface,
                                               ),
                                         ),
                                       ],
@@ -224,7 +239,9 @@ class ForecastScreenState extends State<ForecastScreen>
                         else if (!isLoading && !hasInsufficientHistory)
                           Center(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 40.0),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 40.0,
+                              ),
                               child: Text(
                                 l10n.noExpenses,
                                 style: const TextStyle(color: Colors.grey),
@@ -236,6 +253,50 @@ class ForecastScreenState extends State<ForecastScreen>
                   ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _ForecastSourceCard extends StatelessWidget {
+  const _ForecastSourceCard({required this.forecast});
+
+  final ForecastDayEntity forecast;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final local = forecast.source == 'local_baseline';
+    final confidence = switch (forecast.confidence) {
+      'high' => 'Yüksek',
+      'medium' => 'Orta',
+      _ => 'Düşük',
+    };
+    final fallback = forecast.fallbackReason == 'backend_unavailable';
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            local ? Icons.phone_android_rounded : Icons.cloud_done_outlined,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              '${local ? 'Yerel temel tahmin' : 'Çevrimiçi tahmin'} · '
+              '${forecast.observedDays} gözlem günü · $confidence güven'
+              '${fallback ? '\nÇevrimiçi servis kullanılamadığı için cihazdaki güvenli modele geçildi.' : ''}',
+              style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
+            ),
+          ),
+        ],
       ),
     );
   }

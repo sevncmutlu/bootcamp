@@ -12,8 +12,11 @@ import 'package:maki_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:maki_app/features/auth/presentation/utils/avatar_utils.dart';
 import 'package:maki_app/features/profile/data/datasources/onboarding_local_data_source.dart';
 import 'package:maki_app/features/premium/presentation/bloc/premium_bloc.dart';
+import 'package:maki_app/features/gamification/presentation/bloc/gamification_bloc.dart';
+import 'package:maki_app/features/gamification/presentation/pages/forest_screen.dart';
 import 'package:maki_app/core/theme/app_tokens.dart';
 import 'package:maki_app/core/di/injection_container.dart' as di;
+import 'package:maki_app/features/session/presentation/pages/connection_privacy_screen.dart';
 
 class AppNavigationDrawer extends StatefulWidget {
   const AppNavigationDrawer({super.key});
@@ -23,7 +26,6 @@ class AppNavigationDrawer extends StatefulWidget {
 }
 
 class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
-
   String _selectedTheme = 'system';
   String _selectedLanguage = 'system';
 
@@ -90,9 +92,9 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Text(
                 l10n.settingsThemeTitle,
-                style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  ctx,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
             ListTile(
@@ -150,9 +152,9 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Text(
                 l10n.settingsLanguageTitle,
-                style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  ctx,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
             ListTile(
@@ -232,79 +234,78 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
               width: double.infinity,
               padding: const EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withValues(
-                  alpha: 0.3,
+                color: theme.colorScheme.primaryContainer.withValues(
+                  alpha: 0.72,
                 ),
                 border: Border(
                   bottom: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withValues(
-                      alpha: 0.3,
-                    ),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.12),
                   ),
                 ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    BlocBuilder<AuthBloc, AuthState>(
-                      builder: (context, state) {
-                        final u = state.user;
-                        final name = u?.displayName;
-                        final email = u?.email;
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      final u = state.user;
+                      final name = u?.displayName;
+                      final email = u?.email;
 
-                        return Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: theme.colorScheme.primaryContainer
-                                    .withValues(alpha: 0.3),
-                                border: Border.all(
-                                  color: theme.colorScheme.primary
-                                      .withValues(alpha: 0.4),
-                                  width: 2,
+                      return Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: theme.colorScheme.primaryContainer
+                                  .withValues(alpha: 0.3),
+                              border: Border.all(
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.4,
                                 ),
-                                image: DecorationImage(
-                                  image: AvatarUtils.getAvatarImage(u?.avatarUrl),
-                                  fit: BoxFit.cover,
-                                ),
+                                width: 2,
+                              ),
+                              image: DecorationImage(
+                                image: AvatarUtils.getAvatarImage(u?.avatarUrl),
+                                fit: BoxFit.cover,
                               ),
                             ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    name != null && name.isNotEmpty
-                                        ? name
-                                        : (email != null && email.isNotEmpty
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  name != null && name.isNotEmpty
+                                      ? name
+                                      : (email != null && email.isNotEmpty
                                             ? email
                                             : l10n.guestUser),
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (email != null && email.isNotEmpty)
+                                  Text(
+                                    email,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  if (email != null && email.isNotEmpty)
-                                    Text(
-                                      email,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurfaceVariant,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
-                          ],
-                        );
-                      },
-                    ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                   const SizedBox(height: AppSpacing.md),
                   Row(
                     children: [
@@ -320,7 +321,9 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          context.watch<PremiumBloc>().state.isPremium ? l10n.tierPro : l10n.tierFree,
+                          context.watch<PremiumBloc>().state.isPremium
+                              ? l10n.tierPro
+                              : l10n.tierFree,
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: context.watch<PremiumBloc>().state.isPremium
                                 ? theme.colorScheme.onPrimary
@@ -334,12 +337,11 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                         TextButton(
                           onPressed: () async {
                             Navigator.pop(context);
-                            await Navigator.of(context)
-                                .push<bool>(
-                                  MaterialPageRoute<bool>(
-                                    builder: (_) => const PaywallScreen(),
-                                  ),
-                                );
+                            await Navigator.of(context).push<bool>(
+                              MaterialPageRoute<bool>(
+                                builder: (_) => const PaywallScreen(),
+                              ),
+                            );
                           },
                           style: TextButton.styleFrom(
                             foregroundColor: theme.colorScheme.primary,
@@ -381,6 +383,28 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (_) => const ProfileScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.forest_outlined,
+                      color: theme.colorScheme.primary,
+                    ),
+                    title: Text(l10n.forestTitle),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => BlocProvider(
+                            create: (_) => di.sl<GamificationBloc>(),
+                            child: ForestScreen(
+                              primaryGoal:
+                                  MyApp.of(context)?.primaryGoal ??
+                                  'track_spending',
+                            ),
+                          ),
                         ),
                       );
                     },
@@ -441,6 +465,24 @@ class _AppNavigationDrawerState extends State<AppNavigationDrawer> {
                     onTap: () => _showLanguageSelector(context, l10n),
                   ),
                   const Divider(),
+                  ListTile(
+                    leading: Icon(
+                      Icons.shield_outlined,
+                      color: theme.colorScheme.primary,
+                    ),
+                    title: const Text('Bağlantı ve gizlilik'),
+                    subtitle: const Text(
+                      'Yerel alan · güvenli hesap · yasal bilgiler',
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const ConnectionPrivacyScreen(),
+                        ),
+                      );
+                    },
+                  ),
                   ListTile(
                     leading: Icon(
                       Icons.settings_outlined,

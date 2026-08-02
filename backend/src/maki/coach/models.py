@@ -30,6 +30,8 @@ CitationNumbers = Annotated[
 
 class CoachSafety(StrEnum):
     ANSWERED = "answered"
+    LOCAL_GUIDANCE = "local_guidance"
+    GEMINI_GUIDANCE = "gemini_guidance"
     INSUFFICIENT_SOURCES = "insufficient_sources"
 
 
@@ -110,6 +112,10 @@ class CoachAnswer(ApiModel):
         if self.safety is CoachSafety.ANSWERED:
             if self.answer is None or not self.sources:
                 msg = "Yanıtlanan koç sonucu cevap ve kaynak taşımalıdır."
+                raise ValueError(msg)
+        elif self.safety in {CoachSafety.LOCAL_GUIDANCE, CoachSafety.GEMINI_GUIDANCE}:
+            if self.answer is None or self.sources:
+                msg = "Rehber yanıtı cevap taşımalı ve resmî veri kaynağı taşımamalıdır."
                 raise ValueError(msg)
         elif self.answer is not None or self.sources:
             msg = "Yetersiz kaynak sonucu cevap veya kaynak taşıyamaz."

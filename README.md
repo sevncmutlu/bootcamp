@@ -23,6 +23,7 @@
 - **Emir Hüseyin İnci:** Product Owner & Developer
 - **Sevinç Mutlu:** Scrum Master & Developer
 - **Shajar Ahmad Ahanger:** Developer
+- **Sena Gemiçioğlu:** Developer
 
 ### Ürün Açıklaması
 
@@ -99,7 +100,7 @@ flowchart TB
 
 **Tarih:** 19 Haziran – 5 Temmuz · **Durum:** ✅ Tamamlandı
 
-- **Sprint Notları:** Bu sprint tamamen planlama ve proje belirlemeye ayrıldı; kod yazılmadı. Ürün vizyonu, hedef kitle, teknoloji yığını, ürün kimliği (MakiKoç) ve gizlilik mimarisi kararları verildi. Detaylı sprint dokümanları [Sprint-1 klasöründe](./Sprint-1) yer almaktadır.
+- **Sprint Notları:** Bu sprint tamamen planlama ve proje belirlemeye ayrıldı; kod yazılmadı. Ürün vizyonu, hedef kitle, teknoloji yığını, ürün kimliği (MakiKoç) ve gizlilik mimarisi kararları verildi. Detaylı sprint dokümanları [Sprint 1 klasöründe](./docs/sprints/sprint-1/) yer almaktadır.
 
 - **Sprint içinde tamamlanması tahmin edilen puan:** 100 Puan
 
@@ -118,11 +119,11 @@ flowchart TB
 | US-06 | 3 sprint takvimi + kapsam belirleme | 8 |
 | US-07 | Risklerin belirlenmesi | 5 |
 
-Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
+Detaylı ürün backlog'u: [Ürün Backlog'u](./docs/product-backlog.md)
 
 </details>
 
-- **Daily Scrum:** Daily Scrum toplantıları takım küçük olduğu için kısa senkron görüşme + **Slack** üzerinden yürütülmüştür. Toplantı notları: [Daily-Scrum-Notes.md](./Sprint-1/Daily-Scrum-Notes.md)
+- **Daily Scrum:** Daily Scrum toplantıları takım küçük olduğu için kısa senkron görüşme + **Slack** üzerinden yürütülmüştür. Toplantı notları: [Daily-Scrum-Notes.md](./docs/sprints/sprint-1/Daily-Scrum-Notes.md)
 
 - **Sprint Board Update:** Sprint board, tüm planlama kalemleri **Tamamlandı** sütununa taşınarak tamamlanmıştır. Sprint 2'ye devreden işler Backlog'da, kapsam dışı bırakılan kararlar Reddedildi sütununda yer almaktadır.
 
@@ -130,7 +131,7 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
 
 - **Ürün Durumu:** Sprint 1 planlama sprinti olduğu için henüz çalışan ekran yoktur. Çıktılar: netleşmiş ürün vizyonu, teknoloji & mimari kararları, ürün kimliği (MakiKoç) ve gizlilik mimarisi, 3 sprintlik yol haritası ve risk listesi. _(Mimari şeması yukarıda yer almaktadır.)_
 
-- **Sprint Review:** Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu. Teknoloji yığını, geliştirmeye başlamak için yeterli detayda belirlendi. Gizlilik öncelikli mimari, projenin en kritik farklılaştırıcısı olarak onaylandı. Sprint hedeflerine %100 ulaşıldı, kapsam dışına çıkılmadı. Detay: [Sprint-1-Review.md](./Sprint-1/Sprint-1-Review.md)
+- **Sprint Review:** Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu. Teknoloji yığını, geliştirmeye başlamak için yeterli detayda belirlendi. Gizlilik öncelikli mimari, projenin en kritik farklılaştırıcısı olarak onaylandı. Sprint hedeflerine %100 ulaşıldı, kapsam dışına çıkılmadı. Detay: [Sprint-1-Review.md](./docs/sprints/sprint-1/Sprint-1-Review.md)
 
 - **Sprint Review Katılımcıları:** Emir Hüseyin İnci, Sevinç Mutlu
 
@@ -140,7 +141,7 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
   - Türkçe fiş OCR doğruluğu Sprint 2 başında birkaç örnek fişle erken test edilmeli.
   - Modeller için "önce basit çalışan sürüm, sonra iyileştir" yaklaşımı disiplinli uygulanmalı.
   - Daily Scrum'lar daha yapılandırılmış (sabit saat) hâle getirilmeli.
-  - Detay: [Sprint-1-Retrospective.md](./Sprint-1/Sprint-1-Retrospective.md)
+  - Detay: [Sprint-1-Retrospective.md](./docs/sprints/sprint-1/Sprint-1-Retrospective.md)
 
 ---
 
@@ -152,10 +153,10 @@ Sprint 1'de belirlenen ürün fikri ve Sevinç'in görsel tasarım kararları ko
 mobil uygulama, finans çekirdeği, API sözleşmeleri, gözlemlenebilirlik ve teslim
 altyapısı uçtan uca yeniden yapılandırıldı.
 
-Sprint kayıtları: [Sprint 2 özeti](./Sprint-2.md) ·
-[Backlog](./Sprint-2/Sprint-2-Backlog.md) ·
-[Review](./Sprint-2/Sprint-2-Review.md) ·
-[Retrospective](./Sprint-2/Sprint-2-Retrospective.md)
+Sprint kayıtları: [Sprint 2 özeti](./docs/sprints/sprint-2/) ·
+[Backlog](./docs/sprints/sprint-2/Sprint-2-Backlog.md) ·
+[Review](./docs/sprints/sprint-2/Sprint-2-Review.md) ·
+[Retrospective](./docs/sprints/sprint-2/Sprint-2-Retrospective.md)
 
 ### Tamamlanan kapsam
 
@@ -223,26 +224,77 @@ testleri, Flutter analizi ve Flutter testleri başarıyla tamamlandı. Telefon �
 
 ---
 
-# 🏁 Sprint 3 — Frontend Tam Yeniden Yapılandırma
+# 🏁 Sprint 3 — Yaşayan Finans Ormanı ve Mobil Ürün Teslimi
 
-**Tarih:** 20 Temmuz – 2 Ağustos · **Durum:** ⏳ Planlandı
+**Tarih:** 20 Temmuz – 2 Ağustos · **Durum:** ✅ Tamamlandı
 
-- **Ana hedef:** Mobil frontend; bilgi mimarisi, gezinme, ekranlar, ortak
-  bileşenler, durum yönetimi ve erişilebilirlik katmanlarıyla tamamen yeniden
-  yapılandırılacaktır.
-- **Korunacak temel:** Sprint 2 backend'i, sürümlü API sözleşmeleri,
-  `maki_finance_core`, MakiKoç marka kimliği, maskot ve orman fikri korunacaktır.
-- **Yaklaşım:** Eski ekranları yama zinciriyle büyütmek yerine yeni frontend özellik
-  eşitliğine ulaşana kadar paralel geliştirilecek, ardından kontrollü olarak yerini
-  alacaktır.
-- **Kalite ölçütü:** Tamamı Türkçe kullanıcı deneyimi; dar ekran, büyük yazı ve
-  klavye durumlarında taşmasız düzen; erişilebilirlik, widget, görsel regresyon ve
-  kritik uçtan uca akış testleri.
-- **Sprint içinde tamamlanması tahmin edilen puan:** 100 Puan
-- **Birincil backlog işi:** `S3-FE-01` — Frontend tam yeniden yapılandırma, 21 SP,
-  yüksek öncelik.
-- **Tamamlayıcı kapsam:** Kişisel enflasyon, orman ilerlemesi, bildirim
-  optimizasyonu ve premium borç simülatörü yeni frontend mimarisine taşınacaktır.
+Sprint 2'nin çalışan finans çekirdeği korunarak mobil deneyim; amaç rotaları,
+Yaşayan Finans Ormanı, hedef yolculukları ve cihaz içi analizlerle ürün seviyesine
+taşındı. Android sürümü fiziksel cihazda ve portre emülatörde doğrulandı.
+
+Sprint kayıtları: [Sprint 3 özeti](./docs/sprints/sprint-3/) ·
+[Planning](./docs/sprints/sprint-3/Sprint-3-Planning.md) ·
+[Backlog](./docs/sprints/sprint-3/Sprint-3-Backlog.md) ·
+[Daily Scrum](./docs/sprints/sprint-3/Daily-Scrum-Notes.md) ·
+[Review](./docs/sprints/sprint-3/Sprint-3-Review.md) ·
+[Retrospective](./docs/sprints/sprint-3/Sprint-3-Retrospective.md)
+
+### Tamamlanan kapsam
+
+- Seçilen amaca göre ana finans kartını, önerileri, analiz önceliğini ve görevleri
+  değiştiren farkındalık, hedef, borç ve öğrenme rotaları
+- Takvim, günlük bakım, seri, seri koruma yaprakları, tohum ekonomisi, orman
+  mağazası ve 325 görevlik rota tabanlı Yaşayan Finans Ormanı
+- Tam ekran, etkileşimli hedef haritası; hedef katkısı, kalan yol ve tek seferlik
+  kilometre taşı ödülleri
+- Gelir ve gider eklerken işlemin hedefi etkileyip etkilemeyeceğini kullanıcının
+  seçebilmesi
+- PaddleOCR ile Türkçe fiş çözümleme; okunan toplamı doğrulayıp gider kaydına
+  dönüştürme
+- Son dönem gelir, gider, borç ve net akışı birlikte değerlendiren kişisel finans
+  baskısı; yeterli resmî veri olduğunda TÜİK karşılaştırması
+- Son 56 günlük geçmişten dürüst veri yeterlilik kontrolüyle harcama tahmini
+- Günlük, haftalık ve aylık cihaz içi PDF raporu; Android sistem kaydetme ve
+  paylaşma akışları
+- Sürüklenip kenara yaslanan, konumunu ekran oranıyla hatırlayan Maki Koç balonu
+- Android/iOS yerel bildirim izni, planlama ve davranış geri bildirim döngüsü
+- Dar ekran, yatay yön, klavye ve güvenli alanlarda taşma/gezinti düzeltmeleri
+- Development video sürümünde kullanıcı girişi göstermeden çalışan geçici,
+  asimetrik imzalı yerel oturum; production kimlik kapıları değiştirilmedi
+
+### Uygulamadan görüntüler
+
+<p align="center">
+  <img src="./docs/assets/screenshots/sprint-3-ana-finans-ekrani.png"
+       width="300"
+       alt="Maki ana finans ve hedef rotası ekranı">
+  &nbsp;&nbsp;
+  <img src="./docs/assets/screenshots/sprint-3-yasayan-maki-ormani.png"
+       width="300"
+       alt="Yaşayan Maki Ormanı ilerleme ekranı">
+</p>
+
+<p align="center">
+  <strong>Ana Finans Ekranı</strong>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <strong>Yaşayan Maki Ormanı</strong>
+</p>
+
+### Sprint 3 tamamlandı
+
+Sprint 3 kapsamındaki finans, orman, hedef, rapor, OCR ve mobil gezinme akışları
+tamamlandı.
+
+- **Android:** Fiziksel cihazda ve emülatörde doğrulandı.
+- **Web:** Web sürümü hazırlandı.
+- **iOS:** Proje yapısı hazırlandı; fiziksel doğrulama macOS gerektirir.
+
+- **Sprint içinde tamamlanan puan:** 100 Puan
+- **Ürün Durumu:** Sprint 3 kapsamı çalışan Android uygulamasında birleştirildi.
+- **Sprint Review:** Kritik finans, orman, hedef, rapor, OCR ve mobil gezinme
+  akışları birlikte doğrulandı.
+- **Sprint Retrospective:** Sprint 3 hedefleri tamamlandı ve platform doğrulama
+  notları kaydedildi.
 
 ---
 

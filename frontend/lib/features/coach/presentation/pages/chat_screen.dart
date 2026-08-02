@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/main.dart';
 import 'package:maki_app/core/widgets/mascot.dart';
 import 'package:maki_app/core/widgets/source_card.dart';
+import 'package:maki_app/core/widgets/maki_app_bar_title.dart';
+import 'package:maki_app/core/widgets/maki_background.dart';
+import 'package:maki_app/core/theme/app_tokens.dart';
+import 'package:maki_app/core/personalization/goal_experience.dart';
 import 'package:maki_app/features/coach/presentation/bloc/coach_bloc.dart';
 import 'package:maki_app/features/coach/presentation/bloc/coach_event.dart';
 import 'package:maki_app/features/coach/presentation/bloc/coach_state.dart';
 import 'package:maki_app/features/coach/domain/entities/coach_message_entity.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  const ChatScreen({super.key, this.primaryGoal = 'track_spending'});
+
+  final String primaryGoal;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -26,7 +31,11 @@ class _ChatScreenState extends State<ChatScreen> {
     super.didChangeDependencies();
     final bloc = context.read<CoachBloc>();
     if (bloc.state.messages.isEmpty) {
-      final welcome = AppLocalizations.of(context)!.welcomeMessage;
+      final locale = Localizations.localeOf(context);
+      final profile = GoalExperience.forKey(widget.primaryGoal);
+      final welcome =
+          '${AppLocalizations.of(context)!.welcomeMessage}\n\n'
+          '${profile.route(locale)}: ${profile.coach(locale)}';
       bloc.add(InitChatEvent(welcome));
     }
   }
@@ -36,7 +45,16 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isEmpty) return;
 
     _messageController.clear();
-    context.read<CoachBloc>().add(SendMessageEvent(text));
+    final locale = Localizations.localeOf(context);
+    final profile = GoalExperience.forKey(widget.primaryGoal);
+    context.read<CoachBloc>().add(
+      SendMessageEvent(
+        text,
+        contextHint:
+            'Ana finans rotası: ${profile.route(locale)}. '
+            'Öncelik: ${profile.mission(locale)}',
+      ),
+    );
     _scrollToBottom();
   }
 
@@ -90,215 +108,228 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.menu_rounded),
-          onPressed: () => MainNavigationScreen.openDrawer(),
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Mascot.avatar(pose: MascotPose.happy, size: 28),
-            const SizedBox(width: 8),
-            Text(
-              l10n.navCoach,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        centerTitle: true,
+        title: MakiAppBarTitle(title: l10n.navCoach, eyebrow: 'MAKİ • ÖZEL'),
+        centerTitle: false,
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: AppSpacing.lg),
+            child: Mascot.avatar(pose: MascotPose.happy, size: 34),
+          ),
+        ],
       ),
-      body: BlocConsumer<CoachBloc, CoachState>(
-        listener: (context, state) {
-          if (!state.isLoading) {
-            _scrollToBottom();
-          }
-        },
-        builder: (context, state) {
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 12.0),
-                child: Card(
-                  color: theme.colorScheme.surfaceContainerHighest.withValues(
-                    alpha: 0.3,
+      body: MakiBackground(
+        maxContentWidth: 820,
+        child: BlocConsumer<CoachBloc, CoachState>(
+          listener: (context, state) {
+            if (!state.isLoading) {
+              _scrollToBottom();
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16.0,
+                    right: 16.0,
+                    top: 12.0,
                   ),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(
-                      color: theme.colorScheme.outline.withValues(alpha: 0.1),
+                  child: Card(
+                    color: theme.colorScheme.secondaryContainer.withValues(
+                      alpha: 0.46,
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.shield_outlined,
-                          color: theme.colorScheme.primary,
-                          size: 20,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: AppRadius.card,
+                      side: BorderSide(
+                        color: theme.colorScheme.primary.withValues(
+                          alpha: 0.12,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.privacyTitle,
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                l10n.privacyMessage,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                  height: 1.3,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.sessionHeader,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 40,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildSessionChip(
-                            context,
-                            label: l10n.sessionWeeklyCheckin,
-                            icon: Icons.calendar_today_outlined,
-                            triggerMsg: l10n.promptWeeklyReview,
-                            isLoading: state.isLoading,
+                          Icon(
+                            Icons.shield_outlined,
+                            color: theme.colorScheme.primary,
+                            size: 20,
                           ),
-                          const SizedBox(width: 8),
-                          _buildSessionChip(
-                            context,
-                            label: l10n.sessionDebtStrategy,
-                            icon: Icons.calculate_outlined,
-                            triggerMsg: l10n.promptDebtPlan,
-                            isLoading: state.isLoading,
-                          ),
-                          const SizedBox(width: 8),
-                          _buildSessionChip(
-                            context,
-                            label: l10n.sessionInflationGuide,
-                            icon: Icons.trending_up_outlined,
-                            triggerMsg: l10n.promptInflationImpact,
-                            isLoading: state.isLoading,
-                          ),
-                          const SizedBox(width: 8),
-                          _buildSessionChip(
-                            context,
-                            label: l10n.sessionSavingsHack,
-                            icon: Icons.savings_outlined,
-                            triggerMsg: l10n.promptSavingsAdvice,
-                            isLoading: state.isLoading,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.privacyTitle,
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.privacyMessage,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: state.messages.length + (state.isLoading ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == state.messages.length) {
-                      return const LoadingBubble();
-                    }
-
-                    final msg = state.messages[index];
-                    return MessageBubble(message: msg);
-                  },
-                ),
-              ),
-
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 12.0,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  border: Border(
-                    top: BorderSide(
-                      color: theme.colorScheme.outline.withValues(alpha: 0.1),
-                    ),
                   ),
                 ),
-                child: SafeArea(
-                  child: Row(
+
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16.0,
+                    right: 16.0,
+                    top: 12.0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _messageController,
-                          decoration: InputDecoration(
-                            hintText: l10n.chatPlaceholder,
-                            hintStyle: TextStyle(
-                              color: theme.colorScheme.onSurfaceVariant.withValues(
-                                alpha: 0.5,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(28.0),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.05,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20.0,
-                              vertical: 12.0,
-                            ),
-                          ),
-                          textCapitalization: TextCapitalization.sentences,
-                          onSubmitted: (_) => _sendMessage(),
+                      Text(
+                        l10n.sessionHeader,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        onPressed: state.isLoading ? null : _sendMessage,
-                        icon: Icon(
-                          Icons.send_rounded,
-                          color: state.isLoading
-                              ? theme.colorScheme.onSurface.withValues(alpha: 0.3)
-                              : theme.colorScheme.primary,
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 40,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            _buildSessionChip(
+                              context,
+                              label: l10n.sessionWeeklyCheckin,
+                              icon: Icons.calendar_today_outlined,
+                              triggerMsg: l10n.promptWeeklyReview,
+                              isLoading: state.isLoading,
+                            ),
+                            const SizedBox(width: 8),
+                            _buildSessionChip(
+                              context,
+                              label: l10n.sessionDebtStrategy,
+                              icon: Icons.calculate_outlined,
+                              triggerMsg: l10n.promptDebtPlan,
+                              isLoading: state.isLoading,
+                            ),
+                            const SizedBox(width: 8),
+                            _buildSessionChip(
+                              context,
+                              label: l10n.sessionInflationGuide,
+                              icon: Icons.trending_up_outlined,
+                              triggerMsg: l10n.promptInflationImpact,
+                              isLoading: state.isLoading,
+                            ),
+                            const SizedBox(width: 8),
+                            _buildSessionChip(
+                              context,
+                              label: l10n.sessionSavingsHack,
+                              icon: Icons.savings_outlined,
+                              triggerMsg: l10n.promptSavingsAdvice,
+                              isLoading: state.isLoading,
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16.0),
+                    itemCount:
+                        state.messages.length + (state.isLoading ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == state.messages.length) {
+                        return const LoadingBubble();
+                      }
+
+                      final msg = state.messages[index];
+                      return MessageBubble(message: msg);
+                    },
+                  ),
+                ),
+
+                Container(
+                  margin: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.sm,
+                    AppSpacing.md,
+                    AppSpacing.md,
+                  ),
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerLowest,
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(AppRadius.lg),
+                    ),
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.72,
+                      ),
+                    ),
+                    boxShadow: AppShadows.dock(
+                      theme.brightness,
+                      theme.colorScheme.primary,
+                    ),
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _messageController,
+                            minLines: 1,
+                            maxLines: 4,
+                            decoration: InputDecoration(
+                              hintText: l10n.chatPlaceholder,
+                              hintStyle: TextStyle(
+                                color: theme.colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.5),
+                              ),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              filled: false,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                                vertical: 12.0,
+                              ),
+                            ),
+                            textCapitalization: TextCapitalization.sentences,
+                            onSubmitted: (_) => _sendMessage(),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton.filled(
+                          onPressed: state.isLoading ? null : _sendMessage,
+                          icon: const Icon(Icons.arrow_upward_rounded),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -397,6 +428,28 @@ class MessageBubble extends StatelessWidget {
                         ),
                       ),
                   ],
+                ),
+              ),
+            if (!message.isUser &&
+                !message.isError &&
+                message.assistantMode != null)
+              Padding(
+                padding: const EdgeInsets.only(left: 40, top: 6),
+                child: Chip(
+                  visualDensity: VisualDensity.compact,
+                  avatar: Icon(
+                    message.assistantMode == 'gemini_guidance'
+                        ? Icons.auto_awesome_rounded
+                        : Icons.eco_outlined,
+                    size: 15,
+                  ),
+                  label: Text(
+                    message.assistantMode == 'gemini_guidance'
+                        ? 'Gemini destekli'
+                        : message.assistantMode == 'local_guidance'
+                        ? 'Yerel rehber'
+                        : 'Resmî verilerle',
+                  ),
                 ),
               ),
           ],

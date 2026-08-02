@@ -1,6 +1,5 @@
 # Miscellaneous
 *.class
-*.lock
 *.log
 *.pyc
 *.swp
@@ -45,11 +44,8 @@ unlinked.ds
 unlinked_spec.ds
 
 # Android related
-**/android/**/gradle-wrapper.jar
 .gradle/
 **/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 **/android/key.properties
@@ -112,6 +108,10 @@ app.*.symbols
 users_store.json
 **/users_store.json
 *.db
+.env
+.env.local
+.local/
+backend/.venv/
 
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3

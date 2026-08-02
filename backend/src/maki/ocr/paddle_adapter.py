@@ -103,6 +103,7 @@ def _build_pipeline(
         use_textline_orientation=False,
         lang=_LANGUAGE,
         ocr_version=_OCR_VERSION,
+        enable_mkldnn=False,
     )
 
 
@@ -111,12 +112,13 @@ def _provider_result(raw: object) -> _PaddleResult:
     if isinstance(payload, dict) and "res" in payload:
         payload = payload["res"]
     if isinstance(payload, dict):
-        normalized = dict(payload)
+        normalized: dict[str, object] = {}
         for field in ("rec_texts", "rec_scores", "rec_boxes"):
-            value = normalized.get(field)
+            value = payload.get(field)
             to_list = getattr(value, "tolist", None)
             if callable(to_list):
-                normalized[field] = cast("object", to_list())
+                value = cast("object", to_list())
+            normalized[field] = value
         payload = normalized
     try:
         return _PaddleResult.model_validate(payload)

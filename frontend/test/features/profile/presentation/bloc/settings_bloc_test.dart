@@ -37,7 +37,9 @@ void main() {
 
   group('LoadSettingsEvent', () {
     test('emits loading then settings when successful', () async {
-      when(() => mockRepository.getSettings()).thenAnswer((_) async => tSettings);
+      when(
+        () => mockRepository.getSettings(),
+      ).thenAnswer((_) async => tSettings);
 
       final expectedStates = [
         SettingsState(isLoading: true, settings: null, error: null),
@@ -54,7 +56,11 @@ void main() {
 
       final expectedStates = [
         SettingsState(isLoading: true, settings: null, error: null),
-        const SettingsState(isLoading: false, settings: null, error: 'errLoadSettings'),
+        const SettingsState(
+          isLoading: false,
+          settings: null,
+          error: 'errLoadSettings',
+        ),
       ];
 
       expectLater(settingsBloc.stream, emitsInOrder(expectedStates));
@@ -65,10 +71,14 @@ void main() {
 
   group('UpdatePrimaryGoalEvent', () {
     test('emits updated settings when successful', () async {
-      when(() => mockRepository.updatePrimaryGoal(any())).thenAnswer((_) async => {});
+      when(
+        () => mockRepository.updatePrimaryGoal(any()),
+      ).thenAnswer((_) async => {});
 
       // First load settings so state has settings
-      settingsBloc.emit(SettingsState(isLoading: false, settings: tSettings, error: null));
+      settingsBloc.emit(
+        SettingsState(isLoading: false, settings: tSettings, error: null),
+      );
 
       final tUpdatedSettings = SettingsEntity(
         primaryGoal: 'pay_debt',
@@ -79,25 +89,37 @@ void main() {
       );
 
       final expectedStates = [
-        SettingsState(isLoading: false, settings: tUpdatedSettings, error: null),
+        SettingsState(
+          isLoading: false,
+          settings: tUpdatedSettings,
+          error: null,
+        ),
       ];
 
       expectLater(settingsBloc.stream, emitsInOrder(expectedStates));
 
       settingsBloc.add(UpdatePrimaryGoalEvent('pay_debt'));
-      
+
       await Future<void>.delayed(Duration.zero);
       verify(() => mockRepository.updatePrimaryGoal('pay_debt')).called(1);
     });
 
     test('emits error when updating fails', () async {
-      when(() => mockRepository.updatePrimaryGoal(any())).thenThrow(Exception());
+      when(
+        () => mockRepository.updatePrimaryGoal(any()),
+      ).thenThrow(Exception());
 
       // Pre-seed state so isLoading is false
-      settingsBloc.emit(SettingsState(isLoading: false, settings: tSettings, error: null));
+      settingsBloc.emit(
+        SettingsState(isLoading: false, settings: tSettings, error: null),
+      );
 
       final expectedStates = [
-        SettingsState(isLoading: false, settings: tSettings, error: 'errUpdateGoal'),
+        SettingsState(
+          isLoading: false,
+          settings: tSettings,
+          error: 'errUpdateGoal',
+        ),
       ];
 
       expectLater(settingsBloc.stream, emitsInOrder(expectedStates));
@@ -112,7 +134,12 @@ void main() {
 
       // Initial state has isLoading: true, so the copyWith will inherit that.
       final expectedStates = [
-        SettingsState(isLoading: true, settings: null, error: null, dataCleared: true),
+        SettingsState(
+          isLoading: true,
+          settings: null,
+          error: null,
+          dataCleared: true,
+        ),
       ];
 
       expectLater(settingsBloc.stream, emitsInOrder(expectedStates));

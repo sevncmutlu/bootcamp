@@ -1,4 +1,5 @@
 import 'package:maki_app/core/database/database.dart';
+import 'package:maki_app/features/gamification/domain/entities/daily_challenge_catalog.dart';
 
 abstract class GamificationLocalDataSource {
   Future<List<DailyChallenge>> getOrSeedDailyChallenges(DateTime date);
@@ -8,103 +9,55 @@ abstract class GamificationLocalDataSource {
 }
 
 class GamificationLocalDataSourceImpl implements GamificationLocalDataSource {
-  final AppDatabase _db;
+  GamificationLocalDataSourceImpl(
+    this._db, {
+    Future<String?> Function()? primaryGoalProvider,
+  }) : _primaryGoalProvider = primaryGoalProvider;
 
-  GamificationLocalDataSourceImpl(this._db);
+  final AppDatabase _db;
+  final Future<String?> Function()? _primaryGoalProvider;
+
+  static const _dailyChallengeCount = 4;
+  static const _rotationVersion = 'v4';
 
   @override
   Future<List<DailyChallenge>> getOrSeedDailyChallenges(DateTime date) async {
+    final storedGoal = await _primaryGoalProvider?.call();
+    final routeKey = DailyChallengeCatalog.routeFamilies.containsKey(storedGoal)
+        ? storedGoal!
+        : 'track_spending';
+    final rotationPrefix = '${_rotationVersion}_${routeKey}_';
     final existing = await _db.getChallengesForDate(date);
-    if (existing.length >= 7) {
-      return existing;
+    final currentRotation =
+        existing
+            .where((challenge) => challenge.id.startsWith(rotationPrefix))
+            .toList()
+          ..sort((a, b) => a.id.compareTo(b.id));
+    if (currentRotation.length >= _dailyChallengeCount) {
+      return currentRotation.take(_dailyChallengeCount).toList(growable: false);
     }
 
     final dateStr =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    final selected =
+        DailyChallengeCatalog.selectionForDay(date, routeKey: routeKey)
+            .map(
+              (template) => DailyChallenge(
+                id: '$rotationPrefix${template.id}_$dateStr',
+                titleKey: 'catalog:${template.id}:title',
+                descKey: 'catalog:${template.id}:description',
+                xpReward: template.xp,
+                isCompleted: false,
+                date: date,
+              ),
+            )
+            .toList()
+          ..sort((a, b) => a.id.compareTo(b.id));
 
-    final allCandidates = [
-      DailyChallenge(
-        id: "cook_home_$dateStr",
-        titleKey: "challengeCookHome",
-        descKey: "challengeCookHomeDesc",
-        xpReward: 25,
-        isCompleted: false,
-        date: date,
-      ),
-      DailyChallenge(
-        id: "log_three_$dateStr",
-        titleKey: "challengeLogThree",
-        descKey: "challengeLogThreeDesc",
-        xpReward: 20,
-        isCompleted: false,
-        date: date,
-      ),
-      DailyChallenge(
-        id: "no_shopping_$dateStr",
-        titleKey: "challengeNoShopping",
-        descKey: "challengeNoShoppingDesc",
-        xpReward: 30,
-        isCompleted: false,
-        date: date,
-      ),
-      DailyChallenge(
-        id: "income_achiever_$dateStr",
-        titleKey: "challengeIncomeAchiever",
-        descKey: "challengeIncomeAchieverDesc",
-        xpReward: 25,
-        isCompleted: false,
-        date: date,
-      ),
-      DailyChallenge(
-        id: "learn_budget_$dateStr",
-        titleKey: "challengeLearnBudget",
-        descKey: "challengeLearnBudgetDesc",
-        xpReward: 15,
-        isCompleted: false,
-        date: date,
-      ),
-      DailyChallenge(
-        id: "save_ten_$dateStr",
-        titleKey: "challengeSaveTen",
-        descKey: "challengeSaveTenDesc",
-        xpReward: 35,
-        isCompleted: false,
-        date: date,
-      ),
-      DailyChallenge(
-        id: "review_subs_$dateStr",
-        titleKey: "challengeReviewSubs",
-        descKey: "challengeReviewSubsDesc",
-        xpReward: 40,
-        isCompleted: false,
-        date: date,
-      ),
-      DailyChallenge(
-        id: "meal_prep_$dateStr",
-        titleKey: "challengeMealPrep",
-        descKey: "challengeMealPrepDesc",
-        xpReward: 30,
-        isCompleted: false,
-        date: date,
-      ),
-      DailyChallenge(
-        id: "walk_instead_$dateStr",
-        titleKey: "challengeWalk",
-        descKey: "challengeWalkDesc",
-        xpReward: 20,
-        isCompleted: false,
-        date: date,
-      ),
-    ];
-
-    allCandidates.shuffle();
-    final toInsert = allCandidates.take(7 - existing.length).toList();
-
-    for (final challenge in toInsert) {
+    for (final challenge in selected) {
       await _db.insertChallenge(challenge);
     }
-
-    return _db.getChallengesForDate(date);
+    return List.unmodifiable(selected);
   }
 
   @override

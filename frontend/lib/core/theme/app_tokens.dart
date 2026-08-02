@@ -6,10 +6,10 @@ class AppSpacing {
   static const double xs = 4;
   static const double sm = 8;
   static const double md = 12;
-  static const double lg = 16;
+  static const double lg = 18;
   static const double xl = 24;
-  static const double xxl = 32;
-  static const double xxxl = 48;
+  static const double xxl = 36;
+  static const double xxxl = 52;
 
   static const EdgeInsets screen = EdgeInsets.all(lg);
   static const EdgeInsets screenH = EdgeInsets.symmetric(horizontal: lg);
@@ -18,10 +18,10 @@ class AppSpacing {
 class AppRadius {
   AppRadius._();
 
-  static const double sm = 12;
-  static const double md = 16;
-  static const double lg = 20;
-  static const double xl = 28;
+  static const double sm = 10;
+  static const double md = 18;
+  static const double lg = 24;
+  static const double xl = 32;
   static const double pill = 999;
 
   static const BorderRadius card = BorderRadius.all(Radius.circular(lg));
@@ -33,38 +33,42 @@ class AppRadius {
 class ForestColors {
   ForestColors._();
 
-  static const Color emerald = Color(0xFF10B981); // Vibrant fintech green.
-  static const Color emeraldDark = Color(0xFF047857); // Deep vibrant green.
-  static const Color emeraldLight = Color(0xFF34D399); // Light vibrant green.
+  // Maki's core palette is taken from Mediterranean woodland rather than
+  // generic neon fintech greens.
+  static const Color emerald = Color(0xFF0E4B36);
+  static const Color emeraldDark = Color(0xFF082F24);
+  static const Color emeraldLight = Color(0xFF69B86D);
 
-  static const Color amber = Color(0xFFF2C15A);
-  static const Color amberDark = Color(0xFFD9A431);
+  static const Color amber = Color(0xFFD7A84A);
+  static const Color amberDark = Color(0xFFB78328);
 
-  static const Color cream = Color(0xFFF8F9FA);
-  static const Color creamSoft = Color(0xFFF8F9FA); // Crisp light surface.
-  static const Color neutral = Color(0xFF686F76);
+  static const Color cream = Color(0xFFE5ECE5);
+  static const Color creamSoft = Color(0xFFF3F6F1);
+  static const Color paper = Color(0xFFFCFDF9);
+  static const Color neutral = Color(0xFF5A685F);
 
-  static const Color canopy = Color(0xFF1F5A3A);
-  static const Color moss = Color(0xFF43A047);
-  static const Color sage = Color(0xFFA5D6A7);
-  static const Color fern = Color(0xFF2E7D5B);
+  static const Color canopy = Color(0xFF1D5B40);
+  static const Color moss = Color(0xFF73976B);
+  static const Color sage = Color(0xFFC9D8B5);
+  static const Color fern = Color(0xFF397A57);
+  static const Color lichen = Color(0xFFDCE5CF);
 
   static const Color bark = Color(0xFF6D4C2F);
   static const Color soil = Color(0xFF4E342E);
-  static const Color sand = Color(0xFFF8F9FA);
+  static const Color sand = Color(0xFFF1EFE6);
 
   static const Color sky = Color(0xFF7EC8E3);
   static const Color dawn = Color(0xFFF2C15A);
   static const Color sunset = Color(0xFFFF9E7A);
 
-  static const Color night = Color(0xFF090D14);
-  static const Color nightSurface = Color(0xFF0B0F19);
-  static const Color nightElevated = Color(0xFF0F172A);
+  static const Color night = Color(0xFF071A14);
+  static const Color nightSurface = Color(0xFF0B211A);
+  static const Color nightElevated = Color(0xFF123026);
 
-  static const Color income = Color(0xFF10B981);
-  static const Color expense = Color(0xFFE2703A);
-  static const Color warning = Color(0xFFF2C15A);
-  static const Color info = Color(0xFF3D8BC4);
+  static const Color income = Color(0xFF3E9B62);
+  static const Color expense = Color(0xFFC8623F);
+  static const Color warning = Color(0xFFD7A84A);
+  static const Color info = Color(0xFF3F7698);
 }
 
 class BrandAccent {
@@ -94,19 +98,131 @@ class BrandAccents {
   }
 }
 
+@immutable
+class MakiPalette extends ThemeExtension<MakiPalette> {
+  const MakiPalette({
+    required this.heroStart,
+    required this.heroEnd,
+    required this.onHero,
+    required this.onHeroMuted,
+    required this.income,
+    required this.expense,
+    required this.warning,
+    required this.info,
+    required this.shadow,
+  });
+
+  final Color heroStart;
+  final Color heroEnd;
+  final Color onHero;
+  final Color onHeroMuted;
+  final Color income;
+  final Color expense;
+  final Color warning;
+  final Color info;
+  final Color shadow;
+
+  LinearGradient get heroGradient => LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [heroStart, heroEnd],
+  );
+
+  static MakiPalette fromSeed(Color seed, Brightness brightness) {
+    final isDark = brightness == Brightness.dark;
+    final start = _heroTone(seed, isDark ? 0.16 : 0.19);
+    final end = _heroTone(seed, isDark ? 0.31 : 0.35);
+
+    return MakiPalette(
+      heroStart: start,
+      heroEnd: end,
+      onHero: Colors.white,
+      onHeroMuted: Colors.white.withValues(alpha: 0.78),
+      income: isDark ? const Color(0xFF74D49A) : ForestColors.income,
+      expense: isDark ? const Color(0xFFFFB59D) : ForestColors.expense,
+      warning: isDark ? const Color(0xFFF2C96D) : ForestColors.warning,
+      info: isDark ? const Color(0xFF8AC8EE) : ForestColors.info,
+      shadow: Color.alphaBlend(
+        seed.withValues(alpha: isDark ? 0.16 : 0.22),
+        Colors.black,
+      ),
+    );
+  }
+
+  static Color _heroTone(Color color, double lightness) {
+    final hsl = HSLColor.fromColor(color);
+    return hsl
+        .withLightness(lightness)
+        .withSaturation(hsl.saturation.clamp(0.42, 0.78))
+        .toColor();
+  }
+
+  @override
+  MakiPalette copyWith({
+    Color? heroStart,
+    Color? heroEnd,
+    Color? onHero,
+    Color? onHeroMuted,
+    Color? income,
+    Color? expense,
+    Color? warning,
+    Color? info,
+    Color? shadow,
+  }) {
+    return MakiPalette(
+      heroStart: heroStart ?? this.heroStart,
+      heroEnd: heroEnd ?? this.heroEnd,
+      onHero: onHero ?? this.onHero,
+      onHeroMuted: onHeroMuted ?? this.onHeroMuted,
+      income: income ?? this.income,
+      expense: expense ?? this.expense,
+      warning: warning ?? this.warning,
+      info: info ?? this.info,
+      shadow: shadow ?? this.shadow,
+    );
+  }
+
+  @override
+  MakiPalette lerp(covariant MakiPalette? other, double t) {
+    if (other == null) return this;
+    return MakiPalette(
+      heroStart: Color.lerp(heroStart, other.heroStart, t)!,
+      heroEnd: Color.lerp(heroEnd, other.heroEnd, t)!,
+      onHero: Color.lerp(onHero, other.onHero, t)!,
+      onHeroMuted: Color.lerp(onHeroMuted, other.onHeroMuted, t)!,
+      income: Color.lerp(income, other.income, t)!,
+      expense: Color.lerp(expense, other.expense, t)!,
+      warning: Color.lerp(warning, other.warning, t)!,
+      info: Color.lerp(info, other.info, t)!,
+      shadow: Color.lerp(shadow, other.shadow, t)!,
+    );
+  }
+}
+
+extension MakiThemeData on ThemeData {
+  MakiPalette get makiPalette =>
+      extension<MakiPalette>() ??
+      MakiPalette.fromSeed(colorScheme.primary, brightness);
+}
+
 class AppGradients {
   AppGradients._();
 
   static const LinearGradient canopy = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [ForestColors.emeraldDark, ForestColors.emerald],
+    colors: [
+      ForestColors.emeraldDark,
+      ForestColors.emerald,
+      ForestColors.canopy,
+    ],
+    stops: [0, 0.62, 1],
   );
 
   static const LinearGradient dawn = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [ForestColors.dawn, ForestColors.emeraldLight],
+    colors: [ForestColors.amberDark, ForestColors.amber],
   );
 
   static const LinearGradient moonlit = LinearGradient(
@@ -115,20 +231,29 @@ class AppGradients {
     colors: [ForestColors.nightElevated, ForestColors.canopy],
   );
 
-  static LinearGradient hero(Brightness brightness) =>
-      brightness == Brightness.dark ? moonlit : canopy;
+  static LinearGradient hero(MakiPalette palette) => palette.heroGradient;
 }
 
 class AppShadows {
   AppShadows._();
 
-  static List<BoxShadow> soft(Brightness brightness) => [
+  static List<BoxShadow> soft(Brightness brightness, Color accent) => [
     BoxShadow(
-      color:
-          (brightness == Brightness.dark ? Colors.black : ForestColors.canopy)
-              .withValues(alpha: brightness == Brightness.dark ? 0.35 : 0.08),
-      blurRadius: 18,
-      offset: const Offset(0, 8),
+      color: (brightness == Brightness.dark ? Colors.black : accent).withValues(
+        alpha: brightness == Brightness.dark ? 0.28 : 0.07,
+      ),
+      blurRadius: 28,
+      offset: const Offset(0, 12),
+    ),
+  ];
+
+  static List<BoxShadow> dock(Brightness brightness, Color accent) => [
+    BoxShadow(
+      color: (brightness == Brightness.dark ? Colors.black : accent).withValues(
+        alpha: brightness == Brightness.dark ? 0.42 : 0.12,
+      ),
+      blurRadius: 32,
+      offset: const Offset(0, 14),
     ),
   ];
 }

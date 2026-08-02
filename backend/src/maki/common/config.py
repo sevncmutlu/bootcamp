@@ -1,6 +1,7 @@
 from enum import StrEnum
 from pathlib import Path
 from typing import Annotated, Literal, Self
+from urllib.parse import urlsplit
 
 from pydantic import (
     AnyHttpUrl,
@@ -23,6 +24,11 @@ class Environment(StrEnum):
     @property
     def is_development(self) -> bool:
         return self is Environment.DEVELOPMENT
+
+
+class ExecutionMode(StrEnum):
+    QUEUE = "queue"
+    LOCAL = "local"
 
 
 class _SettingsModel(BaseModel):
@@ -143,20 +149,34 @@ class Settings(BaseSettings):
     billing: BillingSettings = Field(default_factory=BillingSettings)
     retention: RetentionSettings = Field(default_factory=RetentionSettings)
     ocr: OcrSettings = Field(default_factory=OcrSettings)
+    execution_mode: ExecutionMode = ExecutionMode.QUEUE
     anthropic_api_key: SecretStr | None = None
     anthropic_model: str = Field(
         default="claude-sonnet-4-6",
         min_length=1,
         max_length=128,
     )
+    gemini_api_key: SecretStr | None = None
+    gemini_model: str = Field(
+        default="gemini-3.5-flash-lite",
+        min_length=1,
+        max_length=128,
+    )
     evds_api_key: SecretStr | None = None
     enable_insecure_dev_auth: bool = False
+    web_origins: tuple[str, ...] = ()
 
     @model_validator(mode="after")
     def validate_environment_contract(self) -> Self:
         if self.enable_insecure_dev_auth and not self.environment.is_development:
             msg = "Güvensiz geliştirme kimliği yalnızca geliştirme ortamında açılabilir."
             raise ValueError(msg)
+
+        if self.execution_mode is ExecutionMode.LOCAL and not self.environment.is_development:
+            msg = "Yerel iş çalıştırıcısı yalnızca geliştirme ortamında açılabilir."
+            raise ValueError(msg)
+
+        _validate_web_origins(self.web_origins, self.environment)
 
         if self.environment is not Environment.PRODUCTION:
             return self
@@ -175,3 +195,31 @@ class Settings(BaseSettings):
             ("telemetry.otlp_endpoint", self.telemetry.otlp_endpoint),
         )
         return tuple(name for name, value in required if value is None)
+
+
+def _validate_web_origins(origins: tuple[str, ...], environment: Environment) -> None:
+    for origin in origins:
+        parsed = urlsplit(origin)
+        is_loopback = parsed.hostname in {"localhost", "127.0.0.1", "::1"}
+        if (
+            parsed.scheme not in {"http", "https"}
+            or not parsed.netloc
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path
+            or parsed.query
+            or parsed.fragment
+            or origin == "*"
+        ):
+            msg = "Web kökenleri yalnızca tam HTTP(S) köken adresleri olmalıdır."
+            raise ValueError(msg)
+        if not environment.is_development and parsed.scheme != "https":
+            msg = "Geliştirme dışındaki web kökenleri HTTPS kullanmalıdır."
+            raise ValueError(msg)
+        if parsed.scheme == "http" and not is_loopback:
+            msg = "HTTP web kökeni yalnızca yerel geliştirmede kullanılabilir."
+            raise ValueError(msg)
+
+    if len(set(origins)) != len(origins):
+        msg = "Web kökenleri tekrar etmemelidir."
+        raise ValueError(msg)

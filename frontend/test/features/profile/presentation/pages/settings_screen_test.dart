@@ -13,9 +13,12 @@ import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:maki_app/features/auth/domain/entities/user_entity.dart';
+import 'package:maki_app/features/premium/presentation/bloc/premium_bloc.dart';
+import 'package:maki_app/features/premium/presentation/bloc/premium_state.dart';
 import 'dart:async';
 
 class FakeSettingsEvent extends Fake implements SettingsEvent {}
+
 class FakeAuthEvent extends Fake implements AuthEvent {}
 
 class MockAuthBloc extends Mock implements AuthBloc {
@@ -61,9 +64,25 @@ class MockSettingsBloc extends Mock implements SettingsBloc {
   }
 }
 
+class MockPremiumBloc extends Mock implements PremiumBloc {
+  final _controller = StreamController<PremiumState>.broadcast();
+
+  @override
+  Stream<PremiumState> get stream => _controller.stream;
+
+  @override
+  PremiumState get state => PremiumState.initial();
+
+  @override
+  Future<void> close() async {
+    await _controller.close();
+  }
+}
+
 void main() {
   late MockSettingsBloc mockSettingsBloc;
   late MockAuthBloc mockAuthBloc;
+  late MockPremiumBloc mockPremiumBloc;
 
   setUpAll(() {
     registerFallbackValue(FakeSettingsEvent());
@@ -73,6 +92,7 @@ void main() {
   setUp(() {
     mockSettingsBloc = MockSettingsBloc();
     mockAuthBloc = MockAuthBloc();
+    mockPremiumBloc = MockPremiumBloc();
 
     final user = const UserEntity(
       userId: '123',
@@ -81,10 +101,7 @@ void main() {
       avatarUrl: null,
       financialGoal: 'track_spending',
     );
-    mockAuthBloc.emit(AuthState(
-      status: AuthStatus.authenticated,
-      user: user,
-    ));
+    mockAuthBloc.emit(AuthState(status: AuthStatus.authenticated, user: user));
 
     final settings = SettingsEntity(
       primaryGoal: 'track_spending',
@@ -104,14 +121,12 @@ void main() {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('tr'),
-        Locale('en'),
-      ],
+      supportedLocales: const [Locale('tr'), Locale('en')],
       home: MultiBlocProvider(
         providers: [
           BlocProvider<SettingsBloc>.value(value: mockSettingsBloc),
           BlocProvider<AuthBloc>.value(value: mockAuthBloc),
+          BlocProvider<PremiumBloc>.value(value: mockPremiumBloc),
         ],
         child: const SettingsScreen(),
       ),
@@ -123,18 +138,21 @@ void main() {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      // Check for theme, language and premium settings by Icon
-      // In SettingsScreen it uses Icons.dark_mode_outlined for Theme, Icons.language_outlined for language, Icons.star_outline_rounded for premium
+      expect(
+        find.byIcon(Icons.star_outline_rounded),
+        findsOneWidget,
+      ); // Premium
+      await tester.drag(find.byType(ListView), const Offset(0, -800));
+      await tester.pumpAndSettle();
       expect(find.byIcon(Icons.dark_mode_outlined), findsOneWidget); // Theme
       expect(find.byIcon(Icons.language_outlined), findsOneWidget); // Language
-      expect(find.byIcon(Icons.star_outline_rounded), findsOneWidget); // Premium
     });
 
     testWidgets('shows theme selection dialog', (tester) async {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.byIcon(Icons.dark_mode_outlined));
+      await tester.drag(find.byType(ListView), const Offset(0, -800));
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.dark_mode_outlined));
       await tester.pumpAndSettle();
@@ -146,7 +164,7 @@ void main() {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.byIcon(Icons.language_outlined));
+      await tester.drag(find.byType(ListView), const Offset(0, -800));
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.language_outlined));
       await tester.pumpAndSettle();

@@ -7,7 +7,8 @@ import 'package:maki_app/features/gamification/presentation/bloc/gamification_ev
 import 'package:maki_app/features/gamification/presentation/bloc/gamification_state.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockGamificationRepository extends Mock implements GamificationRepository {}
+class MockGamificationRepository extends Mock
+    implements GamificationRepository {}
 
 void main() {
   late MockGamificationRepository mockRepository;
@@ -15,14 +16,16 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(DateTime.now());
-    registerFallbackValue(DailyChallengeEntity(
-      id: '1',
-      titleKey: 'title',
-      descKey: 'desc',
-      xpReward: 10,
-      isCompleted: true,
-      date: DateTime.now(),
-    ));
+    registerFallbackValue(
+      DailyChallengeEntity(
+        id: '1',
+        titleKey: 'title',
+        descKey: 'desc',
+        xpReward: 10,
+        isCompleted: true,
+        date: DateTime.now(),
+      ),
+    );
   });
 
   setUp(() {
@@ -40,18 +43,32 @@ void main() {
     });
 
     test('LoadGamificationDataEvent emits loaded state', () async {
-      when(() => mockRepository.getDailyChallenges(any())).thenAnswer((_) async => []);
-      when(() => mockRepository.getGamificationStatus())
-          .thenAnswer((_) async => const GamificationStatusEntity(xp: 100, level: 2));
-      when(() => mockRepository.getSavingsScoreBasisPoints()).thenAnswer((_) async => 5000);
-      when(() => mockRepository.hasWeeklyIncome()).thenAnswer((_) async => true);
+      when(
+        () => mockRepository.getDailyChallenges(any()),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockRepository.evaluateDailyChallenges(any()),
+      ).thenAnswer((_) async {});
+      when(() => mockRepository.getGamificationStatus()).thenAnswer(
+        (_) async => const GamificationStatusEntity(xp: 100, level: 2),
+      );
+      when(
+        () => mockRepository.getSavingsScoreBasisPoints(),
+      ).thenAnswer((_) async => 5000);
+      when(
+        () => mockRepository.hasWeeklyIncome(),
+      ).thenAnswer((_) async => true);
 
       final expectedStates = [
         isA<GamificationState>().having((s) => s.isLoading, 'isLoading', true),
         isA<GamificationState>()
             .having((s) => s.isLoading, 'isLoading', false)
             .having((s) => s.status?.xp, 'xp', 100)
-            .having((s) => s.savingsScoreBasisPoints, 'savingsScoreBasisPoints', 5000)
+            .having(
+              (s) => s.savingsScoreBasisPoints,
+              'savingsScoreBasisPoints',
+              5000,
+            )
             .having((s) => s.hasWeeklyIncome, 'hasWeeklyIncome', true),
       ];
 
@@ -84,9 +101,12 @@ void main() {
         date: DateTime.now(),
       );
 
-      when(() => mockRepository.claimXP(any()))
-          .thenAnswer((_) async => const GamificationStatusEntity(xp: 50, level: 1));
-      when(() => mockRepository.getDailyChallenges(any())).thenAnswer((_) async => []);
+      when(() => mockRepository.claimXP(any())).thenAnswer(
+        (_) async => const GamificationStatusEntity(xp: 50, level: 1),
+      );
+      when(
+        () => mockRepository.getDailyChallenges(any()),
+      ).thenAnswer((_) async => []);
 
       final expectedStates = [
         isA<GamificationState>()

@@ -31,7 +31,7 @@ class Mascot extends StatelessWidget {
     MascotPose.sleeping: 'assets/mascot/maki_sleeping.webp',
   };
 
-  static const String _avatarAsset = 'assets/mascot/maki_avatar.webp';
+  static const String _avatarAsset = 'assets/mascot/maki_avatar_v2.png';
 
   @override
   Widget build(BuildContext context) {

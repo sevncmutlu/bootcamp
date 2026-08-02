@@ -1,17 +1,18 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/features/auth/presentation/pages/login_screen.dart';
-import 'package:maki_app/features/auth/presentation/pages/register_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:maki_app/core/theme/app_tokens.dart';
-import 'package:maki_app/core/widgets/password_strength_indicator.dart';
+import 'package:maki_app/core/widgets/maki_app_bar_title.dart';
+import 'package:maki_app/core/widgets/maki_background.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:maki_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:maki_app/features/auth/presentation/utils/avatar_utils.dart';
+import 'package:maki_app/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -21,279 +22,105 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Future<void> _logout() async {
+  final _displayNameController = TextEditingController();
+  final _ageController = TextEditingController();
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _displayNameController.dispose();
+    _ageController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _deleteProfile() async {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-
-    final confirm = await showDialog<bool>(
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            l10n.logoutButton,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteDeviceProfileTitle),
+        content: Text(l10n.deleteDeviceProfileConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancelButton),
           ),
-          content: Text(l10n.logoutConfirmation),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(l10n.cancelButton),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.error,
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.error,
-              ),
-              child: Text(l10n.logoutButton),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirm == true) {
-      if (!mounted) return;
-      context.read<AuthBloc>().add(LogoutEvent());
-      Navigator.of(context).pop(true);
-    }
-  }
-
-  Future<void> _deleteAccount() async {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            l10n.deleteAccountTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            child: Text(l10n.deleteDeviceProfileButton),
           ),
-          content: Text(l10n.deleteAccountConfirmation),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(l10n.cancelButton),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.error,
-              ),
-              child: Text(l10n.deleteAccountButton),
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
 
-    if (confirm == true) {
-      if (!mounted) return;
-      context.read<AuthBloc>().add(DeleteAccountEvent());
-      Navigator.of(context).pop(true);
+    if (confirmed == true && mounted) {
+      context.read<AuthBloc>().add(DeleteProfileEvent());
     }
-  }
-
-  Future<void> _showChangePasswordDialog() async {
-    final l10n = AppLocalizations.of(context)!;
-    final oldController = TextEditingController();
-    final newController = TextEditingController();
-    String? dialogError;
-    bool obscureOld = true;
-    bool obscureNew = true;
-
-    await showDialog<void>(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: Text(
-                l10n.changePasswordTitle,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: BlocConsumer<AuthBloc, AuthState>(
-                listener: (context, state) {
-                  if (state.isSuccess) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.changePasswordSuccess)),
-                    );
-                    Navigator.of(context).pop();
-                  } else if (state.error != null) {
-                    setDialogState(() {
-                      dialogError = state.error;
-                    });
-                  }
-                },
-                builder: (context, state) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (dialogError != null) ...[
-                        Text(
-                          dialogError!,
-                          style: const TextStyle(color: Colors.red, fontSize: 13),
-                        ),
-                        const SizedBox(height: 8),
-                      ],
-                      TextField(
-                        controller: oldController,
-                        obscureText: obscureOld,
-                        decoration: InputDecoration(
-                          labelText: l10n.currentPasswordLabel,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              obscureOld
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                            ),
-                            onPressed: () {
-                              setDialogState(() {
-                                obscureOld = !obscureOld;
-                              });
-                            },
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: newController,
-                        obscureText: obscureNew,
-                        onChanged: (_) => setDialogState(() {}),
-                        decoration: InputDecoration(
-                          labelText: l10n.newPasswordLabel,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              obscureNew
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                            ),
-                            onPressed: () {
-                              setDialogState(() {
-                                obscureNew = !obscureNew;
-                              });
-                            },
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                      AnimatedSize(
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeInOut,
-                        child: newController.text.isEmpty
-                            ? const SizedBox.shrink()
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  PasswordStrengthIndicator(
-                                    password: newController.text,
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.cancelButton),
-                ),
-                TextButton(
-                  onPressed: () {
-                    if (oldController.text.isNotEmpty &&
-                        newController.text.length >= 6) {
-                      context.read<AuthBloc>().add(
-                            ChangePasswordEvent(
-                              oldPassword: oldController.text,
-                              newPassword: newController.text,
-                            ),
-                          );
-                    }
-                  },
-                  child: Text(l10n.saveButton),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  ImageProvider _getAvatarImage(String? avatarUrl) {
-    return AvatarUtils.getAvatarImage(avatarUrl);
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(
-        source: source,
-        maxWidth: 800,
-        maxHeight: 800,
-        imageQuality: 85,
-      );
-      if (pickedFile != null) {
-        String avatarPath = pickedFile.path;
-        if (kIsWeb) {
-          final bytes = await pickedFile.readAsBytes();
-          avatarPath = 'data:image/png;base64,${base64Encode(bytes)}';
-        }
-        if (!mounted) return;
-        context.read<AuthBloc>().add(UpdateProfileEvent(avatarUrl: avatarPath));
-      }
-    } catch (e) {
-      debugPrint('Avatar selection error: $e');
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: source,
+      maxWidth: 800,
+      maxHeight: 800,
+      imageQuality: 85,
+    );
+    if (pickedFile == null) return;
+
+    var avatarPath = pickedFile.path;
+    if (kIsWeb) {
+      final bytes = await pickedFile.readAsBytes();
+      avatarPath = 'data:image/png;base64,${base64Encode(bytes)}';
+    }
+    if (mounted) {
+      context.read<AuthBloc>().add(UpdateProfileEvent(avatarUrl: avatarPath));
     }
   }
 
   Future<void> _showAvatarOptions() async {
     final l10n = AppLocalizations.of(context)!;
-
     await showModalBottomSheet<void>(
       context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.photo_library_outlined),
-                title: Text(l10n.galleryButton),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickImage(ImageSource.gallery);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt_outlined),
-                title: Text(l10n.cameraButton),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickImage(ImageSource.camera);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.face_outlined),
-                title: Text(l10n.makiMascotOption),
-                onTap: () {
-                  Navigator.pop(context);
-                  context.read<AuthBloc>().add(
-                    const UpdateProfileEvent(avatarUrl: 'assets/mascot/maki_avatar.webp'),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(l10n.galleryButton),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: Text(l10n.cameraButton),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.face_outlined),
+              title: Text(l10n.makiMascotOption),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                context.read<AuthBloc>().add(
+                  const UpdateProfileEvent(
+                    avatarUrl: 'assets/mascot/maki_avatar.webp',
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -301,333 +128,433 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String title,
     required String initialValue,
     required void Function(String) onSave,
+    bool allowEmpty = false,
     bool isEmail = false,
   }) async {
     final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: initialValue);
-    String? dialogError;
+    String? error;
 
     await showDialog<void>(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: BlocListener<AuthBloc, AuthState>(
-                listener: (context, state) {
-                  if (state.isSuccess) {
-                    Navigator.of(context).pop();
-                  } else if (state.error != null) {
-                    setDialogState(() {
-                      dialogError = state.error;
-                    });
-                  }
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                  if (dialogError != null) ...[
-                    Text(
-                      dialogError!,
-                      style: const TextStyle(color: Colors.red, fontSize: 13),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  TextField(
-                    controller: controller,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  ],
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(title),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (error != null) ...[
+                Text(
+                  error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.cancelButton),
-                ),
-                TextButton(
-                  onPressed: () {
-                    final text = controller.text.trim();
-                    if (text.isNotEmpty) {
-                      if (isEmail) {
-                        final emailRegex =
-                            RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                        if (!emailRegex.hasMatch(text)) {
-                          setDialogState(() {
-                            dialogError = l10n.invalidEmail;
-                          });
-                          return;
-                        }
-                      }
-                      onSave(text);
-                    }
-                  },
-                  child: Text(l10n.saveButton),
-                ),
+                const SizedBox(height: AppSpacing.sm),
               ],
-            );
-          },
-        );
-      },
+              TextField(
+                controller: controller,
+                autofocus: true,
+                keyboardType: isEmail
+                    ? TextInputType.emailAddress
+                    : TextInputType.text,
+                decoration: InputDecoration(
+                  labelText: title,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancelButton),
+            ),
+            FilledButton(
+              onPressed: () {
+                final value = controller.text.trim();
+                if (!allowEmpty && value.isEmpty) {
+                  setDialogState(() => error = l10n.requiredField);
+                  return;
+                }
+                if (isEmail &&
+                    value.isNotEmpty &&
+                    !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) {
+                  setDialogState(() => error = l10n.invalidEmail);
+                  return;
+                }
+                onSave(value);
+                Navigator.pop(dialogContext);
+              },
+              child: Text(l10n.saveButton),
+            ),
+          ],
+        ),
+      ),
+    );
+    controller.dispose();
+  }
+
+  Future<void> _editAge(int? currentAge) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: currentAge?.toString());
+    String? error;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(l10n.ageLabel),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (error != null) ...[
+                Text(
+                  error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
+              TextField(
+                controller: controller,
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3),
+                ],
+                decoration: InputDecoration(
+                  labelText: l10n.ageLabel,
+                  hintText: l10n.ageHint,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancelButton),
+            ),
+            FilledButton(
+              onPressed: () {
+                final age = int.tryParse(controller.text.trim());
+                if (age == null || age < 13 || age > 100) {
+                  setDialogState(() => error = l10n.invalidAge);
+                  return;
+                }
+                context.read<AuthBloc>().add(UpdateProfileEvent(age: age));
+                Navigator.pop(dialogContext);
+              },
+              child: Text(l10n.saveButton),
+            ),
+          ],
+        ),
+      ),
+    );
+    controller.dispose();
+  }
+
+  void _createProfile() {
+    final l10n = AppLocalizations.of(context)!;
+    final displayName = _displayNameController.text.trim();
+    final age = int.tryParse(_ageController.text.trim());
+    final email = _emailController.text.trim();
+    if (displayName.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.requiredField)));
+      return;
+    }
+    if (age == null || age < 13 || age > 100) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.invalidAge)));
+      return;
+    }
+    if (email.isNotEmpty &&
+        !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.invalidEmail)));
+      return;
+    }
+    context.read<AuthBloc>().add(
+      CreateProfileEvent(displayName: displayName, age: age, email: email),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.profileTitle),
-        centerTitle: true,
-      ),
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error!)),
-            );
-          }
-        },
-        builder: (context, state) {
-          final user = state.user;
-          final avatarImage = _getAvatarImage(user?.avatarUrl);
-
-          if (user == null) {
-            return SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: AppSpacing.xxl),
-                    Center(
-                      child: Container(
-                        width: 104,
-                        height: 104,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: theme.colorScheme.primaryContainer
-                              .withValues(alpha: 0.3),
-                          border: Border.all(
-                            color: theme.colorScheme.primary
-                                .withValues(alpha: 0.4),
-                            width: 3,
-                          ),
-                          image: DecorationImage(
-                            image: avatarImage,
-                            fit: BoxFit.cover,
+      appBar: AppBar(title: MakiAppBarTitle(title: l10n.profileTitle)),
+      body: MakiBackground(
+        maxContentWidth: 720,
+        child: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state.error != null) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.error!)));
+            }
+          },
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final user = state.user;
+            return user == null
+                ? _EmptyDeviceProfile(
+                    displayNameController: _displayNameController,
+                    ageController: _ageController,
+                    emailController: _emailController,
+                    onCreate: _createProfile,
+                  )
+                : ListView(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    children: [
+                      _ProfileHero(
+                        displayName: user.displayName,
+                        email: user.email,
+                        avatarUrl: user.avatarUrl,
+                        onAvatarTap: _showAvatarOptions,
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.lg),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.phonelink_lock_outlined,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(width: AppSpacing.md),
+                              Expanded(
+                                child: Text(
+                                  l10n.deviceProfilePrivacy,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      l10n.guestUser,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      const SizedBox(height: AppSpacing.lg),
+                      Card(
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.person_outline),
+                              title: Text(l10n.displayNameLabel),
+                              subtitle: Text(user.displayName),
+                              trailing: const Icon(Icons.edit_outlined),
+                              onTap: () => _editField(
+                                title: l10n.editDisplayNameTitle,
+                                initialValue: user.displayName,
+                                onSave: (value) => context.read<AuthBloc>().add(
+                                  UpdateProfileEvent(displayName: value),
+                                ),
+                              ),
+                            ),
+                            const Divider(height: 1),
+                            ListTile(
+                              leading: const Icon(Icons.cake_outlined),
+                              title: Text(l10n.ageLabel),
+                              subtitle: Text(
+                                user.age?.toString() ?? l10n.ageMissing,
+                              ),
+                              trailing: const Icon(Icons.edit_outlined),
+                              onTap: () => _editAge(user.age),
+                            ),
+                            const Divider(height: 1),
+                            ListTile(
+                              leading: const Icon(
+                                Icons.alternate_email_outlined,
+                              ),
+                              title: Text(l10n.optionalEmailLabel),
+                              subtitle: Text(
+                                user.email.isEmpty
+                                    ? l10n.optionalFieldEmpty
+                                    : user.email,
+                              ),
+                              trailing: const Icon(Icons.edit_outlined),
+                              onTap: () => _editField(
+                                title: l10n.optionalEmailLabel,
+                                initialValue: user.email,
+                                allowEmpty: true,
+                                isEmail: true,
+                                onSave: (value) => context.read<AuthBloc>().add(
+                                  UpdateProfileEvent(email: value),
+                                ),
+                              ),
+                            ),
+                            const Divider(height: 1),
+                            ListTile(
+                              leading: const Icon(Icons.fingerprint_rounded),
+                              title: Text(l10n.deviceProfileIdLabel),
+                              subtitle: Text(user.userId),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      l10n.loginSubtitle,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                      const SizedBox(height: AppSpacing.xxl),
+                      OutlinedButton.icon(
+                        onPressed: _deleteProfile,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                        icon: const Icon(Icons.person_remove_outlined),
+                        label: Text(l10n.deleteDeviceProfileButton),
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const LoginScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.login_rounded),
-                      label: Text(l10n.loginButton),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const RegisterScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.person_add_outlined),
-                      label: Text(l10n.registerButton),
-                    ),
-                  ],
+                    ],
+                  );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyDeviceProfile extends StatelessWidget {
+  const _EmptyDeviceProfile({
+    required this.displayNameController,
+    required this.ageController,
+    required this.emailController,
+    required this.onCreate,
+  });
+
+  final TextEditingController displayNameController;
+  final TextEditingController ageController;
+  final TextEditingController emailController;
+  final VoidCallback onCreate;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return ListView(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      children: [
+        Icon(
+          Icons.phonelink_lock_rounded,
+          size: 72,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          l10n.deviceProfileEmptyTitle,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          l10n.deviceProfileEmptyBody,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        TextField(
+          controller: displayNameController,
+          textInputAction: TextInputAction.next,
+          decoration: InputDecoration(
+            labelText: l10n.displayNameLabel,
+            prefixIcon: const Icon(Icons.person_outline),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        TextField(
+          controller: ageController,
+          keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.next,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(3),
+          ],
+          decoration: InputDecoration(
+            labelText: l10n.ageLabel,
+            hintText: l10n.ageHint,
+            prefixIcon: const Icon(Icons.cake_outlined),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        TextField(
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+            labelText: l10n.optionalEmailLabel,
+            prefixIcon: const Icon(Icons.alternate_email_outlined),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        FilledButton.icon(
+          onPressed: onCreate,
+          icon: const Icon(Icons.lock_outline_rounded),
+          label: Text(l10n.createDeviceProfileButton),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          l10n.deviceProfilePrivacy,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
+    );
+  }
+}
+
+class _ProfileHero extends StatelessWidget {
+  const _ProfileHero({
+    required this.displayName,
+    required this.email,
+    required this.avatarUrl,
+    required this.onAvatarTap,
+  });
+
+  final String displayName;
+  final String email;
+  final String? avatarUrl;
+  final VoidCallback onAvatarTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Semantics(
+          button: true,
+          label: AppLocalizations.of(context)!.changeAvatarLabel,
+          child: InkWell(
+            onTap: onAvatarTap,
+            customBorder: const CircleBorder(),
+            child: Stack(
+              children: [
+                CircleAvatar(
+                  radius: 52,
+                  backgroundImage: AvatarUtils.getAvatarImage(avatarUrl),
                 ),
-              ),
-            );
-          }
-
-          return SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: AppSpacing.lg),
-                  Center(
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 104,
-                          height: 104,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: theme.colorScheme.primaryContainer
-                                .withValues(alpha: 0.3),
-                            border: Border.all(
-                              color: theme.colorScheme.primary
-                                  .withValues(alpha: 0.4),
-                              width: 3,
-                            ),
-                            image: DecorationImage(
-                              image: avatarImage,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: InkWell(
-                            onTap: _showAvatarOptions,
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.camera_alt_rounded,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    child: const Icon(Icons.camera_alt_outlined, size: 18),
                   ),
-                  const SizedBox(height: AppSpacing.lg),
-                  Text(
-                    user.displayName,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    user.email,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  Card(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: AppRadius.card,
-                    ),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.person_outline),
-                          title: Text(l10n.displayNameLabel),
-                          subtitle: Text(user.displayName),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.edit_outlined, size: 20),
-                            onPressed: () => _editField(
-                              title: l10n.editDisplayNameTitle,
-                              initialValue: user.displayName,
-                              onSave: (val) => context.read<AuthBloc>().add(
-                                    UpdateProfileEvent(displayName: val),
-                                  ),
-                            ),
-                          ),
-                        ),
-                        const Divider(height: 1),
-                        ListTile(
-                          leading: const Icon(Icons.email_outlined),
-                          title: Text(l10n.emailLabel),
-                          subtitle: Text(user.email),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.edit_outlined, size: 20),
-                            onPressed: () => _editField(
-                              title: l10n.editEmailTitle,
-                              initialValue: user.email,
-                              isEmail: true,
-                              onSave: (val) => context.read<AuthBloc>().add(
-                                    UpdateProfileEvent(email: val),
-                                  ),
-                            ),
-                          ),
-                        ),
-                        const Divider(height: 1),
-                        ListTile(
-                          leading: const Icon(Icons.lock_outlined),
-                          title: Text(l10n.passwordLabel),
-                          subtitle: const Text('••••••••'),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.edit_outlined, size: 20),
-                            onPressed: _showChangePasswordDialog,
-                          ),
-                        ),
-                        const Divider(height: 1),
-                        ListTile(
-                          leading: const Icon(Icons.badge_outlined),
-                          title: Text(l10n.userIdLabel),
-                          subtitle: Text(user.userId),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  ElevatedButton.icon(
-                    onPressed: _logout,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.errorContainer,
-                      foregroundColor: theme.colorScheme.onErrorContainer,
-                    ),
-                    icon: const Icon(Icons.logout_rounded),
-                    label: Text(l10n.logoutButton),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  OutlinedButton.icon(
-                    onPressed: _deleteAccount,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.colorScheme.error,
-                      side: BorderSide(color: theme.colorScheme.error),
-                    ),
-                    icon: const Icon(Icons.delete_forever_rounded),
-                    label: Text(l10n.deleteAccountButton),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          displayName,
+          style: Theme.of(context).textTheme.headlineSmall,
+          textAlign: TextAlign.center,
+        ),
+        if (email.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Text(email, style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      ],
     );
   }
 }

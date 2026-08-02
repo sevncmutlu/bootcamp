@@ -3,9 +3,7 @@ import 'dart:math';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureKeyHelper {
-  static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
+  static const _storage = FlutterSecureStorage();
 
   static const _keyName = 'maki_db_encryption_key';
 
@@ -17,8 +15,10 @@ class SecureKeyHelper {
         await _storage.write(key: _keyName, value: key);
       }
       return key;
-    } catch (e) {
-      return 'maki_secure_encryption_key_120_hardware_fallback';
+    } on Object catch (error) {
+      throw StateError(
+        'Güvenli veri anahtarı hazırlanamadı. Cihaz güvenli depolamasını kontrol edin: ${error.runtimeType}',
+      );
     }
   }
 

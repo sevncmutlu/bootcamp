@@ -10,7 +10,8 @@ import 'dart:developer' as developer;
 class CoachBloc extends Bloc<CoachEvent, CoachState> {
   final CoachRepository repository;
 
-  CoachBloc({required this.repository}) : super(CoachState.initial(newSessionId())) {
+  CoachBloc({required this.repository})
+    : super(CoachState.initial(newSessionId())) {
     on<InitChatEvent>(_onInitChat);
     on<SendMessageEvent>(_onSendMessage);
   }
@@ -33,23 +34,31 @@ class CoachBloc extends Bloc<CoachEvent, CoachState> {
     if (text.isEmpty) return;
 
     final userMessage = CoachMessageEntity(text: text, isUser: true);
-    emit(state.copyWith(
-      messages: List.from(state.messages)..add(userMessage),
-      isLoading: true,
-      error: null, // Clear previous error
-    ));
+    emit(
+      state.copyWith(
+        messages: List.from(state.messages)..add(userMessage),
+        isLoading: true,
+        error: null, // Clear previous error
+      ),
+    );
 
     try {
       final scrubbedText = PiiScrubber.scrub(text);
+      final contextHint = event.contextHint?.trim();
+      final question = contextHint == null || contextHint.isEmpty
+          ? scrubbedText
+          : '$contextHint\nKullanıcının sorusu: $scrubbedText';
       final reply = await repository.askCoach(
-        question: scrubbedText,
+        question: question,
         sessionId: state.sessionId,
       );
 
-      emit(state.copyWith(
-        messages: List.from(state.messages)..add(reply),
-        isLoading: false,
-      ));
+      emit(
+        state.copyWith(
+          messages: List.from(state.messages)..add(reply),
+          isLoading: false,
+        ),
+      );
     } on MakiApiException catch (e, stackTrace) {
       developer.log(
         'Maki coach error',
@@ -57,17 +66,19 @@ class CoachBloc extends Bloc<CoachEvent, CoachState> {
         stackTrace: stackTrace,
         name: 'CoachBloc',
       );
-      
+
       final errorMessage = CoachMessageEntity(
         text: e.userMessage,
         isUser: false,
         isError: true,
       );
-      
-      emit(state.copyWith(
-        messages: List.from(state.messages)..add(errorMessage),
-        isLoading: false,
-      ));
+
+      emit(
+        state.copyWith(
+          messages: List.from(state.messages)..add(errorMessage),
+          isLoading: false,
+        ),
+      );
     } catch (e, stackTrace) {
       developer.log(
         'Unexpected coach error',
@@ -75,17 +86,19 @@ class CoachBloc extends Bloc<CoachEvent, CoachState> {
         stackTrace: stackTrace,
         name: 'CoachBloc',
       );
-      
+
       final errorMessage = const CoachMessageEntity(
         text: 'Beklenmeyen bir hata oluştu.',
         isUser: false,
         isError: true,
       );
-      
-      emit(state.copyWith(
-        messages: List.from(state.messages)..add(errorMessage),
-        isLoading: false,
-      ));
+
+      emit(
+        state.copyWith(
+          messages: List.from(state.messages)..add(errorMessage),
+          isLoading: false,
+        ),
+      );
     }
   }
 }

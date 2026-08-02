@@ -28,10 +28,16 @@ void main() {
     });
 
     test('InitSimulatorEvent adds debts if state is empty', () {
-      const debt = DebtEntity(id: '1', name: 'Card', balance: 100, minPayment: 10, interestRate: 1);
-      
+      const debt = DebtEntity(
+        id: '1',
+        name: 'Card',
+        balance: 100,
+        minPayment: 10,
+        interestRate: 1,
+      );
+
       bloc.add(const InitSimulatorEvent([debt]));
-      
+
       expectLater(
         bloc.stream,
         emitsInOrder([
@@ -46,21 +52,39 @@ void main() {
     });
 
     test('SimulatePayoffEvent runs simulation', () {
-      const debt = DebtEntity(id: '1', name: 'Card', balance: 100, minPayment: 10, interestRate: 1);
+      const debt = DebtEntity(
+        id: '1',
+        name: 'Card',
+        balance: 100,
+        minPayment: 10,
+        interestRate: 1,
+      );
       bloc.add(const InitSimulatorEvent([debt]));
       bloc.add(const UpdateBudgetEvent(50));
-      
-      const expectedResult = SimulationResultEntity(monthsToFree: 10, totalInterestPaid: 5, schedule: []);
-      
-      when(() => mockRepository.simulatePayoff(
-        debts: any(named: 'debts'),
-        extraBudget: any(named: 'extraBudget'),
-        strategy: any(named: 'strategy'),
-      )).thenAnswer((_) async => expectedResult);
+
+      const expectedResult = SimulationResultEntity(
+        monthsToFree: 10,
+        totalInterestPaid: 5,
+        schedule: [],
+      );
+
+      when(
+        () => mockRepository.simulatePayoff(
+          debts: any(named: 'debts'),
+          extraBudget: any(named: 'extraBudget'),
+          strategy: any(named: 'strategy'),
+        ),
+      ).thenAnswer((_) async => expectedResult);
 
       expectLater(
         bloc.stream,
-        emitsThrough(isA<SimulatorState>().having((s) => s.result, 'result', expectedResult)),
+        emitsThrough(
+          isA<SimulatorState>().having(
+            (s) => s.result,
+            'result',
+            expectedResult,
+          ),
+        ),
       );
 
       bloc.add(SimulatePayoffEvent());

@@ -1,0 +1,23 @@
+{
+  "id": "maki-finans",
+  "name": "Maki · Kişisel Finans Koçun",
+  "short_name": "Maki",
+  "description": "Gelir, gider, hedef ve finans planlarını sakin bir orman deneyiminde takip et.",
+  "lang": "tr-TR",
+  "dir": "ltr",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "background_color": "#071A14",
+  "theme_color": "#071A14",
+  "orientation": "any",
+  "categories": ["finance", "productivity", "lifestyle"],
+  "prefer_related_applications": false,
+  "icons": [
+    {"src": "icons/Icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/Icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/Icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+    {"src": "icons/Icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

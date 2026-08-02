@@ -7,6 +7,7 @@ class IncomeEntity extends Equatable {
   final DateTime date;
   final String source;
   final String? notes;
+  final String? goalId;
 
   const IncomeEntity({
     this.id,
@@ -15,8 +16,9 @@ class IncomeEntity extends Equatable {
     required this.date,
     required this.source,
     this.notes,
+    this.goalId,
   });
 
   @override
-  List<Object?> get props => [id, title, amount, date, source, notes];
+  List<Object?> get props => [id, title, amount, date, source, notes, goalId];
 }

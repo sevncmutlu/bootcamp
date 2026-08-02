@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Annotated, Protocol
 
 from fastapi import Header, Request
 
-from maki.billing.verification import ProviderNotConfigured
+from maki.billing.verification import ProviderNotConfigured, StoreAccountBinding
 from maki.jobs.models import JobKind
 from maki.security.tokens import AuthenticationError
 
@@ -13,10 +13,12 @@ if TYPE_CHECKING:
     from pydantic import JsonValue
 
     from maki.billing.models import Entitlement
+    from maki.coach.models import CoachQuery
     from maki.jobs.models import JobRecord
     from maki.jobs.query import JobStatusView
     from maki.leaderboard.models import CohortKey, CohortPercentile
     from maki.observability.telemetry import Telemetry
+    from maki.official_data.ports import OfficialDataRepository
     from maki.privacy.deletion import DeletionCounts
     from maki.privacy.export import DataExport
     from maki.security.tokens import TokenClaims
@@ -64,6 +66,17 @@ class JobQuery(Protocol):
     ) -> JobStatusView: ...
 
 
+class CoachRequestAcceptor(Protocol):
+    async def accept_coach(
+        self,
+        *,
+        query: CoachQuery,
+        owner_id: str,
+        idempotency_key: str,
+        request_api_key: str | None,
+    ) -> JobRecord: ...
+
+
 class LeaderboardPort(Protocol):
     async def percentile(
         self,
@@ -96,6 +109,8 @@ class BillingVerificationPort(Protocol):
         subject_id: str,
     ) -> tuple[Entitlement, ...]: ...
 
+    def account_binding(self, *, subject_id: str) -> StoreAccountBinding: ...
+
 
 class DataExporterPort(Protocol):
     async def export(self, *, subject_id: str) -> DataExport: ...
@@ -122,6 +137,8 @@ class Container:
     data_exporter: DataExporterPort | None = None
     deletion_service: DeletionServicePort | None = None
     enabled_job_kinds: frozenset[JobKind] | None = None
+    coach_request_acceptor: CoachRequestAcceptor | None = None
+    official_data: OfficialDataRepository | None = None
 
 
 AuthorizationHeader = Annotated[
@@ -233,5 +250,13 @@ def deletion_service(request: Request) -> DeletionServicePort:
     service = container_from_request(request).deletion_service
     if service is None:
         msg = "Veri silme servisi hazır değil."
+        raise ServiceNotReadyError(msg)
+    return service
+
+
+def official_data_repository(request: Request) -> OfficialDataRepository:
+    service = container_from_request(request).official_data
+    if service is None:
+        msg = "Resmî enflasyon verisi hazır değil."
         raise ServiceNotReadyError(msg)
     return service

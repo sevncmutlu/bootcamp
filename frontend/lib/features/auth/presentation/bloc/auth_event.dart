@@ -9,59 +9,46 @@ abstract class AuthEvent extends Equatable {
 
 class InitializeAuthEvent extends AuthEvent {}
 
-class LoginEvent extends AuthEvent {
-  final String email;
-  final String password;
-
-  const LoginEvent({required this.email, required this.password});
-
-  @override
-  List<Object?> get props => [email, password];
-}
-
-class RegisterEvent extends AuthEvent {
-  final String email;
-  final String password;
+class CreateProfileEvent extends AuthEvent {
   final String displayName;
-
-  const RegisterEvent({required this.email, required this.password, required this.displayName});
-
-  @override
-  List<Object?> get props => [email, password, displayName];
-}
-
-class LogoutEvent extends AuthEvent {}
-
-class DeleteAccountEvent extends AuthEvent {}
-
-class ResetPasswordEvent extends AuthEvent {
+  final int age;
   final String email;
-  final String newPassword;
+  final String? financialGoal;
 
-  const ResetPasswordEvent({required this.email, required this.newPassword});
-
-  @override
-  List<Object?> get props => [email, newPassword];
-}
-
-class ChangePasswordEvent extends AuthEvent {
-  final String oldPassword;
-  final String newPassword;
-
-  const ChangePasswordEvent({required this.oldPassword, required this.newPassword});
+  const CreateProfileEvent({
+    required this.displayName,
+    required this.age,
+    this.email = '',
+    this.financialGoal,
+  });
 
   @override
-  List<Object?> get props => [oldPassword, newPassword];
+  List<Object?> get props => [displayName, age, email, financialGoal];
 }
+
+class DeleteProfileEvent extends AuthEvent {}
 
 class UpdateProfileEvent extends AuthEvent {
   final String? displayName;
+  final int? age;
   final String? email;
   final String? avatarUrl;
   final String? financialGoal;
 
-  const UpdateProfileEvent({this.displayName, this.email, this.avatarUrl, this.financialGoal});
+  const UpdateProfileEvent({
+    this.displayName,
+    this.age,
+    this.email,
+    this.avatarUrl,
+    this.financialGoal,
+  });
 
   @override
-  List<Object?> get props => [displayName, email, avatarUrl, financialGoal];
+  List<Object?> get props => [
+    displayName,
+    age,
+    email,
+    avatarUrl,
+    financialGoal,
+  ];
 }

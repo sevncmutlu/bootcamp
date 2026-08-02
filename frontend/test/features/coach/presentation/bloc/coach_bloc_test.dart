@@ -35,32 +35,42 @@ void main() {
         sources: [],
       );
 
-      when(() => mockRepository.askCoach(
-            question: any(named: 'question'),
-            sessionId: any(named: 'sessionId'),
-          )).thenAnswer((_) async => responseMessage);
+      when(
+        () => mockRepository.askCoach(
+          question: any(named: 'question'),
+          sessionId: any(named: 'sessionId'),
+        ),
+      ).thenAnswer((_) async => responseMessage);
 
       final expectedStates = [
         isA<CoachState>().having((s) => s.isLoading, 'isLoading', true),
-        isA<CoachState>().having((s) => s.isLoading, 'isLoading', false).having((s) => s.messages.length, 'messages length', 2),
+        isA<CoachState>()
+            .having((s) => s.isLoading, 'isLoading', false)
+            .having((s) => s.messages.length, 'messages length', 2),
       ];
 
       expectLater(bloc.stream, emitsInOrder(expectedStates));
       bloc.add(const SendMessageEvent('Hello'));
     });
-    
+
     test('emits error state when SendMessageEvent fails', () async {
-      when(() => mockRepository.askCoach(
-            question: any(named: 'question'),
-            sessionId: any(named: 'sessionId'),
-          )).thenThrow(Exception('Failed'));
+      when(
+        () => mockRepository.askCoach(
+          question: any(named: 'question'),
+          sessionId: any(named: 'sessionId'),
+        ),
+      ).thenThrow(Exception('Failed'));
 
       final expectedStates = [
         isA<CoachState>().having((s) => s.isLoading, 'isLoading', true),
         isA<CoachState>()
             .having((s) => s.isLoading, 'isLoading', false)
             .having((s) => s.messages.last.isError, 'isError', true)
-            .having((s) => s.messages.last.text, 'text', 'Beklenmeyen bir hata oluştu.'),
+            .having(
+              (s) => s.messages.last.text,
+              'text',
+              'Beklenmeyen bir hata oluştu.',
+            ),
       ];
 
       expectLater(bloc.stream, emitsInOrder(expectedStates));

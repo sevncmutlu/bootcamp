@@ -38,6 +38,7 @@ def test_ci_uretim_guvenlik_kapilarini_calistirir() -> None:
     assert "check_frontend_boundary.ps1" in icerik
     assert "cyclonedx-py environment" in icerik
     assert "pip-audit" in icerik
+    assert "semgrep scan" in icerik
     assert "trivy-action" in icerik
     assert "--cov-branch" in icerik
     assert "docker build" in icerik

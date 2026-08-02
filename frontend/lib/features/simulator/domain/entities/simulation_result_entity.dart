@@ -16,9 +16,9 @@ class SimulationResultEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        monthsToFree,
-        totalInterestPaid,
-        successProbability,
-        schedule,
-      ];
+    monthsToFree,
+    totalInterestPaid,
+    successProbability,
+    schedule,
+  ];
 }

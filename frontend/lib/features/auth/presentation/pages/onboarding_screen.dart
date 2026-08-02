@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:maki_app/l10n/app_localizations.dart';
-import 'package:maki_app/features/auth/presentation/pages/login_screen.dart';
+import 'package:maki_app/core/theme/app_tokens.dart';
 import 'package:maki_app/core/widgets/brand_wordmark.dart';
-import 'package:maki_app/core/widgets/mascot.dart';
+import 'package:maki_app/core/widgets/maki_background.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final void Function(String) onCompleted;
@@ -36,153 +36,186 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ];
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: () async {
-                      final loggedIn = await Navigator.of(context).push<bool?>(
-                        MaterialPageRoute<bool?>(
-                          builder: (_) => const LoginScreen(),
-                        ),
-                      );
-                      if (loggedIn == true && mounted) {
-                        widget.onCompleted('track_spending');
-                      }
-                    },
-                    icon: const Icon(Icons.login_rounded, size: 20),
-                    label: Text(l10n.loginButton),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              const Center(child: Mascot(pose: MascotPose.wave, size: 120)),
-              const SizedBox(height: 16),
-              const Center(child: BrandWordmark(fontSize: 30)),
-              const SizedBox(height: 24),
-              Text(
-                l10n.onboardingTitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                l10n.onboardingSubtitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 24),
-              ...List.generate(goals.length, (index) {
-                final isSelected = _selectedGoalIndex == index;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          _selectedGoalIndex = index;
-                        });
-                      },
-                      borderRadius: BorderRadius.circular(16.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                          vertical: 18.0,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16.0),
-                          border: Border.all(
-                            color: isSelected
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.outline.withValues(
-                                    alpha: 0.15,
-                                  ),
-                            width: isSelected ? 2.0 : 1.0,
+      body: MakiBackground(
+        maxContentWidth: 680,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 16.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Semantics(
+                  image: true,
+                  label: l10n.onboardingHeroSemantics,
+                  child: ClipRRect(
+                    borderRadius: AppRadius.card,
+                    child: SizedBox(
+                      height: 264,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.asset(
+                            'assets/images/maki_onboarding_grove_v1.webp',
+                            fit: BoxFit.cover,
+                            alignment: Alignment.center,
+                            filterQuality: FilterQuality.high,
+                            excludeFromSemantics: true,
                           ),
-                          color: isSelected
-                              ? theme.colorScheme.primaryContainer.withValues(
-                                  alpha: 0.15,
-                                )
-                              : theme.colorScheme.surface,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              goalIcons[index],
-                              color: isSelected
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Text(
-                                goals[index],
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
-                                  color: isSelected
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurface,
-                                ),
+                          const DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Color(0x120E4B36),
+                                  Color(0x00153F2E),
+                                  Color(0x52153F2E),
+                                ],
                               ),
                             ),
-                            if (isSelected)
-                              Icon(
-                                Icons.check_circle,
-                                color: theme.colorScheme.primary,
+                          ),
+                          Positioned(
+                            top: 12,
+                            right: 12,
+                            child: Chip(
+                              avatar: const Icon(
+                                Icons.phonelink_lock_outlined,
+                                size: 18,
                               ),
-                          ],
-                        ),
+                              label: Text(l10n.localFirstLabel),
+                              backgroundColor: const Color(0xEFFFF9EB),
+                              side: BorderSide.none,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                );
-              }),
-              const SizedBox(height: 4),
-              ElevatedButton(
-                onPressed: _selectedGoalIndex != null
-                    ? () {
-                        final goalsMapping = [
-                          'track_spending',
-                          'save_goal',
-                          'pay_debt',
-                          'learn_invest',
-                        ];
-                        widget.onCompleted(goalsMapping[_selectedGoalIndex!]);
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  elevation: 0,
                 ),
-                child: Text(
-                  l10n.continueButton,
-                  style: const TextStyle(
-                    fontSize: 16,
+                const SizedBox(height: 16),
+                const Center(child: BrandWordmark(fontSize: 30)),
+                const SizedBox(height: 24),
+                Text(
+                  l10n.onboardingTitle,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 12),
+                Text(
+                  l10n.onboardingSubtitle,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ...List.generate(goals.length, (index) {
+                  final isSelected = _selectedGoalIndex == index;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _selectedGoalIndex = index;
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0,
+                            vertical: 18.0,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.0),
+                            border: Border.all(
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.outline.withValues(
+                                      alpha: 0.15,
+                                    ),
+                              width: isSelected ? 2.0 : 1.0,
+                            ),
+                            color: isSelected
+                                ? theme.colorScheme.primaryContainer.withValues(
+                                    alpha: 0.15,
+                                  )
+                                : theme.colorScheme.surface,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                goalIcons[index],
+                                color: isSelected
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  goals[index],
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                    color: isSelected
+                                        ? theme.colorScheme.primary
+                                        : theme.colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  Icons.check_circle,
+                                  color: theme.colorScheme.primary,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+                const SizedBox(height: 4),
+                ElevatedButton(
+                  onPressed: _selectedGoalIndex != null
+                      ? () {
+                          final goalsMapping = [
+                            'track_spending',
+                            'save_goal',
+                            'pay_debt',
+                            'learn_invest',
+                          ];
+                          widget.onCompleted(goalsMapping[_selectedGoalIndex!]);
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    l10n.continueButton,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

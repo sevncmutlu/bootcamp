@@ -57,6 +57,7 @@ class GamificationState extends Equatable {
     String? leaderboardAgeBand,
     String? leaderboardHouseholdBand,
     String? leaderboardError,
+    bool clearLeaderboardError = false,
   }) {
     return GamificationState(
       isLoading: isLoading ?? this.isLoading,
@@ -72,7 +73,9 @@ class GamificationState extends Equatable {
       leaderboardAgeBand: leaderboardAgeBand ?? this.leaderboardAgeBand,
       leaderboardHouseholdBand:
           leaderboardHouseholdBand ?? this.leaderboardHouseholdBand,
-      leaderboardError: leaderboardError ?? this.leaderboardError,
+      leaderboardError: clearLeaderboardError
+          ? null
+          : leaderboardError ?? this.leaderboardError,
     );
   }
 

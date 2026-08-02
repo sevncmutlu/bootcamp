@@ -17,8 +17,12 @@ void main() {
   setUp(() {
     mockRepository = MockTransactionRepository();
     // Default mock behavior for streams
-    when(() => mockRepository.watchExpenses()).thenAnswer((_) => const Stream.empty());
-    when(() => mockRepository.watchIncomes()).thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockRepository.watchExpenses(),
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockRepository.watchIncomes(),
+    ).thenAnswer((_) => const Stream.empty());
   });
 
   group('TransactionBloc', () {
@@ -45,101 +49,118 @@ void main() {
       iconName: 'fastfood',
     );
 
-    test('emits [isLoading, loaded categories] when LoadCategoriesEvent is added successfully', () async {
-      when(() => mockRepository.seedCategories()).thenAnswer((_) async {});
-      when(() => mockRepository.getCategories()).thenAnswer((_) async => [tCategory]);
-      
-      bloc = TransactionBloc(repository: mockRepository);
-      
-      final expectedStates = [
-        const TransactionState(isLoading: true),
-        TransactionState(isLoading: false, categories: [tCategory]),
-      ];
-      
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
-      bloc.add(LoadCategoriesEvent());
-    });
+    test(
+      'emits [isLoading, loaded categories] when LoadCategoriesEvent is added successfully',
+      () async {
+        when(() => mockRepository.seedCategories()).thenAnswer((_) async {});
+        when(
+          () => mockRepository.getCategories(),
+        ).thenAnswer((_) async => [tCategory]);
+
+        bloc = TransactionBloc(repository: mockRepository);
+
+        final expectedStates = [
+          const TransactionState(isLoading: true),
+          TransactionState(isLoading: false, categories: [tCategory]),
+        ];
+
+        expectLater(bloc.stream, emitsInOrder(expectedStates));
+        bloc.add(LoadCategoriesEvent());
+      },
+    );
 
     test('emits [isLoading, error] when LoadCategoriesEvent fails', () async {
-      when(() => mockRepository.seedCategories()).thenThrow(Exception('Failed'));
-      
+      when(
+        () => mockRepository.seedCategories(),
+      ).thenThrow(Exception('Failed'));
+
       bloc = TransactionBloc(repository: mockRepository);
-      
+
       final expectedStates = [
         const TransactionState(isLoading: true),
         const TransactionState(isLoading: false, error: 'Exception: Failed'),
       ];
-      
+
       expectLater(bloc.stream, emitsInOrder(expectedStates));
       bloc.add(LoadCategoriesEvent());
     });
 
-    test('emits [isLoading, isSuccess] when AddExpenseEvent is successful', () async {
-      when(() => mockRepository.addExpense(tExpense)).thenAnswer((_) async {});
-      
-      bloc = TransactionBloc(repository: mockRepository);
-      
-      final expectedStates = [
-        const TransactionState(isLoading: true, isSuccess: false),
-        const TransactionState(isLoading: false, isSuccess: true),
-      ];
-      
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
-      bloc.add(AddExpenseEvent(tExpense));
-    });
+    test(
+      'emits [isLoading, isSuccess] when AddExpenseEvent is successful',
+      () async {
+        when(
+          () => mockRepository.addExpense(tExpense),
+        ).thenAnswer((_) async {});
 
-    test('emits [isLoading, isSuccess] when AddIncomeEvent is successful', () async {
-      when(() => mockRepository.addIncome(tIncome)).thenAnswer((_) async {});
-      
-      bloc = TransactionBloc(repository: mockRepository);
-      
-      final expectedStates = [
-        const TransactionState(isLoading: true, isSuccess: false),
-        const TransactionState(isLoading: false, isSuccess: true),
-      ];
-      
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
-      bloc.add(AddIncomeEvent(tIncome));
-    });
+        bloc = TransactionBloc(repository: mockRepository);
+
+        final expectedStates = [
+          const TransactionState(isLoading: true, isSuccess: false),
+          const TransactionState(isLoading: false, isSuccess: true),
+        ];
+
+        expectLater(bloc.stream, emitsInOrder(expectedStates));
+        bloc.add(AddExpenseEvent(tExpense));
+      },
+    );
+
+    test(
+      'emits [isLoading, isSuccess] when AddIncomeEvent is successful',
+      () async {
+        when(() => mockRepository.addIncome(tIncome)).thenAnswer((_) async {});
+
+        bloc = TransactionBloc(repository: mockRepository);
+
+        final expectedStates = [
+          const TransactionState(isLoading: true, isSuccess: false),
+          const TransactionState(isLoading: false, isSuccess: true),
+        ];
+
+        expectLater(bloc.stream, emitsInOrder(expectedStates));
+        bloc.add(AddIncomeEvent(tIncome));
+      },
+    );
 
     test('calls deleteExpense when DeleteExpenseEvent is added', () async {
       when(() => mockRepository.deleteExpense(1)).thenAnswer((_) async {});
-      
+
       bloc = TransactionBloc(repository: mockRepository);
       bloc.add(const DeleteExpenseEvent(1));
-      
+
       // small delay to let bloc process
       await Future<void>.delayed(const Duration(milliseconds: 50));
-      
+
       verify(() => mockRepository.deleteExpense(1)).called(1);
     });
 
     test('calls deleteIncome when DeleteIncomeEvent is added', () async {
       when(() => mockRepository.deleteIncome(1)).thenAnswer((_) async {});
-      
+
       bloc = TransactionBloc(repository: mockRepository);
       bloc.add(const DeleteIncomeEvent(1));
-      
+
       // small delay to let bloc process
       await Future<void>.delayed(const Duration(milliseconds: 50));
-      
+
       verify(() => mockRepository.deleteIncome(1)).called(1);
     });
 
     test('streams update state correctly on init', () async {
-      when(() => mockRepository.watchExpenses())
-          .thenAnswer((_) => Stream.value([tExpense]));
-      when(() => mockRepository.watchIncomes())
-          .thenAnswer((_) => Stream.value([tIncome]));
-          
+      when(
+        () => mockRepository.watchExpenses(),
+      ).thenAnswer((_) => Stream.value([tExpense]));
+      when(
+        () => mockRepository.watchIncomes(),
+      ).thenAnswer((_) => Stream.value([tIncome]));
+
       bloc = TransactionBloc(repository: mockRepository);
-      
+
       // Wait for stream subscription to emit and bloc to process
       await Future<void>.delayed(const Duration(milliseconds: 50));
-      
+
       expect(bloc.state.expenses, equals([tExpense]));
       expect(bloc.state.incomes, equals([tIncome]));
-      
+
       await bloc.close();
     });
   });

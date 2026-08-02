@@ -13,7 +13,9 @@ void main() {
   late MockPremiumBloc mockPremiumBloc;
 
   setUpAll(() {
-    registerFallbackValue(const PremiumState(isLoading: false, isPremium: false));
+    registerFallbackValue(
+      const PremiumState(isLoading: false, isPremium: false),
+    );
   });
 
   setUp(() {
@@ -35,7 +37,9 @@ void main() {
 
   group('PaywallScreen UI Tests', () {
     testWidgets('renders initial UI correctly', (tester) async {
-      when(() => mockPremiumBloc.state).thenReturn(const PremiumState(isLoading: false, isPremium: false));
+      when(
+        () => mockPremiumBloc.state,
+      ).thenReturn(const PremiumState(isLoading: false, isPremium: false));
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();

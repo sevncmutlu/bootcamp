@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Maki · Güvenli bağlantı</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      display: grid; place-items: center; padding: 24px; color: #f3f6f1;
+      background: radial-gradient(circle at 50% 25%, rgba(115,151,107,.2), transparent 34rem), #071a14;
+      font: 500 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .ring {
+      width: min(32rem, 100%); padding: 54px 36px; text-align: center;
+      border: 1px solid rgba(181,211,176,.24);
+      border-radius: 48% 52% 45% 55% / 52% 44% 56% 48%;
+      background: rgba(14,75,54,.32);
+      box-shadow: 0 24px 80px rgba(0,0,0,.28), inset 0 0 0 10px rgba(115,151,107,.05);
+    }
+    .leaf { display: block; margin-bottom: 18px; color: #8fc888; font-size: 34px; }
+    h1 { margin: 0 0 8px; font: 700 clamp(26px, 6vw, 38px)/1.1 Georgia, serif; }
+    p { margin: 6px 0; color: #c6d7cd; }
+    [data-state="error"] h1 { color: #ff9f8d; }
+    a { color: #b7daa9; }
+  </style>
+</head>
+<body>
+  <main class="ring" id="oidc-card" role="status" aria-live="polite">
+    <span class="leaf" aria-hidden="true">●</span>
+    <h1 id="oidc-title">Güvenli bağlantı tamamlanıyor…</h1>
+    <p id="oidc-detail">Maki seni birazdan uygulamaya geri götürecek.</p>
+    <p id="oidc-error-uri" hidden></p>
+  </main>
+  <script>
+    (function () {
+      'use strict';
+      const WIRE_VERSION = 2;
+      const requestBroadcastChannel = 'oidc_flutter_web/request';
+      const redirectBroadcastChannel = 'oidc_flutter_web/redirect';
+      const stateNamespace = 'state';
+      const stateResponseNamespace = 'response.state';
+      const requestNamespace = 'request';
+      const ACK_TIMEOUT_MS = 10000;
+      const messages = {
+        working: 'Güvenli bağlantı tamamlanıyor…', redirecting: 'Maki’ye dönülüyor…',
+        success: 'Bağlantı tamamlandı. Bu sekmeyi kapatıp Maki’ye dönebilirsin.',
+        loggedOut: 'Oturum kapatıldı. Bu sekmeyi kapatabilirsin.',
+        safeToClose: 'Bu sekmeyi kapatıp Maki’ye dönebilirsin.',
+        errorTitle: 'Bağlantı tamamlanamadı', appError: 'Maki’ye dönüp yeniden deneyebilirsin.',
+        noChannel: 'Tarayıcı sekmeler arası iletişimi desteklemiyor. Maki’ye döndüğünde işlem sürecek.'
+      };
+      const channelSupported = typeof BroadcastChannel !== 'undefined';
+      if (!handleFrontChannelLogout()) handleRedirect();
+
+      function handleRedirect() {
+        render('status', messages.working, 'Maki seni birazdan uygulamaya geri götürecek.');
+        const errorInfo = parseError();
+        let bc = null, settled = false, timer = null;
+        function finish(state, title, detail, errorUri, close) {
+          if (settled) return;
+          settled = true;
+          if (timer !== null) clearTimeout(timer);
+          if (bc) { try { bc.close(); } catch (_) {} }
+          render(state, title, detail, errorUri);
+          if (close) attemptClose();
+        }
+        if (channelSupported) {
+          try {
+            bc = new BroadcastChannel(redirectBroadcastChannel);
+            bc.onmessage = function (event) {
+              let msg;
+              try { msg = JSON.parse(event.data); } catch (_) { return; }
+              if (!msg || msg.v !== WIRE_VERSION || msg.type !== 'ack') return;
+              if (msg.status === 'ok') finish('status', messages.success, '', null, true);
+              else finish('error', messages.errorTitle, msg.message || messages.appError, null, false);
+            };
+            bc.postMessage(JSON.stringify({v: WIRE_VERSION, type: 'redirect', uri: window.location.toString()}));
+          } catch (_) { bc = null; }
+        }
+        if (maybeSelfNavigate()) { render('status', messages.redirecting, ''); return; }
+        if (errorInfo) {
+          finish('error', messages.errorTitle, errorInfo.description || errorInfo.error, errorInfo.uri, true);
+          return;
+        }
+        if (!bc) { render('status', messages.working, messages.noChannel); attemptClose(); return; }
+        timer = setTimeout(function () { finish('status', messages.safeToClose, '', null, true); }, ACK_TIMEOUT_MS);
+      }
+
+      function handleFrontChannelLogout() {
+        const query = new URLSearchParams(window.location.search);
+        if (query.get('requestType') !== 'front-channel-logout') return false;
+        if (channelSupported) {
+          try {
+            const bc = new BroadcastChannel(requestBroadcastChannel);
+            bc.postMessage(window.location.toString()); bc.close();
+          } catch (_) {}
+        }
+        setLocalStorage(requestNamespace, 'front-channel-logout', window.location.toString());
+        render('status', messages.loggedOut, ''); attemptClose(); return true;
+      }
+
+      function maybeSelfNavigate() {
+        let source = new URLSearchParams(window.location.search), state = source.get('state');
+        if (!state && window.location.hash) {
+          source = new URLSearchParams(window.location.hash.substring(1)); state = source.get('state');
+        }
+        if (!state) return false;
+        const raw = getLocalStorage(stateNamespace, state);
+        if (!raw) return false;
+        setLocalStorage(stateResponseNamespace, state, window.location.toString());
+        let parsed;
+        try { parsed = JSON.parse(raw); } catch (_) { return false; }
+        if (!parsed || parsed.options?.webLaunchMode !== 'samePage' || !parsed.original_uri) return false;
+        window.location.assign(parsed.original_uri); return true;
+      }
+
+      function parseError() {
+        function read(params) {
+          const error = params.get('error');
+          return error ? {error: error, description: params.get('error_description'), uri: params.get('error_uri')} : null;
+        }
+        return read(new URLSearchParams(window.location.search)) ||
+          (window.location.hash ? read(new URLSearchParams(window.location.hash.substring(1))) : null);
+      }
+      function attemptClose() { try { window.close(); } catch (_) {} }
+      function render(state, title, detail, errorUri) {
+        const card = document.getElementById('oidc-card');
+        const titleEl = document.getElementById('oidc-title');
+        const detailEl = document.getElementById('oidc-detail');
+        const errorEl = document.getElementById('oidc-error-uri');
+        if (card) card.setAttribute('data-state', state);
+        if (titleEl) titleEl.textContent = title || '';
+        if (detailEl) detailEl.textContent = detail || '';
+        if (!errorEl) return;
+        errorEl.textContent = ''; errorEl.hidden = true;
+        if (!errorUri) return;
+        if (/^https?:\/\//i.test(errorUri)) {
+          const link = document.createElement('a');
+          link.href = errorUri; link.textContent = 'Sağlayıcı ayrıntısını aç'; link.rel = 'noopener noreferrer';
+          errorEl.appendChild(link);
+        } else errorEl.textContent = errorUri;
+        errorEl.hidden = false;
+      }
+      function getLocalStorage(namespace, key) {
+        return localStorage.getItem('oidc.' + namespace + '.' + key);
+      }
+      function setLocalStorage(namespace, key, value) {
+        const keysEntryKey = 'oidc.keys.' + namespace;
+        let parsedKeys = [];
+        try {
+          const storedKeys = JSON.parse(localStorage.getItem(keysEntryKey) || '[]');
+          if (Array.isArray(storedKeys)) parsedKeys = storedKeys;
+        } catch (_) {}
+        if (!parsedKeys.includes(key)) parsedKeys.push(key);
+        localStorage.setItem(keysEntryKey, JSON.stringify(parsedKeys));
+        localStorage.setItem('oidc.' + namespace + '.' + key, value);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -160,7 +160,6 @@ async def test_google_client_classifies_provider_failures(
 @pytest.mark.parametrize(
     ("field", "value"),
     [
-        ("acknowledgementState", "ACKNOWLEDGEMENT_STATE_PENDING"),
         ("subscriptionState", "SUBSCRIPTION_STATE_PENDING"),
         ("testPurchase", {}),
     ],
@@ -183,6 +182,27 @@ async def test_google_non_entitling_states_are_rejected(
             purchase_token="gizli-token",  # noqa: S106
             subject_hash="a" * 64,
         )
+
+
+async def test_pending_acknowledgement_is_verified_before_client_completion() -> None:
+    response = {
+        **_response(),
+        "acknowledgementState": "ACKNOWLEDGEMENT_STATE_PENDING",
+    }
+    verifier = GooglePlayVerifier(
+        publisher=FakePublisher(response),
+        package_name="com.team120.maki.maki_app",
+        allowed_products=frozenset({"maki_debt_pro"}),
+        clock=lambda: NOW,
+    )
+
+    transaction = await verifier.verify(
+        package_name="com.team120.maki.maki_app",
+        purchase_token="gizli-token",  # noqa: S106
+        subject_hash="a" * 64,
+    )
+
+    assert transaction.verified is True
 
 
 def _response() -> dict[str, object]:

@@ -1,27 +1,30 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maki_app/features/premium/domain/repositories/premium_repository.dart';
 import 'package:maki_app/features/premium/presentation/bloc/premium_event.dart';
 import 'package:maki_app/features/premium/presentation/bloc/premium_state.dart';
 
 class PremiumBloc extends Bloc<PremiumEvent, PremiumState> {
-  final PremiumRepository repository;
-
   PremiumBloc({required this.repository}) : super(PremiumState.initial()) {
     on<CheckPremiumStatusEvent>(_onCheckPremiumStatus);
     on<PurchasePremiumEvent>(_onPurchasePremium);
     on<RestorePremiumEvent>(_onRestorePremium);
   }
 
+  final PremiumRepository repository;
+
   Future<void> _onCheckPremiumStatus(
     CheckPremiumStatusEvent event,
     Emitter<PremiumState> emit,
   ) async {
     final isPremium = await repository.isPremium();
-    emit(state.copyWith(
-      isPremium: isPremium,
-      clearPurchaseSuccess: !isPremium,
-    ));
+    emit(
+      state.copyWith(
+        isPremium: isPremium,
+        clearPurchaseSuccess: !isPremium,
+        localizedPrice: repository.localizedPrice,
+        purchaseAvailable: repository.purchaseAvailable,
+      ),
+    );
   }
 
   Future<void> _onPurchasePremium(
@@ -30,20 +33,21 @@ class PremiumBloc extends Bloc<PremiumEvent, PremiumState> {
   ) async {
     emit(state.copyWith(isLoading: true, clearError: true));
     try {
-      if (!kDebugMode) {
-        throw StateError('Mağaza satın alma bağlantısı Sprint 3 kapsamında etkinleştirilecek.');
-      }
-      await repository.setPremium(true);
-      emit(state.copyWith(
-        isLoading: false,
-        isPremium: true,
-        purchaseSuccess: true,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        error: 'Abonelik etkinleştirilemedi.',
-      ));
+      final purchased = await repository.purchase();
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isPremium: purchased || state.isPremium,
+          purchaseSuccess: purchased,
+          error: purchased ? null : 'Satın alma tamamlanmadı.',
+          localizedPrice: repository.localizedPrice,
+          purchaseAvailable: repository.purchaseAvailable,
+        ),
+      );
+    } on Object {
+      emit(
+        state.copyWith(isLoading: false, error: 'Abonelik etkinleştirilemedi.'),
+      );
     }
   }
 
@@ -53,24 +57,23 @@ class PremiumBloc extends Bloc<PremiumEvent, PremiumState> {
   ) async {
     emit(state.copyWith(isLoading: true, clearError: true));
     try {
-      if (!kDebugMode) {
-        throw StateError('Mağaza geri yükleme bağlantısı Sprint 3 kapsamında etkinleştirilecek.');
-      }
-      // Mocking a restore operation
-      await Future<void>.delayed(const Duration(seconds: 1));
-      
-      emit(state.copyWith(
-        isLoading: false,
-        isPremium: false, // In reality, this would be true if they had a past purchase
-        error: 'Önceki abonelik bulunamadı.',
-        clearPurchaseSuccess: true,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        error: 'Abonelik geri yüklenemedi.',
-        clearPurchaseSuccess: true,
-      ));
+      final restored = await repository.restore();
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isPremium: restored || state.isPremium,
+          error: restored ? null : 'Önceki abonelik bulunamadı.',
+          clearPurchaseSuccess: true,
+        ),
+      );
+    } on Object {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          error: 'Abonelik geri yüklenemedi.',
+          clearPurchaseSuccess: true,
+        ),
+      );
     }
   }
 }

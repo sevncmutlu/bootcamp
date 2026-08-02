@@ -24,10 +24,18 @@ class Money {
     ).format(amount);
   }
 
-  static String formatRatioAsPercent(num ratio, {int decimals = 1, String? locale}) =>
+  static String formatRatioAsPercent(
+    num ratio, {
+    int decimals = 1,
+    String? locale,
+  }) =>
       formatPercent(ratio * 100, decimals: decimals, locale: locale ?? 'tr_TR');
 
-  static String formatPercent(num value, {int decimals = 1, String locale = 'tr_TR'}) {
+  static String formatPercent(
+    num value, {
+    int decimals = 1,
+    String locale = 'tr_TR',
+  }) {
     final str = NumberFormat.decimalPatternDigits(
       locale: locale,
       decimalDigits: decimals,
@@ -36,7 +44,16 @@ class Money {
   }
 }
 
-String formatTL(num amount, {int decimals = 2, String? locale, BuildContext? context}) {
-  final loc = locale ?? (context != null ? Localizations.localeOf(context).toString() : Intl.defaultLocale ?? 'tr_TR');
+String formatTL(
+  num amount, {
+  int decimals = 2,
+  String? locale,
+  BuildContext? context,
+}) {
+  final loc =
+      locale ??
+      (context != null
+          ? Localizations.localeOf(context).toString()
+          : Intl.defaultLocale ?? 'tr_TR');
   return Money.format(amount, decimals: decimals, locale: loc);
 }

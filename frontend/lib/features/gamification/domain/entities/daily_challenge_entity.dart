@@ -19,11 +19,11 @@ class DailyChallengeEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        titleKey,
-        descKey,
-        xpReward,
-        isCompleted,
-        date,
-      ];
+    id,
+    titleKey,
+    descKey,
+    xpReward,
+    isCompleted,
+    date,
+  ];
 }

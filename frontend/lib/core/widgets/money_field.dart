@@ -14,18 +14,38 @@ class MoneyField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool autofocus;
 
-  static double? tryParse(String? raw) {
+  static int? tryParseMinor(String? raw) {
     if (raw == null) return null;
     var s = raw.trim();
     if (s.isEmpty) return null;
+    s = s.replaceAll('₺', '').replaceAll(RegExp(r'\s+'), '');
     final hasComma = s.contains(',');
     final hasDot = s.contains('.');
     if (hasComma && hasDot) {
-      s = s.replaceAll('.', '').replaceAll(',', '.');
+      final commaIsDecimal = s.lastIndexOf(',') > s.lastIndexOf('.');
+      s = commaIsDecimal
+          ? s.replaceAll('.', '').replaceAll(',', '.')
+          : s.replaceAll(',', '');
     } else if (hasComma) {
       s = s.replaceAll(',', '.');
     }
-    return double.tryParse(s);
+    if (!RegExp(r'^[-+]?\d+(?:\.\d{1,2})?$').hasMatch(s)) return null;
+
+    final negative = s.startsWith('-');
+    final unsigned = s.replaceFirst(RegExp(r'^[-+]'), '');
+    final parts = unsigned.split('.');
+    final whole = int.tryParse(parts.first);
+    if (whole == null) return null;
+    final fraction = parts.length == 1
+        ? 0
+        : int.parse(parts.last.padRight(2, '0'));
+    final minor = whole * 100 + fraction;
+    return negative ? -minor : minor;
+  }
+
+  static double? tryParse(String? raw) {
+    final minor = tryParseMinor(raw);
+    return minor == null ? null : minor / 100;
   }
 
   @override

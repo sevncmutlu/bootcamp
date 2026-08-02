@@ -13,7 +13,13 @@ void main() {
   group('SimulatorRepositoryImpl', () {
     test('simulatePayoff calculates successfully', () async {
       final debts = [
-        const DebtEntity(id: '1', name: 'Credit Card', balance: 1000, minPayment: 100, interestRate: 1.5), // minPayment 100
+        const DebtEntity(
+          id: '1',
+          name: 'Credit Card',
+          balance: 1000,
+          minPayment: 100,
+          interestRate: 1.5,
+        ), // minPayment 100
       ];
 
       final result = await repository.simulatePayoff(
@@ -28,15 +34,28 @@ void main() {
       expect(result.schedule, isNotEmpty);
     });
 
-    test('simulatePayoff throws exception if payment plan is not safe', () async {
-      final debts = [
-        const DebtEntity(id: '1', name: 'Loan', balance: 10000, minPayment: 1, interestRate: 20.0), // interest much larger than min payment
-      ];
+    test(
+      'simulatePayoff throws exception if payment plan is not safe',
+      () async {
+        final debts = [
+          const DebtEntity(
+            id: '1',
+            name: 'Loan',
+            balance: 10000,
+            minPayment: 1,
+            interestRate: 20.0,
+          ), // interest much larger than min payment
+        ];
 
-      expect(
-        () => repository.simulatePayoff(debts: debts, extraBudget: 0, strategy: 'snowball'),
-        throwsA(isA<DebtValidationException>()),
-      );
-    });
+        expect(
+          () => repository.simulatePayoff(
+            debts: debts,
+            extraBudget: 0,
+            strategy: 'snowball',
+          ),
+          throwsA(isA<DebtValidationException>()),
+        );
+      },
+    );
   });
 }

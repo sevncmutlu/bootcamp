@@ -7,9 +7,11 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:maki_app/core/network/api_config.dart';
 import 'package:maki_app/core/di/injection_container.dart' as di;
-import 'package:maki_app/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:maki_app/features/coach/data/datasources/coach_connection_data_source.dart';
+import 'package:maki_app/features/session/domain/session_repository.dart';
 
 typedef TokenProvider = Future<String?> Function();
+typedef CoachKeyProvider = Future<String?> Function();
 typedef WaitFunction = Future<void> Function(Duration duration);
 
 final class MakiApiException implements Exception {
@@ -41,10 +43,15 @@ final class CoachSource {
 }
 
 final class CoachReply {
-  const CoachReply({required this.answer, required this.sources});
+  const CoachReply({
+    required this.answer,
+    required this.sources,
+    required this.mode,
+  });
 
   final String answer;
   final List<CoachSource> sources;
+  final String mode;
 }
 
 final class ForecastReply {
@@ -56,14 +63,68 @@ final class ForecastReply {
 
 final class ReceiptScan {
   const ReceiptScan({
+    required this.sourceId,
     required this.merchantName,
     required this.totalMinor,
     required this.requiresReview,
+    required this.totalConfidence,
+    required this.merchantConfidence,
+    required this.items,
   });
 
+  final String sourceId;
   final String? merchantName;
   final int? totalMinor;
   final bool requiresReview;
+  final double totalConfidence;
+  final double merchantConfidence;
+  final List<ReceiptLineScan> items;
+}
+
+final class ReceiptLineScan {
+  const ReceiptLineScan({
+    required this.productName,
+    required this.quantityMilli,
+    required this.unitPriceMinor,
+    required this.lineTotalMinor,
+    required this.confidence,
+  });
+
+  final String productName;
+  final int quantityMilli;
+  final int unitPriceMinor;
+  final int lineTotalMinor;
+  final double confidence;
+}
+
+final class OfficialInflationReply {
+  const OfficialInflationReply({
+    required this.period,
+    required this.previousPeriod,
+    required this.rateBasisPoints,
+    required this.source,
+    required this.sourceUrl,
+    required this.retrievedAt,
+  });
+
+  final String period;
+  final String previousPeriod;
+  final int rateBasisPoints;
+  final String source;
+  final String sourceUrl;
+  final DateTime retrievedAt;
+}
+
+final class MakiCapabilities {
+  const MakiCapabilities({
+    required this.receiptScanning,
+    required this.coach,
+    required this.coachMode,
+  });
+
+  final bool receiptScanning;
+  final bool coach;
+  final String coachMode;
 }
 
 final class LeaderboardStanding {
@@ -78,12 +139,23 @@ final class LeaderboardStanding {
   final String cohortSize;
 }
 
+final class StoreAccountBinding {
+  const StoreAccountBinding({
+    required this.googleAccountId,
+    required this.appleAccountToken,
+  });
+
+  final String googleAccountId;
+  final String? appleAccountToken;
+}
+
 class MakiApiClient {
   MakiApiClient({
     required this.baseUri,
     required this.tokenProvider,
     http.Client? client,
     WaitFunction? wait,
+    this.coachKeyProvider,
     this.requestTimeout = const Duration(seconds: 15),
     this.maximumPollCount = 30,
   }) : _client = client ?? http.Client(),
@@ -91,6 +163,7 @@ class MakiApiClient {
 
   final Uri baseUri;
   final TokenProvider tokenProvider;
+  final CoachKeyProvider? coachKeyProvider;
   final Duration requestTimeout;
   final int maximumPollCount;
   final http.Client _client;
@@ -100,15 +173,19 @@ class MakiApiClient {
     required String question,
     required String sessionId,
   }) async {
-    final job = await _acceptJsonJob('/api/v1/coach/queries', {
-      'question': question,
-      'locale': 'tr-TR',
-      'session_id': sessionId,
-    });
+    final providerKey = (await coachKeyProvider?.call())?.trim();
+    final job = await _acceptJsonJob(
+      '/api/v1/coach/queries',
+      {'question': question, 'locale': 'tr-TR', 'session_id': sessionId},
+      extraHeaders: {
+        if (providerKey != null && providerKey.isNotEmpty)
+          'X-Maki-Gemini-Key': providerKey,
+      },
+    );
     final result = await _awaitJob(job);
     final answer = _map(result['answer'], 'Koç sonucu geçersiz.');
     final safety = _string(answer['safety'], 'Koç güvenlik sonucu eksik.');
-    if (safety != 'answered') {
+    if (safety == 'insufficient_sources') {
       throw const MakiApiException(
         'KAYNAK_YETERSIZ',
         'Güvenilir resmi kaynak bulunamadığı için yanıt üretilemedi.',
@@ -131,7 +208,21 @@ class MakiApiClient {
           );
         })
         .toList(growable: false);
-    return CoachReply(answer: text, sources: sources);
+    return CoachReply(answer: text, sources: sources, mode: safety);
+  }
+
+  Future<MakiCapabilities> capabilities() async {
+    final request = http.Request('GET', _resolve('/health/capabilities'))
+      ..headers['Accept'] = 'application/json';
+    final response = _jsonObject(await _send(request));
+    return MakiCapabilities(
+      receiptScanning: _boolean(
+        response['fis_tarama'],
+        'Fiş tarama durumu eksik.',
+      ),
+      coach: _boolean(response['maki_koc'], 'Koç durumu eksik.'),
+      coachMode: _string(response['koc_modu'], 'Koç çalışma biçimi eksik.'),
+    );
   }
 
   Future<ForecastReply> forecast({
@@ -207,12 +298,66 @@ class MakiApiClient {
     final job = _acceptedJob(response);
     final result = await _awaitJob(job);
     final receipt = _map(result['receipt'], 'Fiş sonucu geçersiz.');
+    final confidences = _list(
+      receipt['field_confidences'],
+      'Fiş güven bilgisi geçersiz.',
+    );
+    final items = _list(receipt['items'], 'Fiş kalemleri geçersiz.');
     return ReceiptScan(
+      sourceId: job.jobId,
       merchantName: _optionalString(receipt['merchant_name']),
       totalMinor: _optionalInt(receipt['total_minor']),
       requiresReview: _boolean(
         receipt['requires_review'],
         'Fiş inceleme durumu eksik.',
+      ),
+      totalConfidence: _fieldConfidence(confidences, 'total'),
+      merchantConfidence: _fieldConfidence(confidences, 'merchant_name'),
+      items: items
+          .map((value) {
+            final item = _map(value, 'Fiş kalemi geçersiz.');
+            return ReceiptLineScan(
+              productName: _string(
+                item['product_name'],
+                'Fiş ürün adı geçersiz.',
+              ),
+              quantityMilli: _quantityMilli(item['quantity']),
+              unitPriceMinor:
+                  _optionalInt(item['unit_price_minor']) ??
+                  (throw const FormatException('Fiş birim fiyatı geçersiz.')),
+              lineTotalMinor:
+                  _optionalInt(item['line_total_minor']) ??
+                  (throw const FormatException('Fiş satır toplamı geçersiz.')),
+              confidence: _number(
+                item['confidence'],
+                'Fiş kalem güveni geçersiz.',
+              ),
+            );
+          })
+          .toList(growable: false),
+    );
+  }
+
+  Future<OfficialInflationReply> officialInflationLatest() async {
+    final response = await _getPublicJson(
+      '/api/v1/official-data/inflation/latest',
+    );
+    return OfficialInflationReply(
+      period: _string(response['period'], 'Enflasyon dönemi eksik.'),
+      previousPeriod: _string(
+        response['previous_period'],
+        'Enflasyon karşılaştırma dönemi eksik.',
+      ),
+      rateBasisPoints:
+          _optionalInt(response['rate_basis_points']) ??
+          (throw const FormatException('Enflasyon oranı geçersiz.')),
+      source: _string(response['source'], 'Enflasyon kaynağı eksik.'),
+      sourceUrl: _string(
+        response['source_url'],
+        'Enflasyon kaynak adresi eksik.',
+      ),
+      retrievedAt: DateTime.parse(
+        _string(response['retrieved_at'], 'Enflasyon erişim zamanı eksik.'),
       ),
     );
   }
@@ -232,7 +377,7 @@ class MakiApiClient {
       percentile: _optionalInt(response['percentile_bucket']),
       cohortSize: _string(
         response['cohort_size_bucket'],
-        'Kohort büyüklüğü eksik.',
+        'Karşılaştırma için kişi sayısı eksik.',
       ),
     );
   }
@@ -246,13 +391,48 @@ class MakiApiClient {
     });
   }
 
+  Future<StoreAccountBinding> storeAccountBinding() async {
+    final response = await _getJson('/api/v1/billing/account-binding');
+    return StoreAccountBinding(
+      googleAccountId: _string(
+        response['google_account_id'],
+        'Mağaza hesap bağı eksik.',
+      ),
+      appleAccountToken: _optionalString(response['apple_account_token']),
+    );
+  }
+
+  Future<bool> verifyGooglePlayPurchase({
+    required String packageName,
+    required String purchaseToken,
+  }) async {
+    final response = await _postJson('/api/v1/billing/verifications', {
+      'store': 'google_play',
+      'package_name': packageName,
+      'purchase_token': purchaseToken,
+    });
+    return _grantsEntitlement(response['status']);
+  }
+
+  Future<bool> verifyAppStorePurchase({
+    required String signedTransaction,
+  }) async {
+    final response = await _postJson('/api/v1/billing/verifications', {
+      'store': 'app_store',
+      'signed_transaction': signedTransaction,
+    });
+    return _grantsEntitlement(response['status']);
+  }
+
   Future<_AcceptedJob> _acceptJsonJob(
     String path,
-    Map<String, Object?> body,
-  ) async {
+    Map<String, Object?> body, {
+    Map<String, String> extraHeaders = const {},
+  }) async {
     final token = await _requiredToken();
     final request = http.Request('POST', _resolve(path))
       ..headers.addAll(_headers(token))
+      ..headers.addAll(extraHeaders)
       ..headers['Content-Type'] = 'application/json; charset=utf-8'
       ..body = jsonEncode(body);
     return _acceptedJob(await _send(request));
@@ -274,6 +454,12 @@ class MakiApiClient {
     final token = await _requiredToken();
     final request = http.Request('GET', _resolve(path))
       ..headers.addAll(_headers(token));
+    return _jsonObject(await _send(request));
+  }
+
+  Future<Map<String, Object?>> _getPublicJson(String path) async {
+    final request = http.Request('GET', _resolve(path))
+      ..headers['Accept'] = 'application/json';
     return _jsonObject(await _send(request));
   }
 
@@ -416,7 +602,9 @@ final class MakiApi {
 
   static final MakiApiClient instance = MakiApiClient(
     baseUri: Uri.parse(ApiConfig.baseUrl),
-    tokenProvider: () => di.sl<AuthLocalDataSource>().getAccessToken(),
+    tokenProvider: () => di.sl<SessionRepository>().getAccessToken(),
+    coachKeyProvider: () =>
+        di.sl<CoachConnectionDataSource>().getGeminiApiKey(),
   );
 }
 
@@ -474,11 +662,33 @@ int? _optionalInt(Object? value) => switch (value) {
   _ => null,
 };
 
+double _fieldConfidence(List<Object?> values, String fieldName) {
+  for (final value in values) {
+    final item = _map(value, 'Fiş alan güveni geçersiz.');
+    if (item['field_name'] == fieldName) {
+      return _number(item['confidence'], 'Fiş alan güveni geçersiz.');
+    }
+  }
+  return 0;
+}
+
 double _number(Object? value, String message) {
   if (value is! num || !value.isFinite) {
     throw FormatException(message);
   }
   return value.toDouble();
+}
+
+int _quantityMilli(Object? value) {
+  final parsed = switch (value) {
+    num number => number.toDouble(),
+    String text => double.tryParse(text.replaceAll(',', '.')),
+    _ => null,
+  };
+  if (parsed == null || !parsed.isFinite || parsed <= 0) {
+    throw const FormatException('Fiş miktarı geçersiz.');
+  }
+  return (parsed * 1000).round();
 }
 
 bool _boolean(Object? value, String message) {
@@ -487,3 +697,6 @@ bool _boolean(Object? value, String message) {
   }
   return value;
 }
+
+bool _grantsEntitlement(Object? status) =>
+    status == 'active' || status == 'grace_period';

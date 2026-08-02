@@ -33,28 +33,35 @@ void main() {
       expect(bloc.state, isA<InflationInitial>());
     });
 
-    test('emits [InflationLoading, InflationLoaded] when LoadInflationEvent is successful', () async {
-      when(() => mockRepository.getInflation()).thenAnswer((_) async => tInflation);
+    test(
+      'emits [InflationLoading, InflationLoaded] when LoadInflationEvent is successful',
+      () async {
+        when(
+          () => mockRepository.getInflation(),
+        ).thenAnswer((_) async => tInflation);
 
-      final expectedStates = [
-        isA<InflationLoading>(),
-        isA<InflationLoaded>(),
-      ];
+        final expectedStates = [
+          isA<InflationLoading>(),
+          isA<InflationLoaded>(),
+        ];
 
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
-      bloc.add(LoadInflationEvent());
-    });
+        expectLater(bloc.stream, emitsInOrder(expectedStates));
+        bloc.add(LoadInflationEvent());
+      },
+    );
 
-    test('emits [InflationLoading, InflationError] when LoadInflationEvent fails', () async {
-      when(() => mockRepository.getInflation()).thenThrow(Exception('Failed'));
+    test(
+      'emits [InflationLoading, InflationError] when LoadInflationEvent fails',
+      () async {
+        when(
+          () => mockRepository.getInflation(),
+        ).thenThrow(Exception('Failed'));
 
-      final expectedStates = [
-        isA<InflationLoading>(),
-        isA<InflationError>(),
-      ];
+        final expectedStates = [isA<InflationLoading>(), isA<InflationError>()];
 
-      expectLater(bloc.stream, emitsInOrder(expectedStates));
-      bloc.add(LoadInflationEvent());
-    });
+        expectLater(bloc.stream, emitsInOrder(expectedStates));
+        bloc.add(LoadInflationEvent());
+      },
+    );
   });
 }
