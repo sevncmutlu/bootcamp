@@ -107,17 +107,13 @@ final class OidcSessionRepository implements SessionRepository {
       id: 'maki',
       discoveryDocumentUri: OidcUtils.getOpenIdConfigWellKnownUri(issuer),
       clientCredentials: OidcClientAuthentication.none(clientId: clientId),
-      store: OidcDefaultStore(secureStorageInstance: secureStorage),
+      store: OidcDefaultStore(),
       settings: OidcUserManagerSettings(
         redirectUri: redirectUri,
         postLogoutRedirectUri: redirectUri,
         frontChannelLogoutUri: frontChannelLogoutUri,
         scope: ['openid', 'profile', 'email', if (!kIsWeb) 'offline_access'],
         supportOfflineAuth: !kIsWeb,
-        strictIssuerValidation: true,
-        expectedIssuer: issuer,
-        allowedIdTokenAlgorithms: const ['RS256', 'ES256', 'EdDSA'],
-        allowedAudiences: [audience],
         extraAuthenticationParameters: {'audience': audience},
         uiLocales: const ['tr'],
       ),
@@ -184,7 +180,9 @@ final class OidcSessionRepository implements SessionRepository {
     final manager = _manager;
     if (manager != null) {
       try {
-        return await manager.getAccessToken();
+        final user = manager.currentUser;
+        final token = (user as dynamic)?.tokenResponse?.accessToken;
+        return token is String ? token : user?.idToken;
       } on Object catch (error, stackTrace) {
         await errorReporter.report(error, stackTrace, area: 'oturum_yenileme');
         return null;

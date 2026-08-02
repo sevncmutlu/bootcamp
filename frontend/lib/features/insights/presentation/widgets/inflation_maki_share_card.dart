@@ -95,15 +95,11 @@ class _InflationMakiShareCardState extends State<InflationMakiShareCard> {
       final origin = renderBox is RenderBox
           ? renderBox.localToGlobal(Offset.zero) & renderBox.size
           : null;
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile.fromData(bytes, mimeType: 'image/png')],
-          fileNameOverrides: const ['maki-kisisel-finans-ozeti.png'],
-          title: 'Maki kişisel finans özeti',
-          text:
-              'Aylık harcama değişimimi ve finans ritmimi Maki ile izliyorum.',
-          sharePositionOrigin: origin,
-        ),
+      await Share.shareXFiles(
+        [XFile.fromData(bytes, mimeType: 'image/png', name: 'maki-kisisel-finans-ozeti.png')],
+        subject: 'Maki kişisel finans özeti',
+        text: 'Aylık harcama değişimimi ve finans ritmimi Maki ile izliyorum.',
+        sharePositionOrigin: origin,
       );
     } catch (_) {
       if (!mounted) return;

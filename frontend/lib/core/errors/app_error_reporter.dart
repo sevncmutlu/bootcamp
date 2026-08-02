@@ -72,17 +72,25 @@ String redactSensitiveText(String input) {
 }
 
 SentryEvent sanitizeSentryEvent(SentryEvent event) {
-  event.user = null;
-  event.request = null;
-  event.breadcrumbs = null;
-  final message = event.message;
-  if (message != null) {
-    message.formatted = redactSensitiveText(message.formatted);
-  }
-  for (final exception in event.exceptions ?? const <SentryException>[]) {
-    final value = exception.value;
-    if (value != null) exception.value = redactSensitiveText(value);
-    exception.throwable = null;
-  }
-  return event;
+  final rawMsg = event.message?.formatted;
+  final sanitizedMsg = rawMsg != null ? SentryMessage(redactSensitiveText(rawMsg)) : event.message;
+  final sanitizedExceptions = event.exceptions?.map((exc) {
+    final val = exc.value;
+    final sanitizedValue = val != null ? redactSensitiveText(val) : val;
+    return SentryException(
+      type: exc.type,
+      value: sanitizedValue,
+      module: exc.module,
+      threadId: exc.threadId,
+      mechanism: exc.mechanism,
+    );
+  }).toList();
+
+  return event.copyWith(
+    user: null,
+    request: null,
+    breadcrumbs: null,
+    message: sanitizedMsg,
+    exceptions: sanitizedExceptions,
+  );
 }
