@@ -826,11 +826,6 @@
                                              "size_bytes":  3784
                                          },
                                          {
-                                             "path":  "frontend/lib/features/auth/data/datasources/auth_remote_data_source.dart",
-                                             "sha256":  "5DDE0DC0E6996DDDF3C60816E616BF12385C8EA75BD3068AF7154F00152D3CC4",
-                                             "size_bytes":  6160
-                                         },
-                                         {
                                              "path":  "frontend/lib/features/auth/domain/entities/user_entity.dart",
                                              "sha256":  "9059EF0C365AAC8EC9AACAFBD30E8F03C0B72F17DB7DC65D8C5F623368E94A9C",
                                              "size_bytes":  532
