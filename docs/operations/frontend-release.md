@@ -13,7 +13,7 @@ yasal bağlantılar, mağaza kimliği ve imza eksikken **fail-closed** biçimde 
 Production web derlemesi bilinçli olarak reddedilir. Preview şu komutla üretilir:
 
 ```powershell
-./build_frontend_web_preview.bat
+./scripts/commands/build_frontend_web_preview.bat
 ```
 
 Üstteki kalıcı bant bu sürümün yalnız sentetik veri kullandığını açıkça belirtir.

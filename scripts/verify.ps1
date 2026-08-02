@@ -135,7 +135,7 @@ if (-not $SkipSecurity) {
 
     Invoke-Gate 'Semgrep SAST' {
         semgrep scan `
-            --config (Join-Path $root '.semgrep.yml') `
+            --config (Join-Path $root 'security\semgrep.yml') `
             --error `
             --metrics=off `
             $root

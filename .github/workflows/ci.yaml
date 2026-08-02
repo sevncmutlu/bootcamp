@@ -45,7 +45,7 @@ jobs:
           mkdir -p artifacts
           uv tool install semgrep==1.172.0
           semgrep scan \
-            --config .semgrep.yml \
+            --config security/semgrep.yml \
             --error \
             --metrics=off \
             --json \

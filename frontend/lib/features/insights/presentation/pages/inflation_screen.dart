@@ -17,6 +17,7 @@ import 'package:share_plus/share_plus.dart';
 part 'inflation_breakdown_section.dart';
 part '../widgets/inflation_maki_waiting_card.dart';
 part '../widgets/inflation_maki_share_card.dart';
+part '../widgets/inflation_share_actions.dart';
 part '../widgets/inflation_metric.dart';
 
 class InflationScreen extends StatefulWidget {

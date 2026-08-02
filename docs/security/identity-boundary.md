@@ -42,7 +42,7 @@ verilmez.
 
 - `backend/tests/security/test_identity_boundary.py` kaldırılan uçların 404
   verdiğini ve wildcard CORS başlığı olmadığını doğrular.
-- `.semgrep.yml` legacy parola yüzeyini, hard-coded JWT sırrını, wildcard CORS'u,
+- `security/semgrep.yml` legacy parola yüzeyini, hard-coded JWT sırrını, wildcard CORS'u,
   eski mobil auth yollarını ve gömülü debug token'ı engeller.
 - CI; Semgrep SAST, Trivy kaynak/secret/IaC taraması, `pip-audit`, Ruff, mypy,
   pytest ve container Trivy taramasını birlikte çalıştırır.
