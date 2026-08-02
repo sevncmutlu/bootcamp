@@ -41,9 +41,9 @@
                                              "size_bytes":  638
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/presentation/widgets/price_observation_sheet.dart",
-                                             "sha256":  "BEF3F7296CAC71B28334C18ECAD3E5FB07341C95062864952F3F2AC39E88AD72",
-                                             "size_bytes":  6717
+                                             "path":  "frontend/lib/features/insights/presentation/widgets/inflation_share_actions.dart",
+                                             "sha256":  "A3978B60B1C9F188D02EB8E895185767AEAB5D1393A3CF8B1F081641257AC46D",
+                                             "size_bytes":  2905
                                          },
                                          {
                                              "path":  "frontend/lib/features/premium/data/repositories/premium_repository_impl.dart",
@@ -127,13 +127,13 @@
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/domain/entities/category_breakdown_entity.dart",
-                                             "sha256":  "A895565C2F4AEA7294E61BC8D0D9E0826F7F2C62BAC4EAB8F25BB90C131D705C",
-                                             "size_bytes":  321
+                                             "sha256":  "7B9CFD1058C9036D8F8E797A81B7DBA4413721C29AEA5FEAA4BC6163E0CC9515",
+                                             "size_bytes":  380
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/domain/entities/inflation_data_entity.dart",
-                                             "sha256":  "CC7D15D7135DD75A247C9B51D822E0D3DDB81BD567EF537455BFF08E2EA4B4F8",
-                                             "size_bytes":  655
+                                             "sha256":  "479F3A6ACCFBB4F92A0619DFF2A422B869F5F54749B1A4A8907C7FDF7380531A",
+                                             "size_bytes":  1156
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/bloc/forecast_bloc.dart",
@@ -151,24 +151,14 @@
                                              "size_bytes":  10576
                                          },
                                          {
-                                             "path":  "frontend/lib/features/gamification/presentation/widgets/forest_path_button.dart",
-                                             "sha256":  "82821BD1CF094E9891A1344B049B4F23EE46826477F07F1FE8A25CFF821F3398",
-                                             "size_bytes":  1823
-                                         },
-                                         {
-                                             "path":  "frontend/lib/features/gamification/presentation/widgets/forest_flora_catalog.dart",
-                                             "sha256":  "7327D23390DA63FD94B71E06C4CFB8D6C47453BBB7DB9CFFA2FE0FDF300A8E55",
-                                             "size_bytes":  10599
-                                         },
-                                         {
                                              "path":  "frontend/lib/features/gamification/presentation/widgets/forest_store_shortcut.dart",
                                              "sha256":  "D38F357B01A8490DAA483B91354868C963CF30884DA5C1C6A8DE746502CAB7C3",
                                              "size_bytes":  2779
                                          },
                                          {
-                                             "path":  "frontend/lib/features/insights/data/repositories/insights_repository_impl.dart",
-                                             "sha256":  "9242F362010422A4F16EA40EC9197D6B3E488FB4CA24E15E1E950F277C3A90B5",
-                                             "size_bytes":  4987
+                                             "path":  "frontend/lib/features/gamification/presentation/widgets/forest_path_button.dart",
+                                             "sha256":  "82821BD1CF094E9891A1344B049B4F23EE46826477F07F1FE8A25CFF821F3398",
+                                             "size_bytes":  1823
                                          },
                                          {
                                              "path":  "frontend/lib/features/gamification/presentation/widgets/living_forest_hub.dart",
@@ -176,29 +166,39 @@
                                              "size_bytes":  19279
                                          },
                                          {
+                                             "path":  "frontend/lib/features/insights/data/services/personal_finance_insight_service.dart",
+                                             "sha256":  "AB902F65C3BF29715D7CC96E5CE9C5D4DE024043BF10D5257F158E69D34376A2",
+                                             "size_bytes":  7240
+                                         },
+                                         {
+                                             "path":  "frontend/lib/features/insights/data/repositories/insights_repository_impl.dart",
+                                             "sha256":  "7BDDBEC7D2DE1A85DCF67AAFBAD4124F4322F00EBBBF0CD527CC9F27BF5EE544",
+                                             "size_bytes":  5365
+                                         },
+                                         {
                                              "path":  "frontend/lib/features/insights/presentation/pages/inflation_screen.dart",
-                                             "sha256":  "74E0D7F4B86994AF3A9FCCD43895C3C9E5B70C374500BADA4C46F70D1BB3FBFB",
-                                             "size_bytes":  7890
+                                             "sha256":  "AD7AEC6A2FF26FE800D7D0303934E26207C5D1DD9E683DDC01191D7BD217B7F1",
+                                             "size_bytes":  6171
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/pages/inflation_breakdown_section.dart",
-                                             "sha256":  "5F98F5824D312A408C189D638691C3B1F6DACC2FA3E8EA494360BD61CA26E070",
-                                             "size_bytes":  7074
+                                             "sha256":  "FF743C2FFC113974795578EE5F3EE59565DB05CE4C1C1E52E81F6B7605163EDE",
+                                             "size_bytes":  7233
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/pages/insights_screen.dart",
-                                             "sha256":  "41B9F397111D64FDD08D13CA10B11B1D6F0E9061B10A3B29E978A54011D11A5F",
-                                             "size_bytes":  6848
+                                             "sha256":  "1FB43B27132EEB76883997E4AC52B839A1EC49D001A6544576C72D1A86625B74",
+                                             "size_bytes":  6596
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/widgets/inflation_maki_waiting_card.dart",
-                                             "sha256":  "4B28A9745E4D7A47C4D49E93206F62EF936EF89E3021BC47C3C5627EC39FA081",
-                                             "size_bytes":  4318
+                                             "sha256":  "489C25B8680F0E3385ACA04B47DE0347F2FD81CB89BEEEEE1C04EFF5284EAA01",
+                                             "size_bytes":  3944
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/widgets/inflation_maki_share_card.dart",
-                                             "sha256":  "B97F0C21321D85DE685EAC23DC6814507DA3D30B48BBFD4EA38CD305904DABAA",
-                                             "size_bytes":  13184
+                                             "sha256":  "B102BF4DD7FCF7332A618D19908A63E039964F09AC28FF7673AAB97A9AFDC110",
+                                             "size_bytes":  12471
                                          },
                                          {
                                              "path":  "frontend/lib/features/insights/presentation/pages/forecast_screen.dart",
@@ -252,13 +252,13 @@
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/pages/expense_entry_goal_action.dart",
-                                             "sha256":  "465CD51D6923EE33D31BC8504F8611AD67244535D0980099640DBFA0364880B3",
-                                             "size_bytes":  438
+                                             "sha256":  "F8FA226D6970ED7AA959C071FB57E21DC35649A72280359D03ADA9681E5F8992",
+                                             "size_bytes":  6326
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/controllers/expense_entry_view_controller.dart",
-                                             "sha256":  "88A9006D686F5E8CD53AFD6BA36262C35CF40F6D66395759C481F819FB09B11F",
-                                             "size_bytes":  17326
+                                             "sha256":  "A65BE314344AF6045D45BC3F3E5290A1177E398039EAFC4C641EE4076C783A16",
+                                             "size_bytes":  17530
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/domain/repositories/transaction_repository.dart",
@@ -287,28 +287,28 @@
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/widgets/personalized_finance_overview.dart",
-                                             "sha256":  "B51BACEE54229BD01BF11FA94E3A16E588E455C5FD6E7C6759BB34E7B90CBBDF",
-                                             "size_bytes":  5104
+                                             "sha256":  "9CE9F91BDAB1EE5C622A2B8285E5136183CC45D910136D1752FD61ED07264774",
+                                             "size_bytes":  5307
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/widgets/personalized_finance_hero.dart",
-                                             "sha256":  "E6790BB9DE2F58E6977833013A6E38A4C8CDB96768A0863177119F037F64AE56",
-                                             "size_bytes":  6058
+                                             "sha256":  "A3201E1B6E1FD6B5E22DD9A7A3D37165C40F721BB5DF99BFBD4A2011E91A4B4A",
+                                             "size_bytes":  6195
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/widgets/personalized_finance_savings.dart",
-                                             "sha256":  "0089DB7ECD2A76871EB20122A6CF4B21860175D6DB5F7EA42F4C09AE908D2D27",
-                                             "size_bytes":  8980
+                                             "sha256":  "DE36466F662A82CF16AA3BC3F9576C4167F56A3BBDDF4847274CC97BE197D22D",
+                                             "size_bytes":  10146
                                          },
                                          {
                                              "path":  "frontend/lib/l10n/app_tr.arb",
-                                             "sha256":  "F86AF07D4DB494FCD9DFCFAFB236CA9DFEAF3B2B20BB2A9D4E0CDDFC29ACB443",
-                                             "size_bytes":  19293
+                                             "sha256":  "7009DF3EBEB0B4ED51B6EABD9808A1EA66EEAA731E69EFF93EAF30D88716CF40",
+                                             "size_bytes":  19281
                                          },
                                          {
                                              "path":  "frontend/lib/l10n/app_en.arb",
-                                             "sha256":  "68F72AC0A339CE7D42425353DDAADAC7D5C9DC660BC5AF9DC64BE5BF09400348",
-                                             "size_bytes":  18305
+                                             "sha256":  "0E0685A0557C4C4BF1BE2380401DF880F03ED30258BD1B2B35E88C381425E390",
+                                             "size_bytes":  18302
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/widgets/personalized_finance_goal.dart",
@@ -317,13 +317,13 @@
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/pages/expense_entry_screen.dart",
-                                             "sha256":  "5F3E265FE0E78BF15624D15887F0A817A7248DFDE7AEB0CAB5084D5D4FCB2569",
-                                             "size_bytes":  3265
+                                             "sha256":  "FB7EF8CFE6F3FBD73B4240824108B6D37D51114955F9DA6EDF748FE107E30B20",
+                                             "size_bytes":  3259
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/pages/expense_entry_lifecycle.dart",
-                                             "sha256":  "02E74DE1C3FE516DBEC499827FBCFE4FF752D92D7580E75B846842B2B9F558C8",
-                                             "size_bytes":  1158
+                                             "sha256":  "4F5CCEFE75A1618FE377C70AFF7C4B2C2E973AF557603D0438B541577F32322F",
+                                             "size_bytes":  1249
                                          },
                                          {
                                              "path":  "frontend/lib/features/transactions/presentation/pages/finance_calendar_screen.dart",
@@ -456,6 +456,11 @@
                                              "size_bytes":  21875
                                          },
                                          {
+                                             "path":  "frontend/lib/features/gamification/presentation/widgets/forest_flora_catalog.dart",
+                                             "sha256":  "7327D23390DA63FD94B71E06C4CFB8D6C47453BBB7DB9CFFA2FE0FDF300A8E55",
+                                             "size_bytes":  10599
+                                         },
+                                         {
                                              "path":  "frontend/lib/core/widgets/brand_wordmark.dart",
                                              "sha256":  "CC568DD299019B43FCF541907C2EF59451B6279AD4744D2D9B25194F2D69E647",
                                              "size_bytes":  2478
@@ -472,8 +477,8 @@
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/empty_state.dart",
-                                             "sha256":  "F71CCA533B3FB3D1982BE26E581D89FC6AA1BEBD9E0E9D746B9DCBB587EE0752",
-                                             "size_bytes":  2051
+                                             "sha256":  "5B901570A118C8E87CAC6836E8E47AC4C6E1BDC815889FCE010A7ACE192330C4",
+                                             "size_bytes":  2298
                                          },
                                          {
                                              "path":  "frontend/lib/core/widgets/draggable_coach_bubble.dart",
@@ -607,8 +612,8 @@
                                          },
                                          {
                                              "path":  "frontend/lib/main.dart",
-                                             "sha256":  "22ED3F04F43385E47396EAA7E643880C46061E46D96A4CE1BB45884593A4DE17",
-                                             "size_bytes":  20173
+                                             "sha256":  "BAA3E7F3F030E102B1ACBA2085D1AC57E544E8C676235CC51782CEF51A57EE0D",
+                                             "size_bytes":  20216
                                          },
                                          {
                                              "path":  "frontend/lib/core/config/capability_registry.dart",
@@ -707,8 +712,8 @@
                                          },
                                          {
                                              "path":  "frontend/lib/features/gamification/data/services/living_forest_service.dart",
-                                             "sha256":  "799403FBADA101CB9EFBC15109CC0A10A805E7E2F66A51D559AFFCA7CF234E2B",
-                                             "size_bytes":  21232
+                                             "sha256":  "3E1FE25F98139722B2373677990A62760E0B539633801313C9A4B8C7165F26DD",
+                                             "size_bytes":  22260
                                          },
                                          {
                                              "path":  "frontend/lib/features/coach/presentation/pages/chat_screen.dart",

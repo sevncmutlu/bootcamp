@@ -100,7 +100,7 @@ flowchart TB
 
 **Tarih:** 19 Haziran – 5 Temmuz · **Durum:** ✅ Tamamlandı
 
-- **Sprint Notları:** Bu sprint tamamen planlama ve proje belirlemeye ayrıldı; kod yazılmadı. Ürün vizyonu, hedef kitle, teknoloji yığını, ürün kimliği (MakiKoç) ve gizlilik mimarisi kararları verildi. Detaylı sprint dokümanları [Sprint-1 klasöründe](./Sprint-1) yer almaktadır.
+- **Sprint Notları:** Bu sprint tamamen planlama ve proje belirlemeye ayrıldı; kod yazılmadı. Ürün vizyonu, hedef kitle, teknoloji yığını, ürün kimliği (MakiKoç) ve gizlilik mimarisi kararları verildi. Detaylı sprint dokümanları [Sprint 1 klasöründe](./docs/sprints/sprint-1/) yer almaktadır.
 
 - **Sprint içinde tamamlanması tahmin edilen puan:** 100 Puan
 
@@ -119,11 +119,11 @@ flowchart TB
 | US-06 | 3 sprint takvimi + kapsam belirleme | 8 |
 | US-07 | Risklerin belirlenmesi | 5 |
 
-Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
+Detaylı ürün backlog'u: [Ürün Backlog'u](./docs/product-backlog.md)
 
 </details>
 
-- **Daily Scrum:** Daily Scrum toplantıları takım küçük olduğu için kısa senkron görüşme + **Slack** üzerinden yürütülmüştür. Toplantı notları: [Daily-Scrum-Notes.md](./Sprint-1/Daily-Scrum-Notes.md)
+- **Daily Scrum:** Daily Scrum toplantıları takım küçük olduğu için kısa senkron görüşme + **Slack** üzerinden yürütülmüştür. Toplantı notları: [Daily-Scrum-Notes.md](./docs/sprints/sprint-1/Daily-Scrum-Notes.md)
 
 - **Sprint Board Update:** Sprint board, tüm planlama kalemleri **Tamamlandı** sütununa taşınarak tamamlanmıştır. Sprint 2'ye devreden işler Backlog'da, kapsam dışı bırakılan kararlar Reddedildi sütununda yer almaktadır.
 
@@ -131,7 +131,7 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
 
 - **Ürün Durumu:** Sprint 1 planlama sprinti olduğu için henüz çalışan ekran yoktur. Çıktılar: netleşmiş ürün vizyonu, teknoloji & mimari kararları, ürün kimliği (MakiKoç) ve gizlilik mimarisi, 3 sprintlik yol haritası ve risk listesi. _(Mimari şeması yukarıda yer almaktadır.)_
 
-- **Sprint Review:** Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu. Teknoloji yığını, geliştirmeye başlamak için yeterli detayda belirlendi. Gizlilik öncelikli mimari, projenin en kritik farklılaştırıcısı olarak onaylandı. Sprint hedeflerine %100 ulaşıldı, kapsam dışına çıkılmadı. Detay: [Sprint-1-Review.md](./Sprint-1/Sprint-1-Review.md)
+- **Sprint Review:** Ürün fikri, hedef kitle ve değer önermesi net biçimde ortaya kondu. Teknoloji yığını, geliştirmeye başlamak için yeterli detayda belirlendi. Gizlilik öncelikli mimari, projenin en kritik farklılaştırıcısı olarak onaylandı. Sprint hedeflerine %100 ulaşıldı, kapsam dışına çıkılmadı. Detay: [Sprint-1-Review.md](./docs/sprints/sprint-1/Sprint-1-Review.md)
 
 - **Sprint Review Katılımcıları:** Emir Hüseyin İnci, Sevinç Mutlu
 
@@ -141,7 +141,7 @@ Detaylı ürün backlog'u: [Product-Backlog.md](./Product-Backlog.md)
   - Türkçe fiş OCR doğruluğu Sprint 2 başında birkaç örnek fişle erken test edilmeli.
   - Modeller için "önce basit çalışan sürüm, sonra iyileştir" yaklaşımı disiplinli uygulanmalı.
   - Daily Scrum'lar daha yapılandırılmış (sabit saat) hâle getirilmeli.
-  - Detay: [Sprint-1-Retrospective.md](./Sprint-1/Sprint-1-Retrospective.md)
+  - Detay: [Sprint-1-Retrospective.md](./docs/sprints/sprint-1/Sprint-1-Retrospective.md)
 
 ---
 
@@ -153,10 +153,10 @@ Sprint 1'de belirlenen ürün fikri ve Sevinç'in görsel tasarım kararları ko
 mobil uygulama, finans çekirdeği, API sözleşmeleri, gözlemlenebilirlik ve teslim
 altyapısı uçtan uca yeniden yapılandırıldı.
 
-Sprint kayıtları: [Sprint 2 özeti](./Sprint-2.md) ·
-[Backlog](./Sprint-2/Sprint-2-Backlog.md) ·
-[Review](./Sprint-2/Sprint-2-Review.md) ·
-[Retrospective](./Sprint-2/Sprint-2-Retrospective.md)
+Sprint kayıtları: [Sprint 2 özeti](./docs/sprints/sprint-2/) ·
+[Backlog](./docs/sprints/sprint-2/Sprint-2-Backlog.md) ·
+[Review](./docs/sprints/sprint-2/Sprint-2-Review.md) ·
+[Retrospective](./docs/sprints/sprint-2/Sprint-2-Retrospective.md)
 
 ### Tamamlanan kapsam
 
@@ -232,12 +232,12 @@ Sprint 2'nin çalışan finans çekirdeği korunarak mobil deneyim; amaç rotala
 Yaşayan Finans Ormanı, hedef yolculukları ve cihaz içi analizlerle ürün seviyesine
 taşındı. Android sürümü fiziksel cihazda ve portre emülatörde doğrulandı.
 
-Sprint kayıtları: [Sprint 3 özeti](./Sprint-3.md) ·
-[Planning](./Sprint-3/Sprint-3-Planning.md) ·
-[Backlog](./Sprint-3/Sprint-3-Backlog.md) ·
-[Daily Scrum](./Sprint-3/Daily-Scrum-Notes.md) ·
-[Review](./Sprint-3/Sprint-3-Review.md) ·
-[Retrospective](./Sprint-3/Sprint-3-Retrospective.md)
+Sprint kayıtları: [Sprint 3 özeti](./docs/sprints/sprint-3/) ·
+[Planning](./docs/sprints/sprint-3/Sprint-3-Planning.md) ·
+[Backlog](./docs/sprints/sprint-3/Sprint-3-Backlog.md) ·
+[Daily Scrum](./docs/sprints/sprint-3/Daily-Scrum-Notes.md) ·
+[Review](./docs/sprints/sprint-3/Sprint-3-Review.md) ·
+[Retrospective](./docs/sprints/sprint-3/Sprint-3-Retrospective.md)
 
 ### Tamamlanan kapsam
 
@@ -280,22 +280,21 @@ Sprint kayıtları: [Sprint 3 özeti](./Sprint-3.md) ·
   <strong>Yaşayan Maki Ormanı</strong>
 </p>
 
-### Teslim sınırı
+### Sprint 3 tamamlandı
 
-- **Android:** Production hedefidir; debug APK fiziksel cihaza ve emülatöre kurularak
-  doğrulandı.
-- **Web:** Yalnız sentetik veriyle çalışan açıkça işaretlenmiş preview/demo yüzeyidir.
-- **iOS:** Kaynak ve proje yapısı hazırdır; imza ve fiziksel cihaz doğrulaması macOS
-  gerektirir.
-- Gerçek erişim belirteçleri, imzalama anahtarları, kullanıcı verileri ve servis
-  sırları depoya eklenmez.
+Sprint 3 kapsamındaki finans, orman, hedef, rapor, OCR ve mobil gezinme akışları
+tamamlandı.
+
+- **Android:** Fiziksel cihazda ve emülatörde doğrulandı.
+- **Web:** Web sürümü hazırlandı.
+- **iOS:** Proje yapısı hazırlandı; fiziksel doğrulama macOS gerektirir.
 
 - **Sprint içinde tamamlanan puan:** 100 Puan
 - **Ürün Durumu:** Sprint 3 kapsamı çalışan Android uygulamasında birleştirildi.
 - **Sprint Review:** Kritik finans, orman, hedef, rapor, OCR ve mobil gezinme
   akışları birlikte doğrulandı.
-- **Sprint Retrospective:** Production servis kimliği ve mağaza dağıtım değerleri
-  kaynak kod dışında bırakıldı; platform sınırları teslim dokümanlarında açıklandı.
+- **Sprint Retrospective:** Sprint 3 hedefleri tamamlandı ve platform doğrulama
+  notları kaydedildi.
 
 ---
 
