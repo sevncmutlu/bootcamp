@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Kaynak kodu al
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Flutter kur
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -75,7 +75,7 @@ jobs:
             --dart-define=SENTRY_DSN="$SENTRY_DSN"
 
       - name: Web paketini yükle
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: maki-web-${{ github.ref_name }}
           path: frontend/build/web
@@ -89,10 +89,10 @@ jobs:
     environment: production
     steps:
       - name: Kaynak kodu al
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Java kur
-        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
@@ -168,7 +168,7 @@ jobs:
             --dart-define=SENTRY_DSN="$SENTRY_DSN"
 
       - name: Android paketini yükle
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: maki-android-${{ github.ref_name }}
           path: |
@@ -183,7 +183,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Kaynak kodu al
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Flutter kur
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -235,7 +235,7 @@ jobs:
             --dart-define=TERMS_URL="$TERMS_URL"
 
       - name: İmzasız iOS derleme kanıtını yükle
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: maki-ios-unsigned-${{ github.ref_name }}
           path: frontend/build/ios/iphoneos/Runner.app
